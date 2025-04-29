@@ -31,40 +31,30 @@ Furniture (objects, table7[0], table7[1], table7[2], table7[3])
 
 
 while game_running:
-    # timer = False
-    #
-    #
-    # for event in pygame.event.get():
-    #
-    #     if event.type == animation_timer:
-    #         timer = True
-    #
-    #     if event.type == pygame.QUIT:
-    #         game_running = False
-    #         pygame.quit()
 
     #отслеживание событий: --Таймер и --Выход из игры
     timer, game_running = events_tracking.events_tracking (animation_timer)
 
-    # управление персонажем
-    if pygame.key.get_pressed() != None:
-        hero.move(pygame.key.get_pressed(), objects)
+    if game_running:
+        # управление персонажем
+        if pygame.key.get_pressed() != None:
+            hero.move(pygame.key.get_pressed(), objects)
 
-    # отрисовка всей графики
-    scene_surface = scene()
+        # отрисовка всей графики
+        scene_surface = scene()
 
-    for object in objects:
-        if object.hitbox[1] < hero.hitbox[1]:
-            object.draw(scene_surface, timer)
+        for object in objects:
+            if object.hitbox[1] < hero.hitbox[1]:
+                object.draw(scene_surface, timer)
 
-    hero.draw(scene_surface, timer)
+        hero.draw(scene_surface, timer)
 
-    for object in objects:
-        if object.hitbox[1] >= hero.hitbox[1]:
-            object.draw(scene_surface, timer)
+        for object in objects:
+            if object.hitbox[1] >= hero.hitbox[1]:
+                object.draw(scene_surface, timer)
 
-    screen.blit(scene_surface, (0, 0))
-    pygame.display.update()
+        screen.blit(scene_surface, (0, 0))
+        pygame.display.update()
 
 
-    clock_on.tick(FPS)
+        clock_on.tick(FPS)
