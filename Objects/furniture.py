@@ -1,7 +1,7 @@
 import pygame
 
-SCREEN_WIDTH = 960
-SCREEN_HEIGHT = 540
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 768
 
 class Furniture:
     def __init__ (self, objects, x, y, w, h):
