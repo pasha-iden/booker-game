@@ -1,12 +1,12 @@
 import pygame
 
 from System import init_game, events_tracking, transfering_room
+# импорт классов: --Сцена, -- Мебель, --Герой
 from Objects.scene import Scene
-from Objects.furniture import Furniture
-from Objects.interactives import Interactive
-from Objects.characters import Character, Hero
-from Objects.rooms_furniture import room_furniture
-from Objects.rooms_interactive import room_interactive
+from Objects.characters import Hero
+# импорт функций: -- Расстановка мебели, -- Расстановка интерактивных областей
+from System.rooms_furniture import room_furniture
+from System.rooms_interactive import room_interactive
 
 SCREEN_WIDTH, SCREEN_HEIGHT, FPS, clock_on, screen, animation_timer, game_running = init_game.init_game()
 
@@ -61,11 +61,11 @@ while game_running:
                 object.draw(scene_surface, timer)
 
         hero.draw(scene_surface, timer)
+
+        #проверка на нахождение в интерактивной области (временная)
         if interactive != []:
-            if hero.hitbox.colliderect(interactive[0].hitbox):
-                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
-                interact_message = game_font.render('взаимодействовать', False, 'Green')
-                scene_surface.blit(interact_message, (hero.x - 50, hero.y - 70))
+            #отрисовка интерактивного сообщения
+            hero.action(scene_surface, interactive[0])
 
         for object in furniture:
             if object.hitbox[1] >= hero.hitbox[1]:

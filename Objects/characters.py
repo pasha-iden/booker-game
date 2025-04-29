@@ -58,6 +58,11 @@ class Hero(Sub_character):
                 self.y = now_y
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
+    def action(self, scene_surface, object):
+        if self.hitbox.colliderect(object.hitbox):
+            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+            action_message = game_font.render('взаимодействовать', False, 'Green')
+            scene_surface.blit(action_message, (self.x - 50, self.y - 85))
 
 if __name__ == '__main__':
     pass
