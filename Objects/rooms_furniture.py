@@ -6,15 +6,9 @@ def room_furniture (scene_room):
 
     if scene_room == 1:
         room_furnitures = [(0, 350, 200, 100)]
-        for object in room_furnitures:
-            Furniture(objects, object[0], object[1], object[2], object[3])
-        return objects
 
     if scene_room == 2:
         room_furnitures = [(0, 350, 200, 100)]
-        for object in room_furnitures:
-            Furniture(objects, object[0], object[1], object[2], object[3])
-        return objects
 
     if scene_room == 3:
         room_furnitures = [(0, 350, 200, 100),
@@ -24,8 +18,11 @@ def room_furniture (scene_room):
                            (550, 0, 100, 100),
                            (780, 230, 100, 100),
                            (720, 420, 150, 130)]
-        for object in room_furnitures:
-            Furniture(objects, object[0], object[1], object[2], object[3])
 
-        return objects
+    for object in room_furnitures:
+        Furniture(objects, object[0], object[1], object[2], object[3])
 
+    return objects
+
+if __name__ == '__main__':
+    pass
