@@ -7,8 +7,8 @@ SCREEN_HEIGHT = 768
 class Sub_character:
     def __init__ (self):
         self.type = 'sub_character'
-        self.x = 150
-        self.y = 200
+        self.x = 850
+        self.y = 500
         self.width = 50
         self.height = 70
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)

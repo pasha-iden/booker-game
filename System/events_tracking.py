@@ -11,7 +11,6 @@ def events_tracking (animation_timer):
 
         if event.type == pygame.QUIT:
             game_running = False
-            pygame.quit()
 
     return timer, game_running
 
