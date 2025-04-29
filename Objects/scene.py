@@ -1,11 +1,21 @@
 import pygame
 
-def scene():
-    room = pygame.image.load('files/images/room.jpg').convert()
-    scene_surface = pygame.Surface((960, 540))
-    scene_surface.blit(room, (0, 0))
+class Scene:
+    def __init__(self):
+        self.image = None
+        self.x = 0
+        self.y = 0
 
-    return scene_surface
+    def draw(self, scene_surface, scene_room):
+        if scene_room == 1:
+            self.image = pygame.image.load('files/images/room_outside.jpg').convert()
+            scene_surface.blit(self.image, (0, 90))
+        if scene_room == 2:
+            self.image = pygame.image.load('files/images/room_kitchen.jpg').convert()
+            scene_surface.blit(self.image, (170, 0))
+        if scene_room == 3:
+            self.image = pygame.image.load('files/images/room_large.jpg').convert()
+            scene_surface.blit(self.image, (0, 0))
 
 if __name__ == '__main__':
-    scene()
+    pass

@@ -3,8 +3,8 @@ import pygame
 def init_game():
     pygame.init()
 
-    SCREEN_WIDTH = 960
-    SCREEN_HEIGHT = 540
+    SCREEN_WIDTH = 1024
+    SCREEN_HEIGHT = 768
     # screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags=pygame.NOFRAME)  # базовое разрешение
     # screen = pygame.display.set_mode((1920, 1040), pygame.FULLSCREEN)
@@ -21,7 +21,7 @@ def init_game():
 
     game_running = True
 
-    return FPS, clock_on, screen, animation_timer, game_running
+    return SCREEN_WIDTH, SCREEN_HEIGHT, FPS, clock_on, screen, animation_timer, game_running
 
 if __name__ == '__main__':
     pass

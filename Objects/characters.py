@@ -1,7 +1,7 @@
 import pygame
 
-SCREEN_WIDTH = 960
-SCREEN_HEIGHT = 540
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 768
 
 
 class Sub_character:
@@ -16,12 +16,12 @@ class Sub_character:
         self.speed = 5
         self.head_place = True
 
-    def draw(self, scene, timer):
-        pygame.draw.rect(scene, 'Blue', (self.x, self.y + 20, 50, 50))
+    def draw(self, scene_surface, timer):
+        pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y + 20, 50, 50))
         if self.head_place == True:
-            pygame.draw.rect(scene, 'Yellow', (self.x, self.y - 20, 50, 50))
+            pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 20, 50, 50))
         else:
-            pygame.draw.rect(scene, 'Yellow', (self.x, self.y - 15, 50, 50))
+            pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 15, 50, 50))
         if timer == True:
             self.head_place = not self.head_place
 

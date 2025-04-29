@@ -13,5 +13,5 @@ class Furniture:
         self.height = h
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
-    def draw(self, scene, timer):
-        pygame.draw.rect(scene, 'Red', (self.x, self.y - 20, self.width, self.height + 15))
+    def draw(self, scene_surface, timer):
+        pygame.draw.rect(scene_surface, 'Red', (self.x, self.y - 20, self.width, self.height + 15))
