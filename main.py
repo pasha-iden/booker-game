@@ -1,7 +1,7 @@
 import pygame
 
 from Objects.furniture import Furniture
-from System import init_game
+from System import init_game, events_tracking
 from Objects.scene import scene
 from Objects.characters import Character, Hero
 
@@ -31,18 +31,20 @@ Furniture (objects, table7[0], table7[1], table7[2], table7[3])
 
 
 while game_running:
-    timer = False
+    # timer = False
+    #
+    #
+    # for event in pygame.event.get():
+    #
+    #     if event.type == animation_timer:
+    #         timer = True
+    #
+    #     if event.type == pygame.QUIT:
+    #         game_running = False
+    #         pygame.quit()
 
-
-    for event in pygame.event.get():
-
-        if event.type == animation_timer:
-            timer = True
-
-        if event.type == pygame.QUIT:
-            game_running = False
-            pygame.quit()
-
+    #отслеживание событий: --Таймер и --Выход из игры
+    timer, game_running = events_tracking.events_tracking (animation_timer)
 
     # управление персонажем
     if pygame.key.get_pressed() != None:
