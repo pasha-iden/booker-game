@@ -66,20 +66,20 @@ class Game:
         return hero, scene
 
 
-    def transfering_room (self, hero, scene, key):
-        if hero.hitbox.collidepoint((25, 750)) and key[pygame.K_SPACE] and scene.room == 3:
+    def transfering_room (self, hero, scene):
+        if hero.hitbox.collidepoint((25, 750)) and scene.room == 3:
             scene.room = 2
             hero.x = 730
             hero.y = 30
-        if hero.hitbox.collidepoint((760, 30)) and key[pygame.K_SPACE] and scene.room == 2:
+        if hero.hitbox.collidepoint((760, 30)) and scene.room == 2:
             scene.room = 3
             hero.x = 25
             hero.y = 700
-        if hero.hitbox.collidepoint((455, 760)) and key[pygame.K_SPACE] and scene.room == 2:
+        if hero.hitbox.collidepoint((455, 760)) and scene.room == 2:
             scene.room = 1
             hero.x = 455
             hero.y = 130
-        if hero.hitbox.collidepoint((455, 130)) and key[pygame.K_SPACE] and scene.room == 1:
+        if hero.hitbox.collidepoint((455, 130)) and scene.room == 1:
             scene.room = 2
             hero.x = 455
             hero.y = 700

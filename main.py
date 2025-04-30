@@ -39,7 +39,8 @@ while game.running:
 
             # перемещение между комнатами
             scene.room_before = scene.room
-            hero, scene = game.transfering_room(hero, scene, pygame.key.get_pressed())
+            if pygame.key.get_pressed()[pygame.K_SPACE]:
+                hero, scene = game.transfering_room(hero, scene)
 
             # расстановка --Мебели и -- Интерактива
             if scene.room != scene.room_before:
