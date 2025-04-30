@@ -11,9 +11,6 @@ SCREEN_WIDTH, SCREEN_HEIGHT, FPS, clock_on, screen, animation_timer = init_game.
 
 
 game = Game()
-
-furniture = []
-interactive = []
 hero = Hero()
 scene = Scene()
 scene_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -37,14 +34,9 @@ while game.running:
             if pygame.key.get_pressed()[pygame.K_SPACE]:
                 hero, scene = game.transfering_room(hero, scene)
 
-            # расстановка --Мебели и -- Интерактива
-            if game.recreate_room:
-                game.recreate_room = scene.placing_furniture()
-                scene.placing_interactive()
-
             # управление персонажем
             if pygame.key.get_pressed() != None:
-                hero.move(pygame.key.get_pressed(), furniture)
+                hero.move(pygame.key.get_pressed(), scene.furniture)
 
 
 

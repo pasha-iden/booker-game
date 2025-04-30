@@ -55,6 +55,8 @@ class Game:
                         hero.x = int(save_data[0])
                         hero.y = int(save_data[1])
                         scene.room = int(save_data[2])
+                        scene.placing_furniture()
+                        scene.placing_interactive()
                         self.just_started = False
 
                     if option[0] == 'Выйти':
@@ -91,6 +93,8 @@ class Game:
             hero.y = 700
             self.recreate_room = True
 
+        scene.placing_furniture()
+        scene.placing_interactive()
         return hero, scene
 
 
