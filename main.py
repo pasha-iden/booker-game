@@ -21,8 +21,8 @@ while game.running:
 
     if game.running:
 
-        # работа меню (редактируется)
-        if game.just_started or game.pause or pygame.key.get_pressed()[pygame.K_ESCAPE]:
+        # меню игры
+        if game.just_started or game.pause: #or pygame.key.get_pressed()[pygame.K_ESCAPE]:
             hero, scene = game.menu_window(scene_surface, hero, scene)
         else:
 

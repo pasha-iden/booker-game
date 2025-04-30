@@ -92,11 +92,14 @@ class Game:
 
     def events_tracking(self):
         self.timer = False
-        self.running = True
         for event in pygame.event.get():
 
             if event.type == self.animation_timer:
                 self.timer = True
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE and not self.just_started:
+                    self.pause = not self.pause
 
             if event.type == pygame.QUIT:
                 self.running = False
