@@ -9,13 +9,16 @@ class Game:
         self.running = True
         self.just_started = True
         self.pause = False
+        self.timer = False
+        self.animation_timer= pygame.USEREVENT + 1
+        pygame.time.set_timer(self.animation_timer, 1000)
         self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350, 280, 200, 50)),
                              ('Продолжить', (350, 350), pygame.Rect(350, 350, 220, 50)),
                              ('Сохранить', (350, 420), pygame.Rect(350, 420, 220, 50)),
                              ('Загрузить', (350, 490), pygame.Rect(350, 490, 180, 50)),
                              ('Выйти', (350, 560), pygame.Rect(350, 560, 120, 50)),
                              )
-        self.recreate_room = False
+
 
 
     def menu_window(self, scene_surface, hero, scene):
@@ -69,6 +72,18 @@ class Game:
                 scene_surface.blit(menu_option, option[1])
 
         return hero, scene
+
+
+    def events_tracking(self):
+        self.timer = False
+        self.running = True
+        for event in pygame.event.get():
+
+            if event.type == self.animation_timer:
+                self.timer = True
+
+            if event.type == pygame.QUIT:
+                self.running = False
 
 
     def transfering_room (self, hero, scene):

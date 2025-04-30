@@ -6,7 +6,7 @@ from Objects.game import Game
 from Objects.scene import Scene
 from Objects.characters import Hero
 
-SCREEN_WIDTH, SCREEN_HEIGHT, FPS, clock_on, screen, animation_timer = init_game.init_game()
+SCREEN_WIDTH, SCREEN_HEIGHT, FPS, clock_on, screen = init_game.init_game()
 
 
 
@@ -21,7 +21,7 @@ while game.running:
     scene_surface.fill('Black')
 
     #отслеживание событий: --Таймер и --Выход из игры
-    timer, game.running = events_tracking.events_tracking (animation_timer)
+    game.events_tracking()
 
     if game.running:
 
@@ -48,14 +48,14 @@ while game.running:
 
             # отрисовка интерактивных областей
             for object in scene.interactive:
-                object.draw(scene_surface, timer)
+                object.draw(scene_surface, game.timer)
 
             # отрисовка объектов и персонажа
             for object in scene.furniture:
                 if object.hitbox[1] < hero.hitbox[1]:
-                    object.draw(scene_surface, timer)
+                    object.draw(scene_surface, game.timer)
 
-            hero.draw(scene_surface, timer)
+            hero.draw(scene_surface, game.timer)
 
             #проверка на существование интерактивной области и отрисовка интерактивного сообщения
             if scene.interactive != None:
@@ -63,7 +63,7 @@ while game.running:
 
             for object in scene.furniture:
                 if object.hitbox[1] >= hero.hitbox[1]:
-                    object.draw(scene_surface, timer)
+                    object.draw(scene_surface, game.timer)
 
         # рендер графики и обновление экрана
         screen.blit(scene_surface, (0, 0))

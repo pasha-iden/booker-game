@@ -49,7 +49,6 @@ class Scene:
             Furniture(objects, object[0], object[1], object[2], object[3])
 
         self.furniture = tuple(objects)
-        return False
 
     def placing_interactive(self):
         objects = []

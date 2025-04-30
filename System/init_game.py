@@ -16,10 +16,7 @@ def init_game():
     clock_on = pygame.time.Clock()
     FPS = 60
 
-    animation_timer = pygame.USEREVENT + 1
-    pygame.time.set_timer(animation_timer, 1000)  # в милисекундах
-
-    return SCREEN_WIDTH, SCREEN_HEIGHT, FPS, clock_on, screen, animation_timer
+    return SCREEN_WIDTH, SCREEN_HEIGHT, FPS, clock_on, screen
 
 if __name__ == '__main__':
     pass
