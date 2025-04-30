@@ -31,6 +31,7 @@ class Game:
                     if option[0] == 'Новая игра':
                         hero = Hero()
                         scene = Scene()
+                        scene.placing_furniture()
                         self.just_started = False
 
                     if option[0] == 'Продолжить':
