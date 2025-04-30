@@ -65,10 +65,9 @@ while game.running:
 
             hero.draw(scene_surface, timer)
 
-            #проверка на нахождение в интерактивной области (временная)
-            if interactive != []:
-                #отрисовка интерактивного сообщения
-                hero.action(scene_surface, interactive[0])
+            #проверка на существование интерактивной области и отрисовка интерактивного сообщения
+            if scene.interactive != None:
+                hero.action(scene_surface, scene.interactive)
 
             for object in scene.furniture:
                 if object.hitbox[1] >= hero.hitbox[1]:
