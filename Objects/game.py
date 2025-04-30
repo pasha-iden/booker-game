@@ -32,6 +32,7 @@ class Game:
                         hero = Hero()
                         scene = Scene()
                         scene.placing_furniture()
+                        scene.placing_interactive()
                         self.just_started = False
 
                     if option[0] == 'Продолжить':

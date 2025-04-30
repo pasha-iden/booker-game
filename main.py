@@ -5,8 +5,6 @@ from System import init_game, events_tracking
 from Objects.game import Game
 from Objects.scene import Scene
 from Objects.characters import Hero
-# импорт функций: -- Расстановка мебели, -- Расстановка интерактивных областей
-from System.rooms_interactive import room_interactive
 
 SCREEN_WIDTH, SCREEN_HEIGHT, FPS, clock_on, screen, animation_timer = init_game.init_game()
 
@@ -42,7 +40,7 @@ while game.running:
             # расстановка --Мебели и -- Интерактива
             if game.recreate_room:
                 game.recreate_room = scene.placing_furniture()
-                interactive = room_interactive(scene.room)
+                scene.placing_interactive()
 
             # управление персонажем
             if pygame.key.get_pressed() != None:
@@ -57,7 +55,7 @@ while game.running:
             scene.draw(scene_surface)
 
             # отрисовка интерактивных областей
-            for object in interactive:
+            for object in scene.interactive:
                 object.draw(scene_surface, timer)
 
             # отрисовка объектов и персонажа

@@ -1,6 +1,7 @@
 import pygame
 
 from Objects.furniture import Furniture
+from Objects.interactives import Interactive
 
 
 class Scene:
@@ -10,6 +11,7 @@ class Scene:
         self.y = 0
         self.room = 1
         self.furniture = None
+        self.interactive = None
 
 
     def draw(self, scene_surface):
@@ -48,6 +50,23 @@ class Scene:
 
         self.furniture = tuple(objects)
         return False
+
+    def placing_interactive(self):
+        objects = []
+
+        if self.room == 1:
+            interactive_in_room = ((600, 600, 50, 50),)
+
+        if self.room == 2:
+            interactive_in_room = ((500, 500, 50, 50),)
+
+        if self.room == 3:
+            interactive_in_room = ((400, 400, 50, 50),)
+
+        for object in interactive_in_room:
+            Interactive(objects, object[0], object[1], object[2], object[3])
+
+        self.interactive = tuple(objects)
 
 
 if __name__ == '__main__':
