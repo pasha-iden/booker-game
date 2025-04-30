@@ -6,7 +6,7 @@ class Scene:
         self.x = 0
         self.y = 0
         self.room = 1
-        self.room_before = None
+
 
     def draw(self, scene_surface):
         if self.room == 1:

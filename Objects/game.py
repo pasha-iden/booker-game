@@ -15,6 +15,7 @@ class Game:
                              ('Загрузить', (350, 490), pygame.Rect(350, 490, 180, 50)),
                              ('Выйти', (350, 560), pygame.Rect(350, 560, 120, 50)),
                              )
+        self.recreate_room = False
 
 
     def menu_window(self, scene_surface, hero, scene):
@@ -71,18 +72,22 @@ class Game:
             scene.room = 2
             hero.x = 730
             hero.y = 30
+            self.recreate_room = True
         if hero.hitbox.collidepoint((760, 30)) and scene.room == 2:
             scene.room = 3
             hero.x = 25
             hero.y = 700
+            self.recreate_room = True
         if hero.hitbox.collidepoint((455, 760)) and scene.room == 2:
             scene.room = 1
             hero.x = 455
             hero.y = 130
+            self.recreate_room = True
         if hero.hitbox.collidepoint((455, 130)) and scene.room == 1:
             scene.room = 2
             hero.x = 455
             hero.y = 700
+            self.recreate_room = True
 
         return hero, scene
 
