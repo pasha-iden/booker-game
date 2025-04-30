@@ -6,12 +6,28 @@ from Objects.scene import Scene
 
 class Game:
     def __init__(self):
+        #инициация игры: системные параметры
+        pygame.init()
+        self.SCREEN_WIDTH = 1024
+        self.SCREEN_HEIGHT = 768
+        # screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), flags=pygame.NOFRAME)  # базовое разрешение
+        # screen = pygame.display.set_mode((1920, 1040), pygame.FULLSCREEN)
+        pygame.display.set_caption('Booker - The Coffee Adventure')
+        icon = pygame.image.load('Booker.png')
+        pygame.display.set_icon(icon)
+        self.animation_timer = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.animation_timer, 1000)
+        self.clock_on = pygame.time.Clock()
+        self.FPS = 60
+
+        #переменные параметры игры
         self.running = True
         self.just_started = True
         self.pause = False
         self.timer = False
-        self.animation_timer= pygame.USEREVENT + 1
-        pygame.time.set_timer(self.animation_timer, 1000)
+
+        #опции меню
         self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350, 280, 200, 50)),
                              ('Продолжить', (350, 350), pygame.Rect(350, 350, 220, 50)),
                              ('Сохранить', (350, 420), pygame.Rect(350, 420, 220, 50)),

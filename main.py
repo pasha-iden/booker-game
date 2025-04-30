@@ -1,19 +1,15 @@
 import pygame
 
-from System import init_game, events_tracking
-# импорт классов: --Сцена, -- Мебель, --Герой
 from Objects.game import Game
 from Objects.scene import Scene
 from Objects.characters import Hero
-
-SCREEN_WIDTH, SCREEN_HEIGHT, FPS, clock_on, screen = init_game.init_game()
 
 
 
 game = Game()
 hero = Hero()
 scene = Scene()
-scene_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+scene_surface = pygame.Surface((game.SCREEN_WIDTH, game.SCREEN_HEIGHT))
 
 
 
@@ -66,9 +62,9 @@ while game.running:
                     object.draw(scene_surface, game.timer)
 
         # рендер графики и обновление экрана
-        screen.blit(scene_surface, (0, 0))
+        game.screen.blit(scene_surface, (0, 0))
         pygame.display.update()
 
 
-        clock_on.tick(FPS)
+        game.clock_on.tick(game.FPS)
 pygame.quit()
