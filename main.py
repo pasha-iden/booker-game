@@ -1,6 +1,6 @@
 import pygame
 
-from System import init_game, events_tracking, transfering_room
+from System import init_game, events_tracking
 # импорт классов: --Сцена, -- Мебель, --Герой
 from Objects.game import Game
 from Objects.scene import Scene
@@ -39,7 +39,7 @@ while game.running:
 
             # перемещение между комнатами
             scene.room_before = scene.room
-            scene.room, hero = transfering_room.transfering_room(hero, pygame.key.get_pressed(), scene.room)
+            hero, scene = game.transfering_room(hero, scene, pygame.key.get_pressed())
 
             # расстановка --Мебели и -- Интерактива
             if scene.room != scene.room_before:
