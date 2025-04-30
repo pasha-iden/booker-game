@@ -36,18 +36,22 @@ class Game:
                         self.just_started = False
 
                     if option[0] == 'Сохранить':
+                        save_data = str(hero.x) + '\n' + str(hero.y) + '\n' + str(scene.room)
                         save_file = open("save.txt", 'w', encoding="UTF-8")
-                        print(hero, file=save_file)
+                        print(save_data, file=save_file)
                         save_file.close()
                         self.just_started = False
 
                     if option[0] == 'Загрузить':
                         save_file = open("save.txt", encoding="UTF-8")
-                        lines = []
+                        save_data = []
                         for line in save_file:
-                            lines.append(line.rstrip("\n"))
+                            save_data.append(line.rstrip("\n"))
                         save_file.close()
-                        print (lines)
+                        # print (save_data)
+                        hero.x = int(save_data[0])
+                        hero.y = int(save_data[1])
+                        scene.room = int(save_data[2])
                         self.just_started = False
 
                     if option[0] == 'Выйти':

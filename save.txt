@@ -1,1 +1,3 @@
-<Objects.characters.Hero object at 0x0000024ACE64AC88>
+390
+495
+2
