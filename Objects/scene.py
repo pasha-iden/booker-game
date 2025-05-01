@@ -1,5 +1,6 @@
 import pygame
 
+from Objects.chairs import Chairs
 from Objects.characters import Character
 from Objects.furniture import Furniture
 from Objects.interactives import Interactive
@@ -13,6 +14,7 @@ class Scene:
         self.room = 1
         self.furniture = None
         self.interactive = None
+        self.chairs = None
         self.room_map = None
         self.characters = None
 
@@ -68,6 +70,24 @@ class Scene:
             Interactive(objects, object[0], object[1], object[2], object[3])
 
         self.interactive = objects
+
+
+    def placing_chairs(self):
+        objects = []
+
+        if self.room == 1:
+            chairs_in_room = ((300, 600, 50, 50),)
+
+        if self.room == 2:
+            chairs_in_room = ((400, 500, 50, 50),)
+
+        if self.room == 3:
+            chairs_in_room = ((500, 400, 50, 50),)
+
+        for object in chairs_in_room:
+            Chairs(objects, object[0], object[1], object[2], object[3])
+
+        self.chairs = objects
 
 
     def placing_characters(self):

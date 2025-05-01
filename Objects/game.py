@@ -49,6 +49,7 @@ class Game:
                     if option[0] == 'Новая игра':
                         scene.placing_furniture()
                         scene.placing_interactive()
+                        scene.placing_chairs()
                         scene.mapping_room()
                         scene.placing_characters()
                         self.just_started = False
@@ -74,6 +75,7 @@ class Game:
                         scene.room = int(save_data[2])
                         scene.placing_furniture()
                         scene.placing_interactive()
+                        scene.placing_chairs()
                         scene.mapping_room()
                         scene.placing_characters()
                         self.just_started = False
@@ -127,6 +129,7 @@ class Game:
         if scene_before != scene.room:
             scene.placing_furniture()
             scene.placing_interactive()
+            scene.placing_chairs()
             scene.mapping_room()
             scene.placing_characters()
         return hero, scene

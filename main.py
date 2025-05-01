@@ -47,6 +47,8 @@ while game.running:
             # отрисовка интерактивных областей
             for object in scene.interactive:
                 object.draw(scene_surface, game.timer)
+            for object in scene.chairs:
+                object.draw(scene_surface, game.timer)
 
             # отрисовка объектов и игрока
             for object in scene.furniture:
