@@ -58,7 +58,6 @@ class Character(Sub_character):
             current_position, path = queue.popleft()
 
             if current_position == deal_location:
-                print(path)
                 return path
 
             x, y = current_position
@@ -83,6 +82,33 @@ class Character(Sub_character):
                 self.path_to_deal.pop(0)
                 self.x += -self.speed
                 self.y += self.speed
+                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+            elif self.path_to_deal[0] == 'вниз':
+                self.path_to_deal.pop(0)
+                self.y += self.speed
+                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+            elif self.path_to_deal[0] == 'вниз-вправо':
+                self.path_to_deal.pop(0)
+                self.x += self.speed
+                self.y += self.speed
+                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+            elif self.path_to_deal[0] == 'вправо':
+                self.path_to_deal.pop(0)
+                self.x += self.speed
+                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+            elif self.path_to_deal[0] == 'вверх-вправо':
+                self.path_to_deal.pop(0)
+                self.x += self.speed
+                self.y += -self.speed
+                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+            elif self.path_to_deal[0] == 'вверх':
+                self.path_to_deal.pop(0)
+                self.y += -self.speed
+                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+            elif self.path_to_deal[0] == 'вверх-влево':
+                self.path_to_deal.pop(0)
+                self.x += -self.speed
+                self.y += -self.speed
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
 class Hero(Sub_character):
