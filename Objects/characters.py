@@ -29,14 +29,21 @@ class Sub_character:
 
 
 class Character(Sub_character):
-    def __init__ (self, objects, room_map, interactive):
+    def __init__ (self, objects, room_map, chair, interactive):
         super().__init__()
         objects.append(self)
-        self.path_to_deal = self.find_path_to_deal(room_map, interactive)
+        self.x = chair.x
+        self.y = chair.y
+        self.on_interactove_place = None
+        self.on_chair = None
+        self.on_the_road = None
+        self.path_to_deal = None
+        self.destination = interactive
+        self.find_path_to_deal(room_map, self.destination)
 
 
-    def find_path_to_deal(self, room_map, interactive):
-        deal_location = (interactive.y//5, interactive.x//5)
+    def find_path_to_deal(self, room_map, destination):
+        deal_location = (destination.y//5, destination.x//5)
         start = (self.y//5, self.x//5)
         rows = len(room_map)
         cols = len(room_map[0])
@@ -58,7 +65,7 @@ class Character(Sub_character):
             current_position, path = queue.popleft()
 
             if current_position == deal_location:
-                return path
+                self.path_to_deal = path
 
             x, y = current_position
 
@@ -110,6 +117,10 @@ class Character(Sub_character):
                 self.x += -self.speed
                 self.y += -self.speed
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+
+
+    def decision(self):
+        pass
 
 class Hero(Sub_character):
 

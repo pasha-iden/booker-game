@@ -47,6 +47,8 @@ class Game:
 
                 if pygame.mouse.get_pressed()[0]:
                     if option[0] == 'Новая игра':
+                        scene = Scene()
+                        hero = Hero()
                         scene.placing_furniture()
                         scene.placing_interactive()
                         scene.placing_chairs()

@@ -64,7 +64,7 @@ class Scene:
             interactive_in_room = ((500, 500, 50, 50),)
 
         if self.room == 3:
-            interactive_in_room = ((400, 400, 50, 50),)
+            interactive_in_room = ((400, 180, 50, 50),)
 
         for object in interactive_in_room:
             Interactive(objects, object[0], object[1], object[2], object[3])
@@ -92,7 +92,7 @@ class Scene:
 
     def placing_characters(self):
         objects = []
-        Character(objects, self.room_map, self.interactive[0])
+        Character(objects, self.room_map, self.chairs[0], self.interactive[0])
         self.characters = objects
 
 
