@@ -30,10 +30,12 @@ while game.running:
             if pygame.key.get_pressed()[pygame.K_SPACE]:
                 hero, scene = game.transfering_room(hero, scene)
 
-            # управление персонажем
+            # управление игроком
             if pygame.key.get_pressed() != None:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
+            # передвижение персонажей
+            scene.characters[0].walk()
 
 
             # print(scene.characters[0].path_to_deal)
@@ -48,7 +50,7 @@ while game.running:
             for object in scene.interactive:
                 object.draw(scene_surface, game.timer)
 
-            # отрисовка объектов и персонажа
+            # отрисовка объектов и игрока
             for object in scene.furniture:
                 if object.hitbox[1] < hero.hitbox[1]:
                     object.draw(scene_surface, game.timer)

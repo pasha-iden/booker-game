@@ -48,8 +48,8 @@ class Character(Sub_character):
             (-1, 0, 'вверх'),
             (1, 1, 'вниз-вправо'),
             (-1, -1, 'вверх-влево'),
-            (1, -1, 'вверх-вправо'),
-            (-1, 1, 'вниз-влево')]
+            (-1, 1, 'вверх-вправо'),
+            (1, -1, 'вниз-влево')]
 
         queue = deque([(start, [])])
         visited = set([start])
@@ -73,8 +73,17 @@ class Character(Sub_character):
                     queue.append(((nx, ny), new_path))
 
 
-    def walk_to_deal(self):
-        pass
+    def walk(self):
+        if self.path_to_deal != []:
+            if self.path_to_deal[0] == 'влево':
+                self.path_to_deal.pop(0)
+                self.x += -self.speed
+                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+            elif self.path_to_deal[0] == 'вниз-влево':
+                self.path_to_deal.pop(0)
+                self.x += -self.speed
+                self.y += self.speed
+                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
 
 class Hero(Sub_character):
