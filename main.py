@@ -22,7 +22,7 @@ while game.running:
     if game.running:
 
         # меню игры
-        if game.just_started or game.pause: #or pygame.key.get_pressed()[pygame.K_ESCAPE]:
+        if game.just_started or game.pause:
             hero, scene = game.menu_window(scene_surface, hero, scene)
         else:
 
@@ -37,8 +37,6 @@ while game.running:
             # передвижение персонажей
             scene.characters[0].walk()
 
-
-            # print(scene.characters[0].path_to_deal)
 
 
 

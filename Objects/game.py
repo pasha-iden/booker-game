@@ -36,7 +36,6 @@ class Game:
                              )
 
 
-
     def menu_window(self, scene_surface, hero, scene):
         self.pause = True
         game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=40)
@@ -48,11 +47,10 @@ class Game:
 
                 if pygame.mouse.get_pressed()[0]:
                     if option[0] == 'Новая игра':
-                        hero = Hero()
-                        scene = Scene()
-                        # scene.placing_furniture()
-                        # scene.placing_interactive()
-                        # scene.placing_characters()
+                        scene.placing_furniture()
+                        scene.placing_interactive()
+                        scene.mapping_room()
+                        scene.placing_characters()
                         self.just_started = False
 
                     if option[0] == 'Продолжить':
@@ -71,13 +69,13 @@ class Game:
                         for line in save_file:
                             save_data.append(line.rstrip("\n"))
                         save_file.close()
-                        # print (save_data)
                         hero.x = int(save_data[0])
                         hero.y = int(save_data[1])
                         scene.room = int(save_data[2])
-                        # scene.placing_furniture()
-                        # scene.placing_interactive()
-                        # scene.placing_characters()
+                        scene.placing_furniture()
+                        scene.placing_interactive()
+                        scene.mapping_room()
+                        scene.placing_characters()
                         self.just_started = False
 
                     if option[0] == 'Выйти':
@@ -108,29 +106,29 @@ class Game:
 
 
     def transfering_room (self, hero, scene):
+        scene_before = scene.room
         if hero.hitbox.collidepoint((25, 750)) and scene.room == 3:
             scene.room = 2
             hero.x = 730
             hero.y = 30
-            self.recreate_room = True
         if hero.hitbox.collidepoint((760, 30)) and scene.room == 2:
             scene.room = 3
             hero.x = 25
             hero.y = 700
-            self.recreate_room = True
         if hero.hitbox.collidepoint((455, 760)) and scene.room == 2:
             scene.room = 1
             hero.x = 455
             hero.y = 130
-            self.recreate_room = True
         if hero.hitbox.collidepoint((455, 130)) and scene.room == 1:
             scene.room = 2
             hero.x = 455
             hero.y = 700
-            self.recreate_room = True
 
-        scene.placing_furniture()
-        scene.placing_interactive()
+        if scene_before != scene.room:
+            scene.placing_furniture()
+            scene.placing_interactive()
+            scene.mapping_room()
+            scene.placing_characters()
         return hero, scene
 
 

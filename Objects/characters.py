@@ -85,7 +85,6 @@ class Character(Sub_character):
                 self.y += self.speed
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
-
 class Hero(Sub_character):
 
     def move(self, key, objects):

@@ -11,10 +11,10 @@ class Scene:
         self.x = 0
         self.y = 0
         self.room = 1
-        self.furniture = self.placing_furniture()
-        self.interactive = self.placing_interactive()
-        self.room_map = self.mapping_room()
-        self.characters = self.placing_characters()
+        self.furniture = None
+        self.interactive = None
+        self.room_map = None
+        self.characters = None
 
 
     def draw(self, scene_surface):
@@ -44,14 +44,12 @@ class Scene:
                                   (400, 250, 150, 130),
                                   (0, 0, 250, 200),
                                   (400, 0, 100, 150),
-                                  (550, 0, 100, 100),
-                                  (780, 230, 100, 100),
-                                  (720, 420, 150, 130))
+                                  (550, 0, 100, 100))
 
         for object in furnitere_in_room:
             Furniture(objects, object[0], object[1], object[2], object[3])
 
-        return tuple(objects)
+        self.furniture = objects
 
 
     def placing_interactive(self):
@@ -69,13 +67,13 @@ class Scene:
         for object in interactive_in_room:
             Interactive(objects, object[0], object[1], object[2], object[3])
 
-        return tuple(objects)
+        self.interactive = objects
 
 
     def placing_characters(self):
         objects = []
         Character(objects, self.room_map, self.interactive[0])
-        return tuple(objects)
+        self.characters = objects
 
 
     def mapping_room(self):
@@ -90,7 +88,8 @@ class Scene:
                 rows.append(place_empty)
 
             room_map.append(rows)
-        return room_map
+
+        self.room_map = room_map
 
 
 if __name__ == '__main__':
