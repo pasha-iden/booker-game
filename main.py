@@ -16,7 +16,7 @@ scene_surface = pygame.Surface((game.SCREEN_WIDTH, game.SCREEN_HEIGHT))
 while game.running:
     scene_surface.fill('Black')
 
-    #отслеживание событий: --Таймер и --Выход из игры
+    #отслеживание событий: --Таймер, --Кнопка Escape, --Выход из игры
     game.events_tracking()
 
     if game.running:

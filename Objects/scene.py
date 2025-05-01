@@ -12,6 +12,8 @@ class Scene:
         self.room = 1
         self.furniture = None
         self.interactive = None
+        self.characters = None
+        self.room_map = None
 
 
     def draw(self, scene_surface):
@@ -49,6 +51,8 @@ class Scene:
             Furniture(objects, object[0], object[1], object[2], object[3])
 
         self.furniture = tuple(objects)
+        self.mapping_room()
+
 
     def placing_interactive(self):
         objects = []
@@ -66,6 +70,20 @@ class Scene:
             Interactive(objects, object[0], object[1], object[2], object[3])
 
         self.interactive = tuple(objects)
+
+
+    def mapping_room(self):
+        self.room_map = []
+        for y in range(768//5):
+            raws = []
+            for x in range(1024//5):
+                place_empty = 1
+                for object in self.furniture:
+                    if object.hitbox.collidepoint((x * 5, y * 5)):
+                        place_empty = 0
+                raws.append(place_empty)
+
+            self.room_map.append(raws)
 
 
 if __name__ == '__main__':
