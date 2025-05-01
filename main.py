@@ -2,7 +2,7 @@ import pygame
 
 from Objects.game import Game
 from Objects.scene import Scene
-from Objects.characters import Hero
+from Objects.characters import Hero, Character
 
 
 
@@ -36,6 +36,8 @@ while game.running:
 
 
 
+            # print(scene.characters[0].path_to_deal)
+
 
 
 
@@ -52,6 +54,7 @@ while game.running:
                     object.draw(scene_surface, game.timer)
 
             hero.draw(scene_surface, game.timer)
+            scene.characters[0].draw(scene_surface, game.timer)
 
             #проверка на существование интерактивной области и отрисовка интерактивного сообщения
             if scene.interactive != None:

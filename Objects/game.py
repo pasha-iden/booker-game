@@ -50,8 +50,9 @@ class Game:
                     if option[0] == 'Новая игра':
                         hero = Hero()
                         scene = Scene()
-                        scene.placing_furniture()
-                        scene.placing_interactive()
+                        # scene.placing_furniture()
+                        # scene.placing_interactive()
+                        # scene.placing_characters()
                         self.just_started = False
 
                     if option[0] == 'Продолжить':
@@ -74,8 +75,9 @@ class Game:
                         hero.x = int(save_data[0])
                         hero.y = int(save_data[1])
                         scene.room = int(save_data[2])
-                        scene.placing_furniture()
-                        scene.placing_interactive()
+                        # scene.placing_furniture()
+                        # scene.placing_interactive()
+                        # scene.placing_characters()
                         self.just_started = False
 
                     if option[0] == 'Выйти':

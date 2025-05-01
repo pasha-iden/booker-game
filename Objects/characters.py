@@ -1,5 +1,7 @@
 import pygame
 
+from collections import deque
+
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 
@@ -26,9 +28,53 @@ class Sub_character:
             self.head_place = not self.head_place
 
 
-class Character:
-    def __inin__ (self, objects):
+class Character(Sub_character):
+    def __init__ (self, objects, room_map, interactive):
+        super().__init__()
         objects.append(self)
+        self.path_to_deal = self.find_path_to_deal(room_map, interactive)
+
+
+    def find_path_to_deal(self, room_map, interactive):
+        deal_location = (interactive.y//5, interactive.x//5)
+        start = (self.y//5, self.x//5)
+        rows = len(room_map)
+        cols = len(room_map[0])
+
+        directions = [
+            (0, 1, 'вправо'),
+            (0, -1, 'влево'),
+            (1, 0, 'вниз'),
+            (-1, 0, 'вверх'),
+            (1, 1, 'вниз-вправо'),
+            (-1, -1, 'вверх-влево'),
+            (1, -1, 'вверх-вправо'),
+            (-1, 1, 'вниз-влево')]
+
+        queue = deque([(start, [])])
+        visited = set([start])
+
+        while queue:
+            current_position, path = queue.popleft()
+
+            if current_position == deal_location:
+                print(path)
+                return path
+
+            x, y = current_position
+
+            for dx, dy, direction in directions:
+                nx, ny = x + dx, y + dy
+
+                if 0 <= nx < rows and 0 <= ny < cols and room_map[nx][ny] == 1 and (nx, ny) not in visited:
+                    visited.add((nx, ny))
+                    new_path = path.copy()
+                    new_path.append(direction)
+                    queue.append(((nx, ny), new_path))
+
+
+    def walk_to_deal(self):
+        pass
 
 
 class Hero(Sub_character):
