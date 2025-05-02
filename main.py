@@ -34,12 +34,22 @@ while game.running:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
 
+            # СОБЫТИЯ NPC
+            character_go_away = None
+            can_go_away = len(scene.characters[scene.room-1]) > (len(scene.chairs) // 2)
             # NPC принимают решения и идут к своей цели
             for character in scene.characters[scene.room-1]:
-                scene.interactive = character.decision(game.timer, scene.room_map, scene.interactive)
+                scene.interactive, go_away = character.decision(game.timer, scene.room_map, scene.interactive, can_go_away)
             # передвижение NPC
                 if character.path_to_deal != None:
                     character.walk()
+            # если NPC решил уйти
+                if go_away == True:
+                    character_go_away = character
+                    go_away = False
+            if character_go_away != None:
+                scene.empty_chairs[scene.room-1].append(character_go_away.chair)
+                scene.characters[scene.room-1].pop(scene.characters[scene.room-1].index(character_go_away))
             # приход нового NPC
             scene.adding_character(game.timer)
 

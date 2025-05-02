@@ -122,7 +122,8 @@ class Character(Sub_character):
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
 
-    def decision(self, timer, room_map, interactive):
+    def decision(self, timer, room_map, interactive, can_go_away):
+        go_away = False
         if timer and self.on_chair and self.have_a_deal == False:
             kind_of_decision = randint(1, 100)
             if 80 <= kind_of_decision <= 95:
@@ -133,6 +134,11 @@ class Character(Sub_character):
                 interactive.pop(i)
                 self.destination = self.his_interactive
                 self.find_path_to_deal(room_map, self.destination)
+
+
+            if 95 < kind_of_decision <= 100 and can_go_away:
+                go_away = True
+
         if self.x == self.destination.x and self.y == self.destination.y and self.have_a_deal:
             self.have_a_deal = False
             self.on_interactive = True
@@ -147,7 +153,7 @@ class Character(Sub_character):
             self.find_path_to_deal(room_map, self.destination)
         if self.x == self.chair.x and self.y == self.chair.y and self.have_a_deal == False:
             self.on_chair = True
-        return  interactive
+        return  interactive, go_away
 
 
 
