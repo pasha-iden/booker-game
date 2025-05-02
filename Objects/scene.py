@@ -7,9 +7,12 @@ from Objects.characters import Character
 from Objects.furniture import Furniture
 from Objects.interactives import Interactive
 
+from Objects.stages import stages
+
 
 class Scene:
     def __init__(self):
+        self.stage = 1
         self.image = None
         self.x = 0
         self.y = 0
@@ -22,17 +25,20 @@ class Scene:
         self.characters = [[],[],[]]
 
 
-    def draw(self, scene_surface):
-        if self.room == 1:
-            self.image = pygame.image.load('files/images/room_outside.jpg').convert()
-            scene_surface.blit(self.image, (0, 90))
-        if self.room == 2:
-            self.image = pygame.image.load('files/images/room_kitchen.jpg').convert()
-            scene_surface.blit(self.image, (170, 0))
-        if self.room == 3:
-            self.image = pygame.image.load('files/images/room_large.jpg').convert()
-            scene_surface.blit(self.image, (0, 0))
+    # def draw(self, scene_surface):
+    #     if self.room == 1:
+    #         self.image = pygame.image.load('files/images/room_outside.jpg').convert()
+    #         scene_surface.blit(self.image, (0, 90))
+    #     if self.room == 2:
+    #         self.image = pygame.image.load('files/images/room_kitchen.jpg').convert()
+    #         scene_surface.blit(self.image, (170, 0))
+    #     if self.room == 3:
+    #         self.image = pygame.image.load('files/images/room_large.jpg').convert()
+    #         scene_surface.blit(self.image, (0, 0))
 
+    def draw(self, scene_surface):
+        self.image = pygame.image.load(stages[self.stage]['ФОНЫ'][self.room]).convert()
+        scene_surface.blit(self.image, stages[self.stage]['КООРДИНАТЫ'][self.room])
 
     def placing_furniture(self):
         objects = []
