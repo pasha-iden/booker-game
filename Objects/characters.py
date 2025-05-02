@@ -35,8 +35,12 @@ class Character(Sub_character):
         objects.append(self)
         self.x = chair.x
         self.y = chair.y
+        self.chair = chair
         self.have_a_deal = False
-        self.destination = None
+        self.on_chair = True
+        self.on_interactive = False
+        self.staing = 0
+        self.destination = self.chair
         self.path_to_deal = []
 
 
@@ -118,12 +122,26 @@ class Character(Sub_character):
 
 
     def decision(self, timer, room_map, interactive):
-        if timer and self.have_a_deal == False:
+        if timer and self.on_chair and self.have_a_deal == False:
             kind_of_decision = randint(1, 100)
             if 80 <= kind_of_decision <= 95:
                 self.have_a_deal = True
+                self.on_chair = False
                 self.destination = interactive
                 self.find_path_to_deal(room_map, self.destination)
+        if self.x == self.destination.x and self.y == self.destination.y and self.have_a_deal:
+            self.have_a_deal = False
+            self.on_interactive = True
+            self.staing = 4
+        if self.on_interactive and self.staing > 0 and timer:
+            self.staing += -1
+        if self.on_interactive and self.staing == 0:
+            self.on_interactive = False
+            self.destination = self.chair
+            self.find_path_to_deal(room_map, self.destination)
+        if self.x == self.chair.x and self.y == self.chair.y and self.have_a_deal == False:
+            self.on_chair = True
+
 
 
 class Hero(Sub_character):
