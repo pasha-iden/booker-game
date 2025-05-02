@@ -1,5 +1,7 @@
 import pygame
 
+from random import randint
+
 from Objects.chairs import Chairs
 from Objects.characters import Character
 from Objects.furniture import Furniture
@@ -95,10 +97,12 @@ class Scene:
 
     def placing_characters(self):
         if self.characters[self.room-1] == []:
+            empty_places = randint(0, len(self.chairs)//2)
+            start_qount_characters = len(self.chairs) - empty_places
             objects = []
-            Character(objects, self.room_map, self.chairs[0], self.interactive[0])
+            for i in range(start_qount_characters):
+                Character(objects, self.room_map, self.chairs[i], self.interactive[0])
             self.characters[self.room-1] = objects
-        print (self.characters)
 
 
     def mapping_room(self):

@@ -57,7 +57,8 @@ while game.running:
                     object.draw(scene_surface, game.timer)
 
             hero.draw(scene_surface, game.timer)
-            scene.characters[scene.room-1][0].draw(scene_surface, game.timer)
+            for object in scene.characters[scene.room-1]:
+                object.draw(scene_surface, game.timer)
 
             #проверка на существование интерактивной области и отрисовка интерактивного сообщения
             if scene.interactive != None:
