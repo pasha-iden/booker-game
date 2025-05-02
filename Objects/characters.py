@@ -127,7 +127,7 @@ class Character(Sub_character):
             if 80 <= kind_of_decision <= 95:
                 self.have_a_deal = True
                 self.on_chair = False
-                self.destination = interactive
+                self.destination = interactive[randint(0, len(interactive)-1)]
                 self.find_path_to_deal(room_map, self.destination)
         if self.x == self.destination.x and self.y == self.destination.y and self.have_a_deal:
             self.have_a_deal = False

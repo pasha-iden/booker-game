@@ -61,13 +61,16 @@ class Scene:
         objects = []
 
         if self.room == 1:
-            interactive_in_room = ((600, 600, 50, 50),)
+            interactive_in_room = ((600, 600, 50, 50),
+                                   (100, 100, 50, 50))
 
         if self.room == 2:
-            interactive_in_room = ((500, 500, 50, 50),)
+            interactive_in_room = ((500, 500, 50, 50),
+                                   (300, 100, 50, 50))
 
         if self.room == 3:
-            interactive_in_room = ((400, 180, 50, 50),)
+            interactive_in_room = ((400, 180, 50, 50),
+                                   (50, 600, 50, 50))
 
         for object in interactive_in_room:
             Interactive(objects, object[0], object[1], object[2], object[3])
