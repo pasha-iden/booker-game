@@ -18,6 +18,7 @@ class Scene:
         self.interactive = None
         self.chairs = None
         self.room_map = None
+        self.empty_chairs = [[],[],[]]
         self.characters = [[],[],[]]
 
 
@@ -100,11 +101,11 @@ class Scene:
             empty_places = randint(0, len(self.chairs)//2)
             start_qount_characters = len(self.chairs) - empty_places
             objects = []
-            empty_chairs = list(self.chairs)
+            self.empty_chairs[self.room-1] = list(self.chairs)
             for i in range(start_qount_characters):
-                current_chair = randint(0, len(empty_chairs) - 1)
-                Character(objects, self.room_map, empty_chairs[current_chair], self.interactive[0])
-                empty_chairs.pop(current_chair)
+                current_chair = randint(0, len(self.empty_chairs[self.room-1]) - 1)
+                Character(objects, self.room_map, self.empty_chairs[self.room-1][current_chair], self.interactive[0])
+                self.empty_chairs[self.room-1].pop(current_chair)
             self.characters[self.room-1] = objects
 
 
