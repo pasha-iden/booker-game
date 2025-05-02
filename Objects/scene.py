@@ -112,6 +112,15 @@ class Scene:
             self.characters[self.room-1] = objects
 
 
+    def adding_character(self, timer):
+        if len(self.characters[self.room-1]) < len(self.chairs) and timer and randint(1, 100) > 90:
+            objects = []
+            current_chair = randint(0, len(self.empty_chairs[self.room - 1]) - 1)
+            Character(objects, self.room_map, self.empty_chairs[self.room - 1][current_chair])
+            self.empty_chairs[self.room-1].pop(current_chair)
+            self.characters[self.room-1].append(objects[0])
+
+
     def mapping_room(self):
         room_map = []
         for y in range(768//5):

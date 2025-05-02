@@ -29,7 +29,6 @@ while game.running:
             # перемещение между комнатами
             if pygame.key.get_pressed()[pygame.K_SPACE]:
                 hero, scene = game.transfering_room(hero, scene)
-
             # управление игроком
             if pygame.key.get_pressed() != None:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
@@ -41,6 +40,8 @@ while game.running:
             # передвижение NPC
                 if character.path_to_deal != None:
                     character.walk()
+            # приход нового NPC
+            scene.adding_character(game.timer)
 
 
 
