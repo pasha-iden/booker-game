@@ -16,7 +16,7 @@ class Scene:
         self.interactive = None
         self.chairs = None
         self.room_map = None
-        self.characters = None
+        self.characters = [[],[],[]]
 
 
     def draw(self, scene_surface):
@@ -76,13 +76,16 @@ class Scene:
         objects = []
 
         if self.room == 1:
-            chairs_in_room = ((300, 600, 50, 50),)
+            chairs_in_room = ((300, 600, 50, 50),
+                              (200, 650, 50, 50))
 
         if self.room == 2:
-            chairs_in_room = ((400, 500, 50, 50),)
+            chairs_in_room = ((400, 500, 50, 50),
+                              (150, 250, 50, 50))
 
         if self.room == 3:
-            chairs_in_room = ((500, 400, 50, 50),)
+            chairs_in_room = ((500, 400, 50, 50),
+                              (620, 620, 50, 50))
 
         for object in chairs_in_room:
             Chairs(objects, object[0], object[1], object[2], object[3])
@@ -91,9 +94,11 @@ class Scene:
 
 
     def placing_characters(self):
-        objects = []
-        Character(objects, self.room_map, self.chairs[0], self.interactive[0])
-        self.characters = objects
+        if self.characters[self.room-1] == []:
+            objects = []
+            Character(objects, self.room_map, self.chairs[0], self.interactive[0])
+            self.characters[self.room-1] = objects
+        print (self.characters)
 
 
     def mapping_room(self):

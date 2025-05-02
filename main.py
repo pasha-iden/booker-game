@@ -35,7 +35,8 @@ while game.running:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
             # передвижение персонажей
-            scene.characters[0].walk()
+            if scene.characters[scene.room-1][0].path_to_deal != None:
+                scene.characters[scene.room-1][0].walk()
 
 
 
@@ -56,7 +57,7 @@ while game.running:
                     object.draw(scene_surface, game.timer)
 
             hero.draw(scene_surface, game.timer)
-            scene.characters[0].draw(scene_surface, game.timer)
+            scene.characters[scene.room-1][0].draw(scene_surface, game.timer)
 
             #проверка на существование интерактивной области и отрисовка интерактивного сообщения
             if scene.interactive != None:

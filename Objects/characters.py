@@ -39,7 +39,7 @@ class Character(Sub_character):
         self.on_the_road = None
         self.path_to_deal = None
         self.destination = interactive
-        self.find_path_to_deal(room_map, self.destination)
+        # self.find_path_to_deal(room_map, self.destination)
 
 
     def find_path_to_deal(self, room_map, destination):
