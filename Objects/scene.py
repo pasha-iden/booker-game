@@ -25,83 +25,32 @@ class Scene:
         self.characters = [[],[],[]]
 
 
-    # def draw(self, scene_surface):
-    #     if self.room == 1:
-    #         self.image = pygame.image.load('files/images/room_outside.jpg').convert()
-    #         scene_surface.blit(self.image, (0, 90))
-    #     if self.room == 2:
-    #         self.image = pygame.image.load('files/images/room_kitchen.jpg').convert()
-    #         scene_surface.blit(self.image, (170, 0))
-    #     if self.room == 3:
-    #         self.image = pygame.image.load('files/images/room_large.jpg').convert()
-    #         scene_surface.blit(self.image, (0, 0))
-
     def draw(self, scene_surface):
         self.image = pygame.image.load(stages[self.stage]['ФОНЫ'][self.room]).convert()
         scene_surface.blit(self.image, stages[self.stage]['КООРДИНАТЫ'][self.room])
 
+
     def placing_furniture(self):
         objects = []
-
-        if self.room == 1:
-            furnitere_in_room = ((0, 350, 200, 100),)
-
-        if self.room == 2:
-            furnitere_in_room = ((0, 350, 200, 100),
-                                  (400, 250, 150, 130))
-
-        if self.room == 3:
-            furnitere_in_room = ((0, 350, 200, 100),
-                                  (400, 250, 150, 130),
-                                  (0, 0, 250, 200),
-                                  (400, 0, 100, 150),
-                                  (550, 0, 100, 100))
-
-        for object in furnitere_in_room:
+        furniture_in_room = stages[self.stage]['ТВЕРДЫЕ ОБЪЕКТЫ'][self.room]
+        for object in furniture_in_room:
             Furniture(objects, object[0], object[1], object[2], object[3])
-
         self.furniture = objects
 
 
     def placing_interactive(self):
         objects = []
-
-        if self.room == 1:
-            interactive_in_room = ((600, 600, 50, 50),
-                                   (100, 100, 50, 50))
-
-        if self.room == 2:
-            interactive_in_room = ((500, 500, 50, 50),
-                                   (300, 100, 50, 50))
-
-        if self.room == 3:
-            interactive_in_room = ((400, 180, 50, 50),
-                                   (50, 600, 50, 50))
-
+        interactive_in_room = stages[self.stage]['ИНТЕРАКТИВНЫЕ ОБЪЕКТЫ (npc)'][self.room]
         for object in interactive_in_room:
             Interactive(objects, object[0], object[1], object[2], object[3])
-
         self.interactive = objects
 
 
     def placing_chairs(self):
         objects = []
-
-        if self.room == 1:
-            chairs_in_room = ((300, 600, 50, 50),
-                              (200, 650, 50, 50))
-
-        if self.room == 2:
-            chairs_in_room = ((400, 500, 50, 50),
-                              (150, 250, 50, 50))
-
-        if self.room == 3:
-            chairs_in_room = ((500, 400, 50, 50),
-                              (620, 620, 50, 50))
-
+        chairs_in_room = stages[self.stage]['СТУЛЬЯ (npc)'][self.room]
         for object in chairs_in_room:
             Chairs(objects, object[0], object[1], object[2], object[3])
-
         self.chairs = objects
 
 

@@ -35,6 +35,8 @@ while game.running:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
 
+
+
             # СОБЫТИЯ NPC
             character_go_away = None
             can_go_away = len(scene.characters[scene.room-1]) > (len(scene.chairs) // 2)
