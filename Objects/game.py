@@ -141,6 +141,5 @@ class Game:
         return hero, scene
 
 
-
 if __name__ == '__main__':
     pass
