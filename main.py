@@ -37,7 +37,7 @@ while game.running:
 
             # NPC принимают решения и идут к своей цели
             for character in scene.characters[scene.room-1]:
-                character.decision(game.timer, scene.room_map, scene.interactive)
+                scene.interactive = character.decision(game.timer, scene.room_map, scene.interactive)
             # передвижение NPC
                 if character.path_to_deal != None:
                     character.walk()

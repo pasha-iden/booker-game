@@ -39,6 +39,7 @@ class Character(Sub_character):
         self.have_a_deal = False
         self.on_chair = True
         self.on_interactive = False
+        self.his_interactive = None
         self.staing = 0
         self.destination = self.chair
         self.path_to_deal = []
@@ -127,7 +128,10 @@ class Character(Sub_character):
             if 80 <= kind_of_decision <= 95:
                 self.have_a_deal = True
                 self.on_chair = False
-                self.destination = interactive[randint(0, len(interactive)-1)]
+                i = randint(0, len(interactive)-1)
+                self.his_interactive = interactive[i]
+                interactive.pop(i)
+                self.destination = self.his_interactive
                 self.find_path_to_deal(room_map, self.destination)
         if self.x == self.destination.x and self.y == self.destination.y and self.have_a_deal:
             self.have_a_deal = False
@@ -136,11 +140,14 @@ class Character(Sub_character):
         if self.on_interactive and self.staing > 0 and timer:
             self.staing += -1
         if self.on_interactive and self.staing == 0:
+            interactive.append(self.his_interactive)
+            self.his_interactive = None
             self.on_interactive = False
             self.destination = self.chair
             self.find_path_to_deal(room_map, self.destination)
         if self.x == self.chair.x and self.y == self.chair.y and self.have_a_deal == False:
             self.on_chair = True
+        return  interactive
 
 
 
