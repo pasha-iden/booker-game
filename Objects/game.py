@@ -68,6 +68,8 @@ class Game:
                         self.just_started = False
 
                     if option[0] == 'Загрузить':
+                        hero = Hero()
+                        scene = Scene()
                         save_file = open("save.txt", encoding="UTF-8")
                         save_data = []
                         for line in save_file:
