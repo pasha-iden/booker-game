@@ -34,9 +34,13 @@ while game.running:
             if pygame.key.get_pressed() != None:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
-            # передвижение персонажей
-            if scene.characters[scene.room-1][0].path_to_deal != None:
-                scene.characters[scene.room-1][0].walk()
+
+            # NPC принимают решения и идут к своей цели
+            for character in scene.characters[scene.room-1]:
+                character.decision(game.timer, scene.room_map, scene.interactive[0])
+            # передвижение NPC
+                if character.path_to_deal != None:
+                    character.walk()
 
 
 

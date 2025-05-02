@@ -104,7 +104,7 @@ class Scene:
             self.empty_chairs[self.room-1] = list(self.chairs)
             for i in range(start_qount_characters):
                 current_chair = randint(0, len(self.empty_chairs[self.room-1]) - 1)
-                Character(objects, self.room_map, self.empty_chairs[self.room-1][current_chair], self.interactive[0])
+                Character(objects, self.room_map, self.empty_chairs[self.room-1][current_chair])
                 self.empty_chairs[self.room-1].pop(current_chair)
             self.characters[self.room-1] = objects
 

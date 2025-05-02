@@ -1,5 +1,6 @@
 import pygame
 
+from random import randint
 from collections import deque
 
 SCREEN_WIDTH = 1024
@@ -29,17 +30,14 @@ class Sub_character:
 
 
 class Character(Sub_character):
-    def __init__ (self, objects, room_map, chair, interactive):
+    def __init__ (self, objects, room_map, chair):
         super().__init__()
         objects.append(self)
         self.x = chair.x
         self.y = chair.y
-        self.on_interactove_place = None
-        self.on_chair = None
-        self.on_the_road = None
-        self.path_to_deal = None
-        self.destination = interactive
-        # self.find_path_to_deal(room_map, self.destination)
+        self.have_a_deal = False
+        self.destination = None
+        self.path_to_deal = []
 
 
     def find_path_to_deal(self, room_map, destination):
@@ -119,8 +117,14 @@ class Character(Sub_character):
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
 
-    def decision(self):
-        pass
+    def decision(self, timer, room_map, interactive):
+        if timer and self.have_a_deal == False:
+            kind_of_decision = randint(1, 100)
+            if 80 <= kind_of_decision <= 95:
+                self.have_a_deal = True
+                self.destination = interactive
+                self.find_path_to_deal(room_map, self.destination)
+
 
 class Hero(Sub_character):
 
