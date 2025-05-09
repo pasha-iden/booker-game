@@ -12,19 +12,19 @@ class Sub_character:
         self.type = 'sub_character'
         self.x = 850
         self.y = 500
-        self.width = 50
-        self.height = 70
+        self.width = 48
+        self.height = 48
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         self.direct = 0
-        self.speed = 5
+        self.speed = 4
         self.head_place = True
 
     def draw(self, scene_surface, timer):
-        pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y + 20, 50, 50))
+        pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, 48, 48))
         if self.head_place == True:
-            pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 20, 50, 50))
+            pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
         else:
-            pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 15, 50, 50))
+            pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
         if timer == True:
             self.head_place = not self.head_place
 
@@ -46,8 +46,8 @@ class Character(Sub_character):
 
 
     def find_path_to_deal(self, room_map, destination):
-        deal_location = (destination.y//5, destination.x//5)
-        start = (self.y//5, self.x//5)
+        deal_location = (destination.y//self.speed, destination.x//self.speed)
+        start = (self.y//self.speed, self.x//self.speed)
         rows = len(room_map)
         cols = len(room_map[0])
 
@@ -75,7 +75,7 @@ class Character(Sub_character):
             for dx, dy, direction in directions:
                 nx, ny = x + dx, y + dy
 
-                if 0 <= nx < rows and 0 <= ny < cols and room_map[nx][ny] == 1 and (nx, ny) not in visited:
+                if 0 <= nx < rows and 0 <= ny < cols and room_map[nx][ny] == 1 and room_map[nx + 11][ny] == 1 and room_map[nx][ny + 11] == 1 and room_map[nx + 11][ny + 11] == 1 and (nx, ny) not in visited:
                     visited.add((nx, ny))
                     new_path = path.copy()
                     new_path.append(direction)
@@ -133,6 +133,8 @@ class Character(Sub_character):
                 self.his_interactive = interactive[i]
                 interactive.pop(i)
                 self.destination = self.his_interactive
+                self.x = self.chair.x
+                self.y = self.chair.y
                 self.find_path_to_deal(room_map, self.destination)
 
 
@@ -153,6 +155,8 @@ class Character(Sub_character):
             self.find_path_to_deal(room_map, self.destination)
         if self.x == self.chair.x and self.y == self.chair.y and self.have_a_deal == False:
             self.on_chair = True
+            self.x = self.chair.landing_x
+            self.y = self.chair.landing_y
         return  interactive, go_away
 
 

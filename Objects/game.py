@@ -114,14 +114,14 @@ class Game:
 
     def transfering_room (self, hero, scene):
         scene_before = scene.room
-        if hero.hitbox.collidepoint((25, 750)) and scene.room == 3:
+        if hero.hitbox.collidepoint((25, 550)) and scene.room == 3:
             scene.room = 2
             hero.x = 730
             hero.y = 30
         if hero.hitbox.collidepoint((760, 30)) and scene.room == 2:
             scene.room = 3
             hero.x = 25
-            hero.y = 700
+            hero.y = 560
         if hero.hitbox.collidepoint((455, 760)) and scene.room == 2:
             scene.room = 1
             hero.x = 455

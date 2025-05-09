@@ -34,7 +34,7 @@ class Scene:
         objects = []
         furniture_in_room = stages[self.stage]['ТВЕРДЫЕ ОБЪЕКТЫ'][self.room]
         for object in furniture_in_room:
-            Furniture(objects, object[0], object[1], object[2], object[3])
+            Furniture(objects, object[0], object[1], object[2], object[3], object[4], object[5], object[6])
         self.furniture = objects
 
 
@@ -78,12 +78,12 @@ class Scene:
 
     def mapping_room(self):
         room_map = []
-        for y in range(768//5):
+        for y in range(768//4):
             rows = []
-            for x in range(1024//5):
+            for x in range(1024//4):
                 place_empty = 1
                 for object in self.furniture:
-                    if object.hitbox.collidepoint((x * 5, y * 5)):
+                    if object.hitbox.collidepoint((x * 4, y * 4)):
                         place_empty = 0
                 rows.append(place_empty)
 
