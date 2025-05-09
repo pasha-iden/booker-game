@@ -15,7 +15,7 @@ class Sub_character:
         self.width = 48
         self.height = 48
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.direct = 0
+        self.direction = None
         self.speed = 4
         self.head_place = True
 
@@ -27,6 +27,7 @@ class Sub_character:
             pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
         if timer == True:
             self.head_place = not self.head_place
+            print (self.direction)
 
 
 class Character(Sub_character):
@@ -84,6 +85,7 @@ class Character(Sub_character):
 
     def walk(self):
         if self.path_to_deal != []:
+            self.direction = self.path_to_deal[0]
             if self.path_to_deal[0] == 'влево':
                 self.path_to_deal.pop(0)
                 self.x += -self.speed
@@ -187,6 +189,14 @@ class Hero(Sub_character):
             if self.hitbox.colliderect(object.hitbox):
                 self.y = now_y
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+        if key[pygame.K_a]: self.direction = 'влево'
+        if key[pygame.K_d]: self.direction = 'вправо'
+        if key[pygame.K_w]: self.direction = 'вверх'
+        if key[pygame.K_s]: self.direction = 'вниз'
+        if key[pygame.K_a] and key[pygame.K_w]: self.direction = 'вверх-влево'
+        if key[pygame.K_a] and key[pygame.K_s]: self.direction = 'вниз-влево'
+        if key[pygame.K_d] and key[pygame.K_w]: self.direction = 'вверх-вправо'
+        if key[pygame.K_d] and key[pygame.K_s]: self.direction = 'вниз-вправо'
 
     def action(self, scene_surface, objects):
         for object in objects:
