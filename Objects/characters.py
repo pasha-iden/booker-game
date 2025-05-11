@@ -3,6 +3,8 @@ import pygame
 from random import randint
 from collections import deque
 
+from Objects.skins import skins
+
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
 
@@ -10,24 +12,30 @@ SCREEN_HEIGHT = 768
 class Sub_character:
     def __init__ (self):
         self.type = 'sub_character'
+        self.skin = 1
         self.x = 850
         self.y = 500
         self.width = 48
         self.height = 48
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.direction = None
+        self.direction = 'вниз'
         self.speed = 4
         self.head_place = True
 
     def draw(self, scene_surface, timer):
-        pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, 48, 48))
+        # pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, 48, 48))
+        image = pygame.image.load(skins[self.skin][self.direction]['тело'][0]).convert_alpha()
+        scene_surface.blit(image, (self.x -8, self.y -62))
         if self.head_place == True:
-            pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
+            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
+            image = pygame.image.load(skins[self.skin][self.direction]['голова'][0]).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 62))
         else:
-            pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
+            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
+            image = pygame.image.load(skins[self.skin][self.direction]['голова'][0]).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 58))
         if timer == True:
             self.head_place = not self.head_place
-            print (self.direction)
 
 
 class Character(Sub_character):
