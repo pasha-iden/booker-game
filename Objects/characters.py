@@ -29,7 +29,7 @@ class Sub_character:
         if self.on_walk == False:
             image = pygame.image.load(skins[self.skin][self.direction]['тело']).convert_alpha()
             scene_surface.blit(image, (self.x -8, self.y -62))
-        if self.on_walk == True:
+        elif self.on_walk == True:
             image = pygame.image.load(skins[self.skin][self.direction][self.head_place]).convert_alpha()
             scene_surface.blit(image, (self.x - 8, self.y - 62))
         if self.head_place == True:
