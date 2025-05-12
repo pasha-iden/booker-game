@@ -20,20 +20,28 @@ class Sub_character:
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         self.direction = 'вниз'
         self.speed = 4
+        self.stand = True
         self.head_place = True
+        self.on_walk = False
 
     def draw(self, scene_surface, timer):
         # pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, 48, 48))
-        image = pygame.image.load(skins[self.skin][self.direction]['тело'][0]).convert_alpha()
-        scene_surface.blit(image, (self.x -8, self.y -62))
+        if self.on_walk == False:
+            image = pygame.image.load(skins[self.skin][self.direction]['тело']).convert_alpha()
+            scene_surface.blit(image, (self.x -8, self.y -62))
+        if self.on_walk == True:
+            image = pygame.image.load(skins[self.skin][self.direction][self.head_place]).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 62))
         if self.head_place == True:
             # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
-            image = pygame.image.load(skins[self.skin][self.direction]['голова'][0]).convert_alpha()
+            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
             scene_surface.blit(image, (self.x - 8, self.y - 62))
         else:
             # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
-            image = pygame.image.load(skins[self.skin][self.direction]['голова'][0]).convert_alpha()
+            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
             scene_surface.blit(image, (self.x - 8, self.y - 58))
+
+        self.on_walk = False
         if timer == True:
             self.head_place = not self.head_place
 
@@ -94,6 +102,7 @@ class Character(Sub_character):
     def walk(self):
         if self.path_to_deal != []:
             self.direction = self.path_to_deal[0]
+            self.on_walk = True
             if self.path_to_deal[0] == 'влево':
                 self.path_to_deal.pop(0)
                 self.x += -self.speed
@@ -197,14 +206,14 @@ class Hero(Sub_character):
             if self.hitbox.colliderect(object.hitbox):
                 self.y = now_y
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
-        if key[pygame.K_a]: self.direction = 'влево'
-        if key[pygame.K_d]: self.direction = 'вправо'
-        if key[pygame.K_w]: self.direction = 'вверх'
-        if key[pygame.K_s]: self.direction = 'вниз'
-        if key[pygame.K_a] and key[pygame.K_w]: self.direction = 'вверх-влево'
-        if key[pygame.K_a] and key[pygame.K_s]: self.direction = 'вниз-влево'
-        if key[pygame.K_d] and key[pygame.K_w]: self.direction = 'вверх-вправо'
-        if key[pygame.K_d] and key[pygame.K_s]: self.direction = 'вниз-вправо'
+        if key[pygame.K_a]: self.direction = 'влево'; self.on_walk = True
+        if key[pygame.K_d]: self.direction = 'вправо'; self.on_walk = True
+        if key[pygame.K_w]: self.direction = 'вверх'; self.on_walk = True
+        if key[pygame.K_s]: self.direction = 'вниз'; self.on_walk = True
+        if key[pygame.K_a] and key[pygame.K_w]: self.direction = 'вверх-влево'; self.on_walk = True
+        if key[pygame.K_a] and key[pygame.K_s]: self.direction = 'вниз-влево'; self.on_walk = True
+        if key[pygame.K_d] and key[pygame.K_w]: self.direction = 'вверх-вправо'; self.on_walk = True
+        if key[pygame.K_d] and key[pygame.K_s]: self.direction = 'вниз-вправо'; self.on_walk = True
 
     def action(self, scene_surface, objects):
         for object in objects:
