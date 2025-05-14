@@ -42,7 +42,7 @@ class Sub_character:
             scene_surface.blit(image, (self.x - 8, self.y - 58))
 
         self.on_walk = False
-        if timer == True:
+        if timer:
             self.head_place = not self.head_place
 
 

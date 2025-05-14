@@ -69,22 +69,43 @@ while game.running:
             for object in scene.chairs:
                 object.draw(scene_surface, game.timer)
 
-            # отрисовка объектов и игрока
-            for object in scene.furniture:
-                if object.hitbox[1] < hero.hitbox[1]:
-                    object.draw(scene_surface, game.timer)
 
-            hero.draw(scene_surface, game.timer)
-            for object in scene.characters[scene.room-1]:
-                object.draw(scene_surface, game.timer)
+
+
+            rendering_objects = []
+            for object in scene.characters[scene.room -1]:
+                rendering_objects.append((object.y + hero.height * 1.5, object.type, scene.characters[scene.room -1].index(object)))
+            for object in scene.furniture:
+                rendering_objects.append((object.y + object.height, object.type, scene.furniture.index(object)))
+            rendering_objects.append((hero.y + hero.height * 1.5, 'герой', 0))
+            rendering_objects.sort(key=lambda x: x[0])
+
+            for object in rendering_objects:
+                if object[1] == 'sub_character':
+                    scene.characters[scene.room -1][object[2]].draw(scene_surface, game.timer)
+                elif object[1] == 'furniture':
+                    scene.furniture[object[2]].draw(scene_surface, game.timer)
+                else:
+                    hero.draw(scene_surface, game.timer)
+
+
+
+            # отрисовка объектов и игрока
+            # for object in scene.furniture:
+            #     if object.hitbox[1] < hero.hitbox[1]:
+            #         object.draw(scene_surface, game.timer)
+            #
+            # hero.draw(scene_surface, game.timer)
+            # for object in scene.characters[scene.room-1]:
+            #     object.draw(scene_surface, game.timer)
 
             #проверка на существование интерактивной области и отрисовка интерактивного сообщения
-            if scene.interactive != None:
-                hero.action(scene_surface, scene.interactive)
-
-            for object in scene.furniture:
-                if object.hitbox[1] >= hero.hitbox[1]:
-                    object.draw(scene_surface, game.timer)
+            # if scene.interactive != None:
+            #     hero.action(scene_surface, scene.interactive)
+            #
+            # for object in scene.furniture:
+            #     if object.hitbox[1] >= hero.hitbox[1]:
+            #         object.draw(scene_surface, game.timer)
 
         # рендер графики и обновление экрана
         game.screen.blit(scene_surface, (0, 0))
