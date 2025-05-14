@@ -29,12 +29,19 @@ class Scene:
         self.image = pygame.image.load(stages[self.stage]['ФОНЫ'][self.room]).convert()
         scene_surface.blit(self.image, stages[self.stage]['КООРДИНАТЫ'][self.room])
 
+    def draw_area(self, scene_surface, i):
+        table = self.furniture[i].table
+        for object in self.chairs:
+            if object.table == table:
+                object.draw(scene_surface, True)
+        self.furniture[i].draw(scene_surface, True)
+
 
     def placing_furniture(self):
         objects = []
         furniture_in_room = stages[self.stage]['ТВЕРДЫЕ ОБЪЕКТЫ'][self.room]
         for object in furniture_in_room:
-            Furniture(objects, object[0], object[1], object[2], object[3], object[4], object[5], object[6])
+            Furniture(objects, object[0], object[1], object[2], object[3], object[4], object[5], object[6], object[7])
         self.furniture = objects
 
 
@@ -50,7 +57,7 @@ class Scene:
         objects = []
         chairs_in_room = stages[self.stage]['СТУЛЬЯ (npc)'][self.room]
         for object in chairs_in_room:
-            Chairs(objects, object[0], object[1], object[2], object[3])
+            Chairs(objects, object[0], object[1], object[2], object[3], object[4], object[5], object[6], object[7])
         self.chairs = objects
 
 

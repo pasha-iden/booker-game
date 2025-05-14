@@ -1,5 +1,7 @@
 import pygame
 
+import time
+
 from Objects.game import Game
 from Objects.scene import Scene
 from Objects.characters import Hero, Character
@@ -71,13 +73,17 @@ while game.running:
 
 
 
-
+            # отрисовка мебели и персонажей
             rendering_objects = []
+
             for object in scene.characters[scene.room -1]:
                 rendering_objects.append((object.y + hero.height * 1.5, object.type, scene.characters[scene.room -1].index(object)))
             for object in scene.furniture:
-                rendering_objects.append((object.y + object.height, object.type, scene.furniture.index(object)))
-            rendering_objects.append((hero.y + hero.height * 1.5, 'герой', 0))
+                if object.table == 0:
+                    rendering_objects.append((object.y + object.height, object.type, scene.furniture.index(object)))
+                else:
+                    rendering_objects.append((object.y + object.height, 'table', scene.furniture.index(object)))
+            rendering_objects.append((hero.y + hero.height * 1.5, 'hero', 0))
             rendering_objects.sort(key=lambda x: x[0])
 
             for object in rendering_objects:
@@ -85,9 +91,13 @@ while game.running:
                     scene.characters[scene.room -1][object[2]].draw(scene_surface, game.timer)
                 elif object[1] == 'furniture':
                     scene.furniture[object[2]].draw(scene_surface, game.timer)
-                else:
+                elif object[1] == 'table':
+                    scene.draw_area(scene_surface, object[2])
+                elif object[1] == 'hero':
                     hero.draw(scene_surface, game.timer)
 
+            if scene.interactive != None:
+                hero.action(scene_surface, scene.interactive)
 
 
             # отрисовка объектов и игрока

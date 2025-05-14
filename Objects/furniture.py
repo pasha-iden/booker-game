@@ -2,7 +2,7 @@ import pygame
 
 
 class Furniture:
-    def __init__ (self, objects, x, y, w, h, image, ix, iy):
+    def __init__ (self, objects, x, y, w, h, image, ix, iy, table):
         objects.append(self)
         self.type = 'furniture'
         self.image = image
@@ -13,6 +13,7 @@ class Furniture:
         self.width = w
         self.height = h
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.table = table
 
     def draw(self, scene_surface, timer):
         if self.image != None:

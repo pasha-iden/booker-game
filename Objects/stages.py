@@ -17,31 +17,31 @@ stages = {1 : {'СТАДИЯ' : '1',
                                          (0, 0, 112, 545, None, 0, 0),
                                          (0, 350, 200, 100, None, 0, 0),
                                          (400, 250, 150, 130, None, 0, 0) ),
-                                    3 : ((0, 0, 1024, 112, None, 0, 0), # верхняя стена
-                                         (914, 0, 130, 778, None, 0, 0), # правая стена
-                                         (0, 656, 1024, 130, None, 0, 0), # нижняя стена
-                                         (0, 0, 112, 545, None, 0, 0), # левая стена
+                                    3 : ((0, 0, 1024, 112, None, 0, 0, 0), # верхняя стена
+                                         (914, 0, 130, 778, None, 0, 0, 0), # правая стена
+                                         (0, 656, 1024, 130, None, 0, 0, 0), # нижняя стена
+                                         (0, 0, 112, 545, None, 0, 0, 0), # левая стена
 
-                                         (112, 114, 80, 84, 'Files/Images/S1R3/room_large_flower_1.png', 86, 92), # цветок в верхнем левом углу
-                                         (112, 174, 80, 84, 'Files/Images/S1R3/room_large_chair_1.png', 98, 174), # серый стул в верхнем левом углу
-                                         (228, 174, 80, 84, 'Files/Images/S1R3/room_large_table_1.png', 218, 164), # круглый стол слева вверху
-                                         (312, 114, 80, 84, 'Files/Images/S1R3/room_large_chair_2.png', 300, 104), # крутящийся серый стул в верхнем левом углу
-                                         (112, 270, 48, 68, 'Files/Images/S1R3/room_large_table_2.png', 98, 270), # розовая тумбочка
-                                         (460, 116, 84, 166, 'Files/Images/S1R3/room_large_woodrobe_1.png', 458, 96), # красная книжная полка
-                                         (626, 96, 110, 110, 'Files/Images/S1R3/room_large_table_with_chairs_1.png', 586, 94), # красный стол вверху
-                                         (824, 112, 108, 88, 'Files/Images/S1R3/room_large_flower_2.png', 806,104), # цветок вверху справа
+                                         (112, 114, 80, 84, 'Files/Images/S1R3/room_large_flower_1.png', 86, 92, 0), # цветок в верхнем левом углу
+                                         (112, 174, 80, 84, 'Files/Images/S1R3/room_large_chair_1.png', 98, 174, 0), # серый стул в верхнем левом углу
+                                         (228, 174, 80, 84, 'Files/Images/S1R3/room_large_table_1.png', 218, 164, 1), # круглый стол слева вверху
+                                         (312, 114, 80, 84, 'Files/Images/S1R3/room_large_chair_2.png', 300, 104, 0), # крутящийся серый стул в верхнем левом углу
+                                         (112, 270, 48, 68, 'Files/Images/S1R3/room_large_table_2.png', 98, 270, 0), # розовая тумбочка
+                                         (460, 116, 84, 166, 'Files/Images/S1R3/room_large_woodrobe_1.png', 458, 96, 0), # красная книжная полка
+                                         (626, 96, 110, 110, 'Files/Images/S1R3/room_large_table_with_chairs_1.png', 586, 94, 2), # красный стол вверху
+                                         (824, 112, 108, 88, 'Files/Images/S1R3/room_large_flower_2.png', 806, 104, 0), # цветок вверху справа
 
-                                         (112, 408, 212, 90, 'Files/Images/S1R3/room_large_table_with_chairs_2.png', 98, 354), # двойной стол слева
-                                         (422, 382, 176, 140, 'Files/Images/S1R3/room_large_table_with_chairs_3.png', 408, 355), # круглый стол в центре
-                                         (702, 308, 110, 94, 'Files/Images/S1R3/room_large_table_with_chairs_4.png', 664, 290), # красный стол справа
+                                         (112, 408, 212, 90, 'Files/Images/S1R3/room_large_table_with_chairs_2.png', 98, 354, 3), # двойной стол слева
+                                         (422, 382, 176, 140, 'Files/Images/S1R3/room_large_table_with_chairs_3.png', 408, 355, 4), # круглый стол в центре
+                                         (702, 308, 110, 94, 'Files/Images/S1R3/room_large_table_with_chairs_4.png', 664, 290, 5), # красный стол справа
 
-                                         (782, 512, 80, 76, 'Files/Images/S1R3/room_large_table_4.png', 770, 498), # круглый стол справа внизу
-                                         (700, 580, 80, 76, 'Files/Images/S1R3/room_large_chair_3.png', 692, 566), # нижний серый стул справа внизу
-                                         (852, 464, 60, 44, 'Files/Images/S1R3/room_large_chair_4.png', 848, 442), # правый серый стул справа внизу
-                                         (848, 588, 60, 60, 'Files/Images/S1R3/room_large_flower_3.png', 844, 580), # цветок справа внизу
+                                         (782, 512, 80, 76, 'Files/Images/S1R3/room_large_table_4.png', 770, 498, 6), # круглый стол справа внизу
+                                         (700, 580, 80, 76, 'Files/Images/S1R3/room_large_chair_3.png', 692, 566, 0), # нижний серый стул справа внизу
+                                         (852, 464, 60, 44, 'Files/Images/S1R3/room_large_chair_4.png', 848, 442, 0), # правый серый стул справа внизу
+                                         (848, 588, 60, 60, 'Files/Images/S1R3/room_large_flower_3.png', 844, 580, 0), # цветок справа внизу
 
-                                         (320, 604, 350, 50, 'Files/Images/S1R3/room_large_woodrobe_2.png', 302, 604), # книжная полка
-                                         (168, 630, 96, 40, 'Files/Images/S1R3/room_large_table_3.png', 166, 620), # нижний серый стол слева внизу
+                                         (320, 604, 350, 50, 'Files/Images/S1R3/room_large_woodrobe_2.png', 302, 604, 0), # книжная полка
+                                         (168, 630, 96, 40, 'Files/Images/S1R3/room_large_table_3.png', 166, 620, 0), # стелла слева внизу
 
                                          )},
                'ИНТЕРАКТИВНЫЕ ОБЪЕКТЫ (npc)' : {1: ((400, 180, 48, 48),
@@ -54,8 +54,8 @@ stages = {1 : {'СТАДИЯ' : '1',
                                      (620, 532, 620, 552)),
                                  2: ((600, 400, 600, 352),
                                      (620, 532, 620, 552)),
-                                 3: ((600, 400, 600, 352),
-                                     (620, 532, 620, 552))}
+                                 3: ((600, 400, 600, 352, 'Files/Images/S1R3/room_large_chair_1.png', 150, 350, 3),
+                                     (620, 532, 620, 552, 'Files/Images/S1R3/room_large_chair_1.png', 250, 350, 3))}
                },
           2 : {'СТАДИЯ' : '2',
                'ФОНЫ' : {1 : 'files/images/room_outside_2.jpg',
