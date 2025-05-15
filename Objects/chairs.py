@@ -20,5 +20,5 @@ class Chairs:
     def draw(self, scene_surface, timer):
         image = pygame.image.load(self.image).convert_alpha()
         scene_surface.blit(image, (self.ix, self.iy))
-        pygame.draw.rect(scene_surface, 'Orange', (self.x, self.y, 48, 48))
-        pygame.draw.rect(scene_surface, 'Pink', (self.landing_x, self.landing_y, 48, 48))
+        # pygame.draw.rect(scene_surface, 'Orange', (self.x, self.y, 48, 48))
+        # pygame.draw.rect(scene_surface, 'Pink', (self.landing_x, self.landing_y, 48, 48))

@@ -54,10 +54,10 @@ stages = {1 : {'СТАДИЯ' : '1',
                                      (620, 532, 620, 552)),
                                  2: ((600, 400, 600, 352),
                                      (620, 532, 620, 552)),
-                                 3: ((165, 260, 140, 204, 'Files/Images/S1R3/room_large_chair_1.png', 98, 174, 1, 'вправо'), # коричневый стол слева вверху
+                                 3: ((164, 260, 140, 204, 'Files/Images/S1R3/room_large_chair_1.png', 98, 174, 1, 'вправо'), # коричневый стол слева вверху
                                      (320, 198, 320, 134, 'Files/Images/S1R3/room_large_chair_2.png', 300, 104, 1, 'вниз-влево'), #
                                      (570, 140, 585, 128, 'Files/Images/S1R3/room_large_chair_7.png', 575, 122, 2, 'вправо'), # красный стол сверху
-                                     (735, 140, 724, 128, 'Files/Images/S1R3/room_large_chair_8.png', 734, 122, 2, 'влево'), #
+                                     (736, 140, 724, 128, 'Files/Images/S1R3/room_large_chair_8.png', 726, 126, 2, 'влево'), #
                                      (160, 348, 133, 364, 'Files/Images/S1R3/room_large_chair_5.png', 127, 350, 3, 'вниз'), # двойной красный стол слева
                                      (252, 348, 246, 364, 'Files/Images/S1R3/room_large_chair_5.png', 240, 350, 3, 'вниз'), #
                                      (140, 500, 132, 478, 'Files/Images/S1R3/room_large_chair_6.png', 127, 488, 3, 'вверх'), #
@@ -69,7 +69,7 @@ stages = {1 : {'СТАДИЯ' : '1',
                                      (652, 326, 662, 326, 'Files/Images/S1R3/room_large_chair_9.png', 655, 320, 5, 'вправо'), # красный стол справа
                                      (824, 326, 800, 326, 'Files/Images/S1R3/room_large_chair_10.png', 790, 320, 5, 'влево'), #
                                      (724, 528, 729, 570, 'Files/Images/S1R3/room_large_chair_3.png', 692, 566, 6, 'вверх-вправо'), # коричневый стол справа внизу
-                                     (800, 442, 850, 462, 'Files/Images/S1R3/room_large_chair_4.png', 848, 442, 6, 'вниз-влево'))} #
+                                     (800, 444, 850, 462, 'Files/Images/S1R3/room_large_chair_4.png', 848, 442, 6, 'вниз-влево'))} #
                },
           2 : {'СТАДИЯ' : '2',
                'ФОНЫ' : {1 : 'files/images/room_outside_2.jpg',

@@ -1,7 +1,5 @@
 import pygame
 
-import time
-
 from Objects.game import Game
 from Objects.scene import Scene
 from Objects.characters import Hero, Character
@@ -99,6 +97,7 @@ while game.running:
 
             if scene.interactive != None:
                 hero.action(scene_surface, scene.interactive)
+
 
 
             # отрисовка объектов и игрока
