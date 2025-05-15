@@ -46,6 +46,22 @@ class Sub_character:
             self.head_place = not self.head_place
 
 
+    def draw_body(self, scene_surface, timer):
+        image = pygame.image.load(skins[self.skin][self.direction]['тело']).convert_alpha()
+        scene_surface.blit(image, (self.x - 8, self.y - 62))
+    def draw_head(self, scene_surface, timer):
+        if self.head_place == True:
+            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
+            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 62))
+        else:
+            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
+            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 58))
+        if timer:
+            self.head_place = not self.head_place
+
+
 class Character(Sub_character):
     def __init__ (self, objects, room_map, chair):
         super().__init__()
@@ -145,7 +161,7 @@ class Character(Sub_character):
         go_away = False
         if timer and self.on_chair and self.have_a_deal == False:
             kind_of_decision = randint(1, 100)
-            if 80 <= kind_of_decision <= 95:
+            if 80 <= kind_of_decision <= 95 and len(interactive) != 0:
                 self.have_a_deal = True
                 self.on_chair = False
                 i = randint(0, len(interactive)-1)
@@ -174,6 +190,7 @@ class Character(Sub_character):
             self.find_path_to_deal(room_map, self.destination)
         if self.x == self.chair.x and self.y == self.chair.y and self.have_a_deal == False:
             self.on_chair = True
+            self.direction = self.chair.direction
             self.x = self.chair.landing_x
             self.y = self.chair.landing_y
         return  interactive, go_away

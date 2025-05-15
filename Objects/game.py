@@ -34,7 +34,6 @@ class Game:
                              ('Загрузить', (350, 490), pygame.Rect(350, 490, 180, 50)),
                              ('Выйти', (350, 560), pygame.Rect(350, 560, 120, 50)),
                              )
-        self.all_rooms_characters = [[],[],[]]
 
 
     def menu_window(self, scene_surface, hero, scene):

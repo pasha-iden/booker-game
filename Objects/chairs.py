@@ -2,7 +2,7 @@ import pygame
 
 
 class Chairs:
-    def __init__ (self, objects, x, y, lx, ly, image, ix, iy, table):
+    def __init__ (self, objects, x, y, lx, ly, image, ix, iy, table, direction):
         objects.append(self)
         self.type = 'chairs'
         self.image = image
@@ -13,6 +13,7 @@ class Chairs:
         self.landing_x = lx
         self.landing_y = ly
         self.table = table
+        self.direction = direction
         self.hitbox = pygame.Rect(self.x, self.y, self.x + 48, self.y + 48)
         self.number = None
 

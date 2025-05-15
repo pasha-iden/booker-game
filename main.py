@@ -77,7 +77,8 @@ while game.running:
             rendering_objects = []
 
             for object in scene.characters[scene.room -1]:
-                rendering_objects.append((object.y + hero.height * 1.5, object.type, scene.characters[scene.room -1].index(object)))
+                if not object.on_chair:
+                    rendering_objects.append((object.y + hero.height * 1.5, object.type, scene.characters[scene.room -1].index(object)))
             for object in scene.furniture:
                 if object.table == 0:
                     rendering_objects.append((object.y + object.height, object.type, scene.furniture.index(object)))
@@ -92,8 +93,8 @@ while game.running:
                 elif object[1] == 'furniture':
                     scene.furniture[object[2]].draw(scene_surface, game.timer)
                 elif object[1] == 'table':
-                    scene.draw_area(scene_surface, object[2])
-                elif object[1] == 'hero':
+                    scene.draw_area(scene_surface, game.timer, object[2])
+                else:
                     hero.draw(scene_surface, game.timer)
 
             if scene.interactive != None:

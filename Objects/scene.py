@@ -29,12 +29,21 @@ class Scene:
         self.image = pygame.image.load(stages[self.stage]['ФОНЫ'][self.room]).convert()
         scene_surface.blit(self.image, stages[self.stage]['КООРДИНАТЫ'][self.room])
 
-    def draw_area(self, scene_surface, i):
+    def draw_area(self, scene_surface, timer, i):
         table = self.furniture[i].table
         for object in self.chairs:
             if object.table == table:
-                object.draw(scene_surface, True)
-        self.furniture[i].draw(scene_surface, True)
+                object.draw(scene_surface, timer)
+        for object in self.characters[self.room-1]:
+            if object.on_chair and object.chair.table == table and (object.direction != 'вверх-вправо' and object.direction != 'вверх' and object.direction != 'вверх-влево'):
+                object.draw_body(scene_surface, timer)
+        self.furniture[i].draw(scene_surface, timer)
+        for object in self.characters[self.room-1]:
+            if object.on_chair and object.chair.table == table and (object.direction == 'вверх-вправо' or object.direction == 'вверх' or object.direction == 'вверх-влево'):
+                object.draw_body(scene_surface, timer)
+        for object in self.characters[self.room-1]:
+            if object.on_chair and object.chair.table == table:
+                object.draw_head(scene_surface, timer)
 
 
     def placing_furniture(self):
@@ -57,7 +66,7 @@ class Scene:
         objects = []
         chairs_in_room = stages[self.stage]['СТУЛЬЯ (npc)'][self.room]
         for object in chairs_in_room:
-            Chairs(objects, object[0], object[1], object[2], object[3], object[4], object[5], object[6], object[7])
+            Chairs(objects, object[0], object[1], object[2], object[3], object[4], object[5], object[6], object[7], object[8])
         self.chairs = objects
 
 
