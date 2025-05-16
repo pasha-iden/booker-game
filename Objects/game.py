@@ -113,22 +113,22 @@ class Game:
 
     def transfering_room (self, hero, scene):
         scene_before = scene.room
-        if hero.hitbox.collidepoint((25, 550)) and scene.room == 3:
+        if hero.hitbox.collidepoint((30, 570)) and scene.room == 3:
             scene.room = 2
-            hero.x = 730
-            hero.y = 30
-        if hero.hitbox.collidepoint((760, 30)) and scene.room == 2:
+            hero.x = 650
+            hero.y = 80
+        if hero.hitbox.collidepoint((630, 90)) and scene.room == 2:
             scene.room = 3
             hero.x = 25
             hero.y = 560
-        if hero.hitbox.collidepoint((455, 760)) and scene.room == 2:
+        if hero.hitbox.collidepoint((445, 620)) and scene.room == 2:
             scene.room = 1
-            hero.x = 455
-            hero.y = 130
-        if hero.hitbox.collidepoint((455, 130)) and scene.room == 1:
+            hero.x = 580
+            hero.y = 296
+        if hero.hitbox.collidepoint((595, 300)) and scene.room == 1:
             scene.room = 2
-            hero.x = 455
-            hero.y = 700
+            hero.x = 425
+            hero.y = 600
 
         if scene_before != scene.room:
             scene.placing_furniture()
