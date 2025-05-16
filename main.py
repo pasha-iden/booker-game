@@ -59,17 +59,12 @@ while game.running:
 
 
 
-
             # отрисовка сцены
             scene.draw(scene_surface)
 
             # отрисовка интерактивных областей
             for object in scene.interactive:
                 object.draw(scene_surface, game.timer)
-            for object in scene.chairs:
-                object.draw(scene_surface, game.timer)
-
-
 
             # отрисовка мебели и персонажей
             rendering_objects = []
@@ -95,27 +90,11 @@ while game.running:
                 else:
                     hero.draw(scene_surface, game.timer)
 
+            # интерактивное сообщение
             if scene.interactive != None:
                 hero.action(scene_surface, scene.interactive)
 
 
-
-            # отрисовка объектов и игрока
-            # for object in scene.furniture:
-            #     if object.hitbox[1] < hero.hitbox[1]:
-            #         object.draw(scene_surface, game.timer)
-            #
-            # hero.draw(scene_surface, game.timer)
-            # for object in scene.characters[scene.room-1]:
-            #     object.draw(scene_surface, game.timer)
-
-            #проверка на существование интерактивной области и отрисовка интерактивного сообщения
-            # if scene.interactive != None:
-            #     hero.action(scene_surface, scene.interactive)
-            #
-            # for object in scene.furniture:
-            #     if object.hitbox[1] >= hero.hitbox[1]:
-            #         object.draw(scene_surface, game.timer)
 
         # рендер графики и обновление экрана
         game.screen.blit(scene_surface, (0, 0))
