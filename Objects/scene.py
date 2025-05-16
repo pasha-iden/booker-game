@@ -35,12 +35,15 @@ class Scene:
             if object.table == table:
                 object.draw(scene_surface, timer)
         for object in self.characters[self.room-1]:
+            if object.on_chair and object.chair.table == table:
+                object.draw_legs(scene_surface, timer)
+        for object in self.characters[self.room-1]:
             if object.on_chair and object.chair.table == table and (object.direction != 'вверх-вправо' and object.direction != 'вверх' and object.direction != 'вверх-влево'):
-                object.draw_body(scene_surface, timer)
+                object.draw_torso(scene_surface, timer)
         self.furniture[i].draw(scene_surface, timer)
         for object in self.characters[self.room-1]:
             if object.on_chair and object.chair.table == table and (object.direction == 'вверх-вправо' or object.direction == 'вверх' or object.direction == 'вверх-влево'):
-                object.draw_body(scene_surface, timer)
+                object.draw_torso(scene_surface, timer)
         for object in self.characters[self.room-1]:
             if object.on_chair and object.chair.table == table:
                 object.draw_head(scene_surface, timer)

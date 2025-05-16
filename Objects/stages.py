@@ -54,21 +54,21 @@ stages = {1 : {'СТАДИЯ' : '1',
                                      (620, 532, 620, 552)),
                                  2: ((600, 400, 600, 352),
                                      (620, 532, 620, 552)),
-                                 3: ((164, 260, 140, 204, 'Files/Images/S1R3/room_large_chair_1.png', 98, 174, 1, 'вправо'), # коричневый стол слева вверху
-                                     (320, 198, 320, 134, 'Files/Images/S1R3/room_large_chair_2.png', 300, 104, 1, 'вниз-влево'), #
-                                     (570, 140, 585, 128, 'Files/Images/S1R3/room_large_chair_7.png', 575, 122, 2, 'вправо'), # красный стол сверху
+                                 3: ((164, 260, 155, 194, 'Files/Images/S1R3/room_large_chair_1.png', 98, 174, 1, 'вправо'), # коричневый стол слева вверху
+                                     (320, 200, 315, 140, 'Files/Images/S1R3/room_large_chair_2.png', 300, 104, 1, 'вниз-влево'), #
+                                     (572, 140, 589, 128, 'Files/Images/S1R3/room_large_chair_7.png', 575, 122, 2, 'вправо'), # красный стол сверху
                                      (736, 140, 724, 128, 'Files/Images/S1R3/room_large_chair_8.png', 726, 126, 2, 'влево'), #
                                      (160, 348, 133, 364, 'Files/Images/S1R3/room_large_chair_5.png', 127, 350, 3, 'вниз'), # двойной красный стол слева
                                      (252, 348, 246, 364, 'Files/Images/S1R3/room_large_chair_5.png', 240, 350, 3, 'вниз'), #
                                      (140, 500, 132, 478, 'Files/Images/S1R3/room_large_chair_6.png', 127, 488, 3, 'вверх'), #
                                      (252, 500, 245, 478, 'Files/Images/S1R3/room_large_chair_6.png', 240, 488, 3, 'вверх'), #
-                                     (400, 332, 425, 365, 'Files/Images/S1R3/room_large_chair_11.png', 408, 355, 4, 'вниз-вправо'), # круглый стол
+                                     (400, 332, 420, 370, 'Files/Images/S1R3/room_large_chair_11.png', 408, 355, 4, 'вниз-вправо'), # круглый стол
                                      (560, 332, 548, 375, 'Files/Images/S1R3/room_large_chair_12.png', 533, 355, 4, 'вниз-влево'), #
-                                     (400, 524, 412, 482, 'Files/Images/S1R3/room_large_chair_13.png', 406, 467, 4, 'вверх-вправо'), #
-                                     (560, 524, 554, 482, 'Files/Images/S1R3/room_large_chair_14.png', 533, 466, 4, 'вверх-влево'), #
-                                     (652, 326, 662, 326, 'Files/Images/S1R3/room_large_chair_9.png', 655, 320, 5, 'вправо'), # красный стол справа
-                                     (824, 326, 800, 326, 'Files/Images/S1R3/room_large_chair_10.png', 790, 320, 5, 'влево'), #
-                                     (724, 528, 729, 570, 'Files/Images/S1R3/room_large_chair_3.png', 692, 566, 6, 'вверх-вправо'), # коричневый стол справа внизу
+                                     (400, 524, 408, 488, 'Files/Images/S1R3/room_large_chair_13.png', 400, 472, 4, 'вверх-вправо'), #
+                                     (560, 524, 562, 494, 'Files/Images/S1R3/room_large_chair_14.png', 542, 474, 4, 'вверх-влево'), #
+                                     (652, 324, 665, 326, 'Files/Images/S1R3/room_large_chair_9.png', 655, 320, 5, 'вправо'), # красный стол справа
+                                     (824, 324, 797, 326, 'Files/Images/S1R3/room_large_chair_10.png', 790, 320, 5, 'влево'), #
+                                     (724, 528, 727, 577, 'Files/Images/S1R3/room_large_chair_3.png', 692, 566, 6, 'вверх-вправо'), # коричневый стол справа внизу
                                      (800, 444, 850, 462, 'Files/Images/S1R3/room_large_chair_4.png', 848, 442, 6, 'вниз-влево'))} #
                },
           2 : {'СТАДИЯ' : '2',

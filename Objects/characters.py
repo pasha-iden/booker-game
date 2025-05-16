@@ -46,8 +46,11 @@ class Sub_character:
             self.head_place = not self.head_place
 
 
-    def draw_body(self, scene_surface, timer):
-        image = pygame.image.load(skins[self.skin][self.direction]['тело']).convert_alpha()
+    def draw_legs(self, scene_surface, timer):
+        image = pygame.image.load(skins[self.skin][self.direction]['ноги']).convert_alpha()
+        scene_surface.blit(image, (self.x - 8, self.y - 62))
+    def draw_torso(self, scene_surface, timer):
+        image = pygame.image.load(skins[self.skin][self.direction]['торс']).convert_alpha()
         scene_surface.blit(image, (self.x - 8, self.y - 62))
     def draw_head(self, scene_surface, timer):
         if self.head_place == True:
