@@ -13,7 +13,7 @@ class Sub_character:
     def __init__ (self):
         self.type = 'sub_character'
         self.skin = 1
-        self.x = 850
+        self.x = 952
         self.y = 500
         self.width = 48
         self.height = 48
@@ -32,6 +32,8 @@ class Sub_character:
         self.staing = 0
         self.destination = self.chair
         self.path_to_deal = []
+
+        self.replica = None
 
 
     def find_path_to_deal(self, room_map, destination):

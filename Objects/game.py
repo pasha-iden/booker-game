@@ -2,6 +2,7 @@ import pygame
 
 from Objects.characters import Hero
 from Objects.scene import Scene
+from Objects.interactives import Cut_interactive
 
 from Objects.stages import stages
 from Objects.acts import act
@@ -37,6 +38,8 @@ class Game:
                              ('Загрузить', (350, 490), pygame.Rect(350, 490, 180, 50)),
                              ('Выйти', (350, 560), pygame.Rect(350, 560, 120, 50)),
                              )
+
+        self.pushed_SPACE = False
 
 
     def menu_window(self, scene_surface, hero, scene):
@@ -110,6 +113,9 @@ class Game:
                 if event.key == pygame.K_ESCAPE and not self.just_started:
                     self.pause = not self.pause
 
+                if event.key == pygame.K_SPACE and not self.pause:
+                    self.pushed_SPACE = True
+
             if event.type == pygame.QUIT:
                 self.running = False
 
@@ -143,9 +149,30 @@ class Game:
         return hero, scene
 
 
-    def cut_scene_initiation (self, hero, scene):
-        pass
+    def cut_scene (self, hero, scene, key):
 
+        if scene.act_started == False:
+            print(act[scene.act]['Действие'])
+            for action in act[scene.act]['Действие']:
+                if action[0] == 'герой идет':
+                    hero.destination = Cut_interactive(action[1], action[2])
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                elif action[0] == 'реплика героя':
+                    hero.replica = action[1]
+            scene.act_started = True
+
+        if scene.act_started == True:
+            if act[scene.act]['Действие'][0][0] == 'герой идет' and act[scene.act]['Окончание'] == 'герой пришел':
+                if hero.path_to_deal != []:
+                    hero.walk()
+                else:
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+            if act[scene.act]['Действие'][0][0] == 'реплика героя' and act[scene.act]['Окончание'] == 'пробел':
+                if self.pushed_SPACE:
+                    hero.replica = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
 
 
     def render (self, scene_surface, hero, scene):
@@ -184,6 +211,11 @@ class Game:
         # интерактивное сообщение
         if scene.interactive != None:
             hero.action(scene_surface, scene.interactive)
+
+        if hero.replica != None:
+            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+            message = game_font.render(hero.replica, False, 'Black')
+            scene_surface.blit(message, (hero.x - 50, hero.y - 85))
 
 
 if __name__ == '__main__':

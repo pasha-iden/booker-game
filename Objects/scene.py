@@ -14,6 +14,7 @@ class Scene:
     def __init__(self):
         self.stage = 1
         self.act = 1
+        self.act_started = False
         self.image = None
         self.x = 0
         self.y = 0
@@ -29,6 +30,7 @@ class Scene:
     def draw(self, scene_surface):
         self.image = pygame.image.load(stages[self.stage]['ФОНЫ'][self.room]).convert()
         scene_surface.blit(self.image, stages[self.stage]['КООРДИНАТЫ'][self.room])
+
 
     def draw_area(self, scene_surface, timer, i):
         table = self.furniture[i].table

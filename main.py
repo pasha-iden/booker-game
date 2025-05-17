@@ -26,6 +26,11 @@ while game.running:
             hero, scene = game.menu_window(scene_surface, hero, scene)
         else:
 
+
+
+            game.cut_scene(hero, scene, pygame.key.get_pressed())
+            game.pushed_SPACE = False
+
             # перемещение между комнатами
             if pygame.key.get_pressed()[pygame.K_SPACE]:
                 hero, scene = game.transfering_room(hero, scene)
@@ -60,6 +65,7 @@ while game.running:
 
             #рендер всех объектов
             game.render(scene_surface, hero, scene)
+
 
 
 
