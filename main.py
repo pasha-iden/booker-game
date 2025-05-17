@@ -58,41 +58,8 @@ while game.running:
 
 
 
-
-            # отрисовка сцены
-            scene.draw(scene_surface)
-
-            # отрисовка интерактивных областей
-            for object in scene.interactive:
-                object.draw(scene_surface, game.timer)
-
-            # отрисовка мебели и персонажей
-            rendering_objects = []
-
-            for object in scene.characters[scene.room -1]:
-                if not object.on_chair:
-                    rendering_objects.append((object.y + hero.height * 1.5, object.type, scene.characters[scene.room -1].index(object)))
-            for object in scene.furniture:
-                if object.table == 0:
-                    rendering_objects.append((object.y + object.height, object.type, scene.furniture.index(object)))
-                else:
-                    rendering_objects.append((object.y + object.height, 'table', scene.furniture.index(object)))
-            rendering_objects.append((hero.y + hero.height * 1.5, 'hero', 0))
-            rendering_objects.sort(key=lambda x: x[0])
-
-            for object in rendering_objects:
-                if object[1] == 'sub_character':
-                    scene.characters[scene.room -1][object[2]].draw(scene_surface, game.timer)
-                elif object[1] == 'furniture':
-                    scene.furniture[object[2]].draw(scene_surface, game.timer)
-                elif object[1] == 'table':
-                    scene.draw_area(scene_surface, game.timer, object[2])
-                else:
-                    hero.draw(scene_surface, game.timer)
-
-            # интерактивное сообщение
-            if scene.interactive != None:
-                hero.action(scene_surface, scene.interactive)
+            #рендер всех объектов
+            game.render(scene_surface, hero, scene)
 
 
 

@@ -199,7 +199,6 @@ class Character(Sub_character):
         return  interactive, go_away
 
 
-
 class Hero(Sub_character):
 
     def move(self, key, objects):
