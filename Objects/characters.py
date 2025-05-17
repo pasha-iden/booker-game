@@ -20,60 +20,13 @@ class Sub_character:
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         self.direction = 'вниз'
         self.speed = 4
-        self.stand = True
         self.head_place = True
+
+        self.stand = True
         self.on_walk = False
-
-    def draw(self, scene_surface, timer):
-        # pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, 48, 48))
-        if self.on_walk == False:
-            image = pygame.image.load(skins[self.skin][self.direction]['тело']).convert_alpha()
-            scene_surface.blit(image, (self.x -8, self.y -62))
-        elif self.on_walk == True:
-            image = pygame.image.load(skins[self.skin][self.direction][self.head_place]).convert_alpha()
-            scene_surface.blit(image, (self.x - 8, self.y - 62))
-        if self.head_place == True:
-            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
-            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
-            scene_surface.blit(image, (self.x - 8, self.y - 62))
-        else:
-            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
-            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
-            scene_surface.blit(image, (self.x - 8, self.y - 58))
-
-        self.on_walk = False
-        if timer:
-            self.head_place = not self.head_place
-
-
-    def draw_legs(self, scene_surface, timer):
-        image = pygame.image.load(skins[self.skin][self.direction]['ноги']).convert_alpha()
-        scene_surface.blit(image, (self.x - 8, self.y - 62))
-    def draw_torso(self, scene_surface, timer):
-        image = pygame.image.load(skins[self.skin][self.direction]['торс']).convert_alpha()
-        scene_surface.blit(image, (self.x - 8, self.y - 62))
-    def draw_head(self, scene_surface, timer):
-        if self.head_place == True:
-            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
-            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
-            scene_surface.blit(image, (self.x - 8, self.y - 62))
-        else:
-            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
-            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
-            scene_surface.blit(image, (self.x - 8, self.y - 58))
-        if timer:
-            self.head_place = not self.head_place
-
-
-class Character(Sub_character):
-    def __init__ (self, objects, room_map, chair):
-        super().__init__()
-        objects.append(self)
-        self.x = chair.x
-        self.y = chair.y
-        self.chair = chair
+        self.on_chair = False
+        self.chair = None
         self.have_a_deal = False
-        self.on_chair = True
         self.on_interactive = False
         self.his_interactive = None
         self.staing = 0
@@ -160,6 +113,60 @@ class Character(Sub_character):
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
 
+    def draw(self, scene_surface, timer):
+        # pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, 48, 48))
+        if self.on_walk == False:
+            image = pygame.image.load(skins[self.skin][self.direction]['тело']).convert_alpha()
+            scene_surface.blit(image, (self.x -8, self.y -62))
+        elif self.on_walk == True:
+            image = pygame.image.load(skins[self.skin][self.direction][self.head_place]).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 62))
+        if self.head_place == True:
+            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
+            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 62))
+        else:
+            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
+            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 58))
+
+        self.on_walk = False
+        if timer:
+            self.head_place = not self.head_place
+
+
+    def draw_legs(self, scene_surface, timer):
+        image = pygame.image.load(skins[self.skin][self.direction]['ноги']).convert_alpha()
+        scene_surface.blit(image, (self.x - 8, self.y - 62))
+    def draw_torso(self, scene_surface, timer):
+        image = pygame.image.load(skins[self.skin][self.direction]['торс']).convert_alpha()
+        scene_surface.blit(image, (self.x - 8, self.y - 62))
+    def draw_head(self, scene_surface, timer):
+        if self.head_place == True:
+            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
+            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 62))
+        else:
+            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
+            image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
+            scene_surface.blit(image, (self.x - 8, self.y - 58))
+        if timer:
+            self.head_place = not self.head_place
+
+
+class Character(Sub_character):
+    def __init__ (self, objects, room_map, chair):
+        super().__init__()
+        objects.append(self)
+        self.type = 'character'
+        self.x = chair.x
+        self.y = chair.y
+        self.chair = chair
+        self.stand = False
+        self.on_chair = True
+        self.destination = None
+
+
     def decision(self, timer, room_map, interactive, can_go_away):
         go_away = False
         if timer and self.on_chair and self.have_a_deal == False:
@@ -179,7 +186,7 @@ class Character(Sub_character):
             if 95 < kind_of_decision <= 100 and can_go_away:
                 go_away = True
 
-        if self.x == self.destination.x and self.y == self.destination.y and self.have_a_deal:
+        if self.have_a_deal and self.x == self.destination.x and self.y == self.destination.y:
             self.have_a_deal = False
             self.on_interactive = True
             self.staing = 4
@@ -200,6 +207,9 @@ class Character(Sub_character):
 
 
 class Hero(Sub_character):
+    def __init__ (self):
+        super().__init__()
+        self.type = 'hero'
 
     def move(self, key, objects):
         # print (objects[0].hitbox, self.hitbox)

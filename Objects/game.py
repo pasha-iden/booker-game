@@ -3,6 +3,9 @@ import pygame
 from Objects.characters import Hero
 from Objects.scene import Scene
 
+from Objects.stages import stages
+from Objects.acts import act
+
 
 class Game:
     def __init__(self):
@@ -140,6 +143,11 @@ class Game:
         return hero, scene
 
 
+    def cut_scene_initiation (self, hero, scene):
+        pass
+
+
+
     def render (self, scene_surface, hero, scene):
         # отрисовка сцены
         scene.draw(scene_surface)
@@ -164,7 +172,7 @@ class Game:
         rendering_objects.sort(key=lambda x: x[0])
 
         for object in rendering_objects:
-            if object[1] == 'sub_character':
+            if object[1] == 'character':
                 scene.characters[scene.room - 1][object[2]].draw(scene_surface, self.timer)
             elif object[1] == 'furniture':
                 scene.furniture[object[2]].draw(scene_surface, self.timer)

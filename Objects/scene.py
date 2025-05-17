@@ -13,6 +13,7 @@ from Objects.stages import stages
 class Scene:
     def __init__(self):
         self.stage = 1
+        self.act = 1
         self.image = None
         self.x = 0
         self.y = 0
