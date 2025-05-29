@@ -83,6 +83,7 @@ class Game:
                         hero.x = int(save_data[0])
                         hero.y = int(save_data[1])
                         scene.room = int(save_data[2])
+                        scene.image = pygame.image.load(stages[scene.stage]['ФОНЫ'][scene.room]).convert()
                         scene.placing_furniture()
                         scene.placing_interactive()
                         scene.placing_chairs()
@@ -140,6 +141,7 @@ class Game:
             hero.y = 600
 
         if scene_before != scene.room:
+            scene.image = pygame.image.load(stages[scene.stage]['ФОНЫ'][scene.room]).convert()
             scene.placing_furniture()
             scene.placing_interactive()
             scene.placing_chairs()
