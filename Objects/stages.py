@@ -1,8 +1,9 @@
 
 stages = {1 : {'СТАДИЯ' : '1',
                'ФОНЫ' : {1 : ('files/images/S1R1/room_outside_atlas.png', (0, 0, 1023, 767), (0, 800, 1023, 1567), (0, 1600, 1023, 2367)),
-                         2 : ('files/images/S1R2/room_kitchen.png', (0, 0, 1023, 767)),
-                         3 : ('Files/Images/S1R3/room_large.png', (0, 0, 1023, 767))},
+                         2 : ('files/images/S1R2/room_kitchen.png',),
+                         3 : ('Files/Images/S1R3/room_large.png',),
+                         11: ('Files/Images/S1R1/room_outside_atlas_leaves.png', (0, 0, 1023, 767), (0, 784, 1023, 1551), (0, 1568, 1023, 2335))},
 
                'ТВЕРДЫЕ ОБЪЕКТЫ' : {1 : ((0, 0, 1024, 288,  None, 0, 0, 0), # верхняя стена
                                          (1004, 0, 20, 778, None, 0, 0, 0), # правая стена
@@ -10,17 +11,30 @@ stages = {1 : {'СТАДИЯ' : '1',
                                          (0, 0, 20, 768, None, 0, 0, 0), # левая стена
                                          (400, 248, 110, 110, 'Files/Images/S1R3/room_large_table_with_chairs_1.png', 400, 248, 1) ),
 
-                                    2 : ((0, 0, 580, 112, None, 0, 0, 0), # верхняя стена
+                                    2 : ((0, 0, 588, 112, None, 0, 0, 0), # верхняя стена
+                                         (0, 0, 800, 60, None, 0, 0, 0), # ограничитель
                                          (736, 0, 298, 778, None, 0, 0, 0), # правая стена
-                                         (0, 656, 1024, 130, None, 0, 0, 0), # нижняя стена
-                                         (0, 0, 320, 768, None, 0, 0, 0), # левая стена
-                                         (648, 184, 110, 110, 'Files/Images/S1R3/room_large_table_with_chairs_1.png', 649, 184, 1),
-                                         (648, 380, 110, 110, 'Files/Images/S1R3/room_large_table_with_chairs_1.png', 649, 380, 2)),
+                                         (700, 0, 298, 112, None, 0, 0, 0), # ограничитель
+                                         (0, 688, 1024, 130, None, 0, 0, 0), # нижняя стена
+                                         (0, 656, 384, 130, None, 0, 0, 0), # ограничитель левый
+                                         (600, 656, 384, 130, None, 0, 0, 0), # ограничитель правый
+                                         (0, 0, 312, 768, None, 0, 0, 0), # левая стена
+
+                                         (312, 112, 252, 40, 'Files/Images/S1R2/room_kitchen_woodrobe_1.png', 234, 27, 0), # кухонный шкаф
+                                         (264, 420, 0, 1, 'Files/Images/S1R2/room_kitchen_table_5.png', 234, 217, 0), # кухонная полка
+                                         (312, 260, 40, 160, 'Files/Images/S1R2/room_kitchen_table_1.png', 288, 236, 0), # кухонный стол слева
+                                         (312, 420, 40, 60, 'Files/Images/S1R2/room_kitchen_barista_chair.png', 300, 423, 0), # стул бариста
+                                         (312, 476, 48, 108, 'Files/Images/S1R2/room_kitchen_cooler.png', 272, 476, 0), # холодильник
+                                         (360, 492, 96, 60, 'Files/Images/S1R2/room_kitchen_table_2.png', 360, 473, 0), # большой стол левый
+                                         (456, 272, 96, 278, 'Files/Images/S1R2/room_kitchen_table_3.png', 456, 253, 0), # большой стол правый
+                                         (675, 537, 60, 120, 'Files/Images/S1R2/room_kitchen_woodrobe_2.png', 675, 537, 0), # шкаф с мерчем
+                                         (648, 208, 110, 88, 'Files/Images/S1R2/room_kitchen_table_4.png', 649, 184, 1), # верхний красный стол
+                                         (648, 404, 110, 80, 'Files/Images/S1R2/room_kitchen_table_4.png', 649, 380, 2)), # нижний красный стол
 
                                     3 : ((0, 0, 1024, 112, None, 0, 0, 0), # верхняя стена
                                          (914, 0, 130, 778, None, 0, 0, 0), # правая стена
                                          (0, 656, 1024, 130, None, 0, 0, 0), # нижняя стена
-                                         (0, 0, 112, 545, None, 0, 0, 0), # левая стена
+                                         (0, 0, 112, 548, None, 0, 0, 0), # левая стена
 
                                          (112, 114, 80, 84, 'Files/Images/S1R3/room_large_flower_1.png', 86, 92, 0), # цветок в верхнем левом углу
                                          (112, 174, 80, 84, None, 98, 174, 0), # серый стул в верхнем левом углу
@@ -40,22 +54,22 @@ stages = {1 : {'СТАДИЯ' : '1',
                                          (852, 464, 60, 44, None, 848, 442, 0), # правый серый стул справа внизу
                                          (848, 588, 60, 60, 'Files/Images/S1R3/room_large_flower_3.png', 844, 580, 0), # цветок справа внизу
 
-                                         (320, 604, 350, 50, 'Files/Images/S1R3/room_large_woodrobe_2.png', 302, 604, 0), # книжная полка
+                                         (328, 604, 350, 50, 'Files/Images/S1R3/room_large_woodrobe_2.png', 302, 604, 0), # книжная полка
                                          (168, 630, 96, 40, 'Files/Images/S1R3/room_large_table_3.png', 166, 620, 0), # стелла слева внизу
                                          )},
                'ИНТЕРАКТИВНЫЕ ОБЪЕКТЫ (npc)' : {1: ((400, 380, 48, 48),
                                                     (52, 592, 48, 48)),
                                                 2: ((400, 180, 48, 48),
-                                                    (340, 492, 48, 48)),
+                                                    (360, 572, 48, 48)),
                                                 3: ((400, 180, 48, 48),
                                                     (52, 592, 48, 48))},
                'СТУЛЬЯ (npc)' : {1: ((344, 312, 365, 284, 'Files/Images/S1R3/room_large_chair_9.png', 360, 278, 1, 'вправо'),
                                      (516, 312, 504, 284, 'Files/Images/S1R3/room_large_chair_10.png', 494, 278, 1, 'влево')
                                      ),
-                                 2: ((664, 132, 684, 166, 'Files/Images/S1R3/room_large_chair_5.png', 678, 150, 1, 'вниз'),
-                                     (664, 296, 682, 278, 'Files/Images/S1R3/room_large_chair_6.png', 678, 280, 1, 'вверх'),
-                                     (664, 332, 684, 362, 'Files/Images/S1R3/room_large_chair_5.png', 678, 344, 2, 'вниз'),
-                                     (664, 496, 682, 472, 'Files/Images/S1R3/room_large_chair_6.png', 678, 474, 2, 'вверх')
+                                 2: ((664, 132, 684, 166, 'Files/Images/S1R2/room_kitchen_chair_2.png', 678, 150, 1, 'вниз'),
+                                     (664, 296, 682, 278, 'Files/Images/S1R2/room_kitchen_chair_1.png', 678, 280, 1, 'вверх'),
+                                     (664, 332, 684, 362, 'Files/Images/S1R2/room_kitchen_chair_2.png', 678, 344, 2, 'вниз'),
+                                     (664, 496, 682, 472, 'Files/Images/S1R2/room_kitchen_chair_1.png', 678, 474, 2, 'вверх')
                                      ),
                                  3: ((164, 260, 155, 194, 'Files/Images/S1R3/room_large_chair_1.png', 98, 174, 1, 'вправо'), # коричневый стол слева вверху
                                      (320, 200, 315, 140, 'Files/Images/S1R3/room_large_chair_2.png', 300, 104, 1, 'вниз-влево'), #

@@ -14,7 +14,7 @@ class Sub_character:
         self.type = 'sub_character'
         self.skin = 1
         self.x = 952
-        self.y = 500
+        self.y = 380
         self.width = 48
         self.height = 48
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)

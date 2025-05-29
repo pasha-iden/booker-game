@@ -16,10 +16,13 @@ class Scene:
         self.act = 1
         self.act_started = False
         self.image = None
+        self.phase = 1
         self.x = 0
         self.y = 0
         self.room = 1
         self.image = pygame.image.load(stages[self.stage]['ФОНЫ'][self.room][0]).convert()
+        if self.room == 1:
+            self.leaves = pygame.image.load(stages[self.stage]['ФОНЫ'][11][0]).convert_alpha()
         self.furniture = None
         self.interactive = None
         self.chairs = None
@@ -28,8 +31,17 @@ class Scene:
         self.characters = [[],[],[]]
 
 
-    def draw(self, scene_surface):
-        scene_surface.blit(self.image, (0, 0))
+    def draw(self, scene_surface, timer, leaves):
+
+        if self.room != 1 and not leaves:
+            scene_surface.blit(self.image, (0, 0))
+
+        if self.room == 1 and not leaves:
+            if timer:
+                self.phase = randint (1, 3)
+            scene_surface.blit(self.image, (0, 0), stages[self.stage]['ФОНЫ'][1][self.phase])
+        if self.room == 1 and leaves:
+            scene_surface.blit(self.leaves, (0, 0), stages[self.stage]['ФОНЫ'][11][self.phase])
 
 
     def draw_area(self, scene_surface, timer, i):
@@ -63,16 +75,16 @@ class Scene:
     def placing_interactive(self):
         objects = []
         interactive_in_room = stages[self.stage]['ИНТЕРАКТИВНЫЕ ОБЪЕКТЫ (npc)'][self.room]
-        for object in interactive_in_room:
-            Interactive(objects, object[0], object[1], object[2], object[3])
+        for parameters in interactive_in_room:
+            Interactive(objects, parameters)
         self.interactive = objects
 
 
     def placing_chairs(self):
         objects = []
         chairs_in_room = stages[self.stage]['СТУЛЬЯ (npc)'][self.room]
-        for object in chairs_in_room:
-            Chairs(objects, object[0], object[1], object[2], object[3], object[4], object[5], object[6], object[7], object[8])
+        for parameters in chairs_in_room:
+            Chairs(objects, parameters)
         self.chairs = objects
 
 

@@ -179,7 +179,7 @@ class Game:
 
     def render (self, scene_surface, hero, scene):
         # отрисовка сцены
-        scene.draw(scene_surface)
+        scene.draw(scene_surface, self.timer, False) # False - значит, что рисуется не листва
 
         # отрисовка интерактивных областей
         for object in scene.interactive:
@@ -209,6 +209,9 @@ class Game:
                 scene.draw_area(scene_surface, self.timer, object[2])
             else:
                 hero.draw(scene_surface, self.timer)
+
+        # отрисовка листьев
+        scene.draw(scene_surface, self.timer, True) # True - значит, что рисуется - листва
 
         # интерактивное сообщение
         if scene.interactive != None:

@@ -8,14 +8,16 @@ class Cut_interactive:
 
 
 class Interactive:
-    def __init__ (self, objects, x, y, w, h):
+    def __init__ (self, objects, parameters):
+        # x, y, w, h
+        # 0  1  2  3
         super().__init__()
         objects.append(self)
         self.type = 'interactive'
-        self.x = x
-        self.y = y
-        self.width = w
-        self.height = h
+        self.x = parameters[0]
+        self.y = parameters[1]
+        self.width = parameters[2]
+        self.height = parameters[3]
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw(self, scene_surface, timer):
