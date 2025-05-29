@@ -55,8 +55,8 @@ class Scene:
     def placing_furniture(self):
         objects = []
         furniture_in_room = stages[self.stage]['ТВЕРДЫЕ ОБЪЕКТЫ'][self.room]
-        for object in furniture_in_room:
-            Furniture(objects, object[0], object[1], object[2], object[3], object[4], object[5], object[6], object[7])
+        for parameters in furniture_in_room:
+            Furniture(objects, parameters)
         self.furniture = objects
 
 
