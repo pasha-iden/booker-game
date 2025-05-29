@@ -7,9 +7,9 @@ class Furniture:
         # 0  1  2  3  4      5   6   7
         objects.append(self)
         self.type = 'furniture'
-        self.picture = parameters[4]
-        if self.picture != None:
-            self.image = pygame.image.load(self.picture).convert_alpha()
+        self.image = parameters[4]
+        if self.image != None:
+            self.image = pygame.image.load(self.image).convert_alpha()
         self.ix = parameters[5]
         self.iy = parameters[6]
         self.x = parameters[0]
@@ -20,7 +20,7 @@ class Furniture:
         self.table = parameters[7]
 
     def draw(self, scene_surface, timer):
-        if self.picture != None:
+        if self.image != None:
             scene_surface.blit(self.image, (self.ix, self.iy))
 
         # отрисовка хитбоксов

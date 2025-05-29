@@ -1,8 +1,8 @@
 
 stages = {1 : {'СТАДИЯ' : '1',
-               'ФОНЫ' : {1 : 'files/images/room_outside.jpg',
-                         2 : 'files/images/room_kitchen.jpg',
-                         3 : 'Files/Images/S1R3/room_large_main.png'},
+               'ФОНЫ' : {1 : ('files/images/S1R1/room_outside_atlas.png', (0, 0, 1023, 767), (0, 800, 1023, 1567), (0, 1600, 1023, 2367)),
+                         2 : ('files/images/S1R2/room_kitchen.png', (0, 0, 1023, 767)),
+                         3 : ('Files/Images/S1R3/room_large.png', (0, 0, 1023, 767))},
 
                'ТВЕРДЫЕ ОБЪЕКТЫ' : {1 : ((0, 0, 1024, 288,  None, 0, 0, 0), # верхняя стена
                                          (1004, 0, 20, 778, None, 0, 0, 0), # правая стена
@@ -33,7 +33,7 @@ stages = {1 : {'СТАДИЯ' : '1',
 
                                          (112, 408, 212, 90, 'Files/Images/S1R3/room_large_table_with_chairs_2.png', 98, 385, 3), # двойной стол слева
                                          (422, 382, 176, 140, 'Files/Images/S1R3/room_large_table_with_chairs_3.png', 420, 360, 4), # круглый стол в центре
-                                         (702, 308, 110, 94, 'Files/Images/S1R3/room_large_table_with_chairs_4.png', 699, 290, 5), # красный стол справа
+                                         (702, 308, 110, 94, 'Files/Images/S1R3/room_large_table_with_chairs_1.png', 699, 290, 5), # красный стол справа
 
                                          (782, 512, 80, 76, 'Files/Images/S1R3/room_large_table_4.png', 770, 498, 6), # круглый стол справа внизу
                                          (700, 580, 80, 76, None, 692, 566, 0), # нижний серый стул справа внизу

@@ -19,7 +19,7 @@ class Scene:
         self.x = 0
         self.y = 0
         self.room = 1
-        self.image = pygame.image.load(stages[self.stage]['ФОНЫ'][self.room]).convert()
+        self.image = pygame.image.load(stages[self.stage]['ФОНЫ'][self.room][0]).convert()
         self.furniture = None
         self.interactive = None
         self.chairs = None
