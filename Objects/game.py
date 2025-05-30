@@ -153,6 +153,34 @@ class Game:
         return hero, scene
 
 
+    def message_preparing (self, message, is_replica):
+        words_in_message = message.split()
+        message_lines = ['']
+        line = 0
+        tutorial = False
+        lines_before_tutorial = 0
+        for word in words_in_message:
+            if word == '*':
+                if message_lines != ['']:
+                    message_lines.append('')
+                    message_lines.append('')
+                    line += 2
+                    if tutorial == False:
+                        lines_before_tutorial += 2
+                tutorial = True
+
+            else:
+                if len(message_lines[line]) + len(word) + 1 > 30 * (1 + is_replica):
+                    message_lines.append('')
+                    line += 1
+                    if tutorial == False:
+                        lines_before_tutorial += 1
+                elif len(message_lines[line]) != 0:
+                    message_lines[line] += ' '
+                message_lines[line] = message_lines[line] + word
+        return message_lines, tutorial, lines_before_tutorial
+
+
     def cut_scene (self, hero, scene, key):
 
         if scene.act_started == False:
@@ -160,8 +188,10 @@ class Game:
             if act[scene.act][0] == 'герой идет':
                 hero.destination = Cut_interactive(act[scene.act][1], act[scene.act][2])
                 hero.find_path_to_deal(scene.room_map, hero.destination)
-            elif act[scene.act][0] == 'реплика героя':
-                hero.replica = act[scene.act][1]
+            elif act[scene.act][0] == 'реплика':
+                scene.replica = act[scene.act][2]
+            elif act[scene.act][0] == 'мысли героя':
+                hero.thoughts = act[scene.act][1]
             scene.act_started = True
 
         if scene.act_started == True:
@@ -171,9 +201,14 @@ class Game:
                 else:
                     scene.act = scene.act + 1
                     scene.act_started = False
-            if act[scene.act][0] == 'реплика героя':
+            elif act[scene.act][0] == 'реплика':
                 if self.pushed_SPACE:
-                    hero.replica = None
+                    scene.replica = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+            elif act[scene.act][0] == 'мысли героя':
+                if self.pushed_SPACE:
+                    hero.thoughts = None
                     scene.act = scene.act + 1
                     scene.act_started = False
 
@@ -218,44 +253,35 @@ class Game:
         if scene.interactive != None:
             hero.action(scene_surface, scene.interactive)
 
-        # отрисовка реплик
-        if hero.replica != None:
-
-            # составление строк сообщения
-            words_in_message = hero.replica.split()
-            message_lines = ['']
-            line = 0
-            max_line = 0
-            for word in words_in_message:
-                if len(message_lines[line]) + len(word) + 1 > 10:
-                    message_lines.append('')
-                    line += 1
-                if len(message_lines[line]) != 0: message_lines[line] += ' '
-                message_lines[line] = message_lines[line] + word
-                if len(message_lines[line]) > max_line: max_line = len(message_lines[line])
-
-            # отрисовка окна и текста реплики
-            pygame.draw.rect(scene_surface, 'Gray', (hero.x - 50 - 4, hero.y - 85 - len(message_lines) * 22, max_line * 11, len(message_lines) * 22 + 6))
-            pygame.draw.rect(scene_surface, (80, 80 ,80), (hero.x - 50 - 4, hero.y - 85 - len(message_lines) * 22, max_line * 11, len(message_lines) * 22 + 6), 2)
+        # отрисовка мыслей
+        if hero.thoughts != None:
+            message_lines, tutorial, lines_before_tutorial = self.message_preparing(hero.thoughts, False)
+            pygame.draw.rect(scene_surface, 'Gray', (hero.x - 100 - 4, hero.y - 85 - len(message_lines) * 22, len(max(message_lines, key=len)) * 11, len(message_lines) * 22 + 6))
+            pygame.draw.rect(scene_surface, (80, 80 ,80), (hero.x - 100 - 4, hero.y - 85 - len(message_lines) * 22, len(max(message_lines, key=len)) * 11, len(message_lines) * 22 + 6), 2)
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             l = 0
             for line in message_lines:
-                message = game_font.render(line, False, 'Black')
-                scene_surface.blit(message, (hero.x - 50, hero.y - 85 - (len(message_lines) -l) * 20))
+                if (tutorial == False) or (tutorial == True and l < lines_before_tutorial):
+                    message = game_font.render(line, False, 'Black')
+                else:
+                    message = game_font.render(line, False, (125, 125, 125))
+                scene_surface.blit(message, (hero.x - 100, hero.y - 85 - (len(message_lines) -l) * 20))
                 l += 1
 
-            # мысли героини и несюжетные реплики персонажей отображаются в окошке над ними
-            # чтобы отобразить следующую мысль героини, нажмите ПРОБЕЛ
-
-            # закрепим: нажмите ПРОБЕЛ снова, чтобы отобразить следующую мысль героини
-
-            # когда мысль героини закончена, окошко с ее мыслями исчезнет: нажмите ПРОБЕЛ еще раз
-
-            # используйте клавиши W, A, S, D, чтобы стать еще на шаг ближе к заветной мечте.
-            # когда освоитесь с управлением, нажмите пробел
-
-            # подойдите к сюжетной области
-
+        # отрисовка реплик
+        if scene.replica != None:
+            message_lines, tutorial, lines_before_tutorial = self.message_preparing(scene.replica, True)
+            pygame.draw.rect(scene_surface, 'Gray', (200 - 4, 600, 600, 200))
+            pygame.draw.rect(scene_surface, (80, 80, 80), (200 - 4, 600, 600, 200), 2)
+            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+            l = 0
+            for line in message_lines:
+                if (tutorial == False) or (tutorial == True and l < lines_before_tutorial):
+                    message = game_font.render(line, False, 'Black')
+                else:
+                    message = game_font.render(line, False, (125, 125, 125))
+                scene_surface.blit(message, (200, 600 + l * 20))
+                l += 1
 
 if __name__ == '__main__':
     pass

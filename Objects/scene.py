@@ -15,6 +15,7 @@ class Scene:
         self.stage = 1
         self.act = 1
         self.act_started = False
+        self.replica = None
         self.image = None
         self.phase = 1
         self.x = 0

@@ -33,7 +33,7 @@ class Sub_character:
         self.destination = self.chair
         self.path_to_deal = []
 
-        self.replica = None
+        self.thoughts = None
 
 
     def find_path_to_deal(self, room_map, destination):
