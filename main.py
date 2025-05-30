@@ -67,7 +67,7 @@ while game.running:
             game.render(scene_surface, hero, scene)
 
 
-        print(pygame.mouse.get_pos())
+        # print(pygame.mouse.get_pos())
 
         # рендер графики и обновление экрана
         game.screen.blit(scene_surface, (0, 0))

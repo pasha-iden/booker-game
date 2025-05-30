@@ -1,3 +1,5 @@
+from re import split
+
 import pygame
 
 from Objects.characters import Hero
@@ -218,9 +220,41 @@ class Game:
 
         # отрисовка реплик
         if hero.replica != None:
+
+            # составление строк сообщения
+            words_in_message = hero.replica.split()
+            message_lines = ['']
+            line = 0
+            max_line = 0
+            for word in words_in_message:
+                if len(message_lines[line]) + len(word) + 1 > 10:
+                    message_lines.append('')
+                    line += 1
+                if len(message_lines[line]) != 0: message_lines[line] += ' '
+                message_lines[line] = message_lines[line] + word
+                if len(message_lines[line]) > max_line: max_line = len(message_lines[line])
+
+            # отрисовка окна и текста реплики
+            pygame.draw.rect(scene_surface, 'Gray', (hero.x - 50 - 4, hero.y - 85 - len(message_lines) * 22, max_line * 11, len(message_lines) * 22 + 6))
+            pygame.draw.rect(scene_surface, (80, 80 ,80), (hero.x - 50 - 4, hero.y - 85 - len(message_lines) * 22, max_line * 11, len(message_lines) * 22 + 6), 2)
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
-            message = game_font.render(hero.replica, False, 'Black')
-            scene_surface.blit(message, (hero.x - 50, hero.y - 85))
+            l = 0
+            for line in message_lines:
+                message = game_font.render(line, False, 'Black')
+                scene_surface.blit(message, (hero.x - 50, hero.y - 85 - (len(message_lines) -l) * 20))
+                l += 1
+
+            # мысли героини и несюжетные реплики персонажей отображаются в окошке над ними
+            # чтобы отобразить следующую мысль героини, нажмите ПРОБЕЛ
+
+            # закрепим: нажмите ПРОБЕЛ снова, чтобы отобразить следующую мысль героини
+
+            # когда мысль героини закончена, окошко с ее мыслями исчезнет: нажмите ПРОБЕЛ еще раз
+
+            # используйте клавиши W, A, S, D, чтобы стать еще на шаг ближе к заветной мечте.
+            # когда освоитесь с управлением, нажмите пробел
+
+            # подойдите к сюжетной области
 
 
 if __name__ == '__main__':
