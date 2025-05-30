@@ -27,7 +27,7 @@ while game.running:
         else:
 
 
-
+            # менеджер кат-сцены
             game.cut_scene(hero, scene, pygame.key.get_pressed())
             game.pushed_SPACE = False
 

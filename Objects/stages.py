@@ -76,7 +76,7 @@ stages = {1 : {'СТАДИЯ' : '1',
                                      (52, 560, 60, 568, 'Files/Images/S1R1/room_outside_chair_4.png', 48, 554, 2, 'вверх-вправо'),
                                      (212, 560, 217, 568, 'Files/Images/S1R1/room_outside_chair_3.png', 198, 558, 2, 'вверх-влево'),
                                      (280, 560, 288, 568, 'Files/Images/S1R1/room_outside_chair_4.png', 276, 554, 3, 'вверх-вправо'),
-                                     (438, 560, 445, 568, 'Files/Images/S1R1/room_outside_chair_3.png', 426, 558, 3, 'вверх-влево')
+                                     (440, 560, 445, 568, 'Files/Images/S1R1/room_outside_chair_3.png', 426, 558, 3, 'вверх-влево')
                                      ),
                                  2: ((664, 132, 684, 166, 'Files/Images/S1R2/room_kitchen_chair_2.png', 678, 150, 1, 'вниз'),
                                      (664, 296, 682, 278, 'Files/Images/S1R2/room_kitchen_chair_1.png', 678, 280, 1, 'вверх'),

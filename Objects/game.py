@@ -154,23 +154,22 @@ class Game:
     def cut_scene (self, hero, scene, key):
 
         if scene.act_started == False:
-            print(act[scene.act]['Действие'])
-            for action in act[scene.act]['Действие']:
-                if action[0] == 'герой идет':
-                    hero.destination = Cut_interactive(action[1], action[2])
-                    hero.find_path_to_deal(scene.room_map, hero.destination)
-                elif action[0] == 'реплика героя':
-                    hero.replica = action[1]
+            print(act[scene.act])
+            if act[scene.act][0] == 'герой идет':
+                hero.destination = Cut_interactive(act[scene.act][1], act[scene.act][2])
+                hero.find_path_to_deal(scene.room_map, hero.destination)
+            elif act[scene.act][0] == 'реплика героя':
+                hero.replica = act[scene.act][1]
             scene.act_started = True
 
         if scene.act_started == True:
-            if act[scene.act]['Действие'][0][0] == 'герой идет' and act[scene.act]['Окончание'] == 'герой пришел':
+            if act[scene.act][0] == 'герой идет':
                 if hero.path_to_deal != []:
                     hero.walk()
                 else:
                     scene.act = scene.act + 1
                     scene.act_started = False
-            if act[scene.act]['Действие'][0][0] == 'реплика героя' and act[scene.act]['Окончание'] == 'пробел':
+            if act[scene.act][0] == 'реплика героя':
                 if self.pushed_SPACE:
                     hero.replica = None
                     scene.act = scene.act + 1
@@ -185,9 +184,8 @@ class Game:
         for object in scene.interactive:
             object.draw(scene_surface, self.timer)
 
-        # отрисовка мебели и персонажей
+        # ранжирование объектов по порядку их отрисовки
         rendering_objects = []
-
         for object in scene.characters[scene.room - 1]:
             if not object.on_chair:
                 rendering_objects.append(
@@ -200,6 +198,7 @@ class Game:
         rendering_objects.append((hero.y + hero.height * 1.5, 'hero', 0))
         rendering_objects.sort(key=lambda x: x[0])
 
+        # отрисовка объектов
         for object in rendering_objects:
             if object[1] == 'character':
                 scene.characters[scene.room - 1][object[2]].draw(scene_surface, self.timer)
@@ -217,6 +216,7 @@ class Game:
         if scene.interactive != None:
             hero.action(scene_surface, scene.interactive)
 
+        # отрисовка реплик
         if hero.replica != None:
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             message = game_font.render(hero.replica, False, 'Black')
