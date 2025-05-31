@@ -170,8 +170,6 @@ class Game:
             scene.mapping_room()
             scene.placing_characters()
 
-        return hero, scene
-
 
     def message_preparing (self, message, is_replica):
         words_in_message = message.split()
@@ -261,7 +259,6 @@ class Game:
                     self.wait = None
                     scene.act = scene.act + 1
                     scene.act_started = False
-
 
 
     # рендер всей сцены
