@@ -50,6 +50,8 @@ class Game:
         # технические состояния
         self.fade_animation = None
         self.wow_fade_animation = None
+        self.chapter_info = None
+        self.chapter_timer = None
 
 
     def menu_window(self, scene_surface, hero, scene):
@@ -211,6 +213,9 @@ class Game:
                 hero.thoughts = act[scene.act][1]
             elif act[scene.act][0] == 'погружение':
                 self.wow_fade_animation = 0
+            elif act[scene.act][0] == 'акт':
+                self.chapter_info = act[scene.act][1]
+                self.chapter_timer = 0
             scene.act_started = True
 
         if scene.act_started == True:
@@ -231,12 +236,18 @@ class Game:
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'погружение':
-                if self.wow_fade_animation == 7:
+                if self.wow_fade_animation == 110:
                     self.wow_fade_animation = None
                     hero.x = act[scene.act][1]
                     hero.y = act[scene.act][2]
                     hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
                     hero, scene = self.transfering_room(hero, scene)
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+            elif act[scene.act][0] == 'акт':
+                if self.chapter_timer == 4:
+                    self.chapter_info = None
+                    self.chapter_timer = None
                     scene.act = scene.act + 1
                     scene.act_started = False
 
@@ -324,20 +335,54 @@ class Game:
             if self.timer_005:
                 self.fade_animation += 1
 
+
+
+
         # cюжетные спецэффекты
         # wow-переход
         if self.wow_fade_animation != None:
             fade_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)
             # if self.wow_fade_animation < 7:
-            if self.wow_fade_animation < 5:
-                fade = 64 * self.wow_fade_animation - 1 * (self.wow_fade_animation > 0)
-            if self.wow_fade_animation >= 5:
+            if self.wow_fade_animation < 52:
+                fade = 0 + 5 * self.wow_fade_animation
+            else:
                 fade = 255
             # print (fade)
             pygame.draw.rect(fade_surface, (0, 0, 0, fade), (0, 0, 1024, 768))
             scene_surface.blit(fade_surface, (0, 0))
-            if self.timer:
+            if self.timer_005:
                 self.wow_fade_animation += 1
+
+        # название главы
+        if self.chapter_info != None:
+            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=60)
+
+            # левые
+            message = game_font.render(self.chapter_info[0], False, 'Orange')
+            scene_surface.blit(message, (400-4, 300-4))
+            message = game_font.render(self.chapter_info[0], False, 'Orange')
+            scene_surface.blit(message, (400 - 4, 300))
+            message = game_font.render(self.chapter_info[0], False, 'Orange')
+            scene_surface.blit(message, (400-4, 300+4))
+
+            # центральные
+            message = game_font.render(self.chapter_info[0], False, 'Orange')
+            scene_surface.blit(message, (400, 300-4))
+            message = game_font.render(self.chapter_info[0], False, 'Orange')
+            scene_surface.blit(message, (400, 300+4))
+
+            # правые
+            message = game_font.render(self.chapter_info[0], False, 'Orange')
+            scene_surface.blit(message, (400+4, 300-4))
+            message = game_font.render(self.chapter_info[0], False, 'Orange')
+            scene_surface.blit(message, (400+4, 300))
+            message = game_font.render(self.chapter_info[0], False, 'Red')
+            scene_surface.blit(message, (400+4, 300+4))
+
+            message = game_font.render(self.chapter_info[0], False, 'Yellow')
+            scene_surface.blit(message, (400, 300))
+            if self.timer:
+                self.chapter_timer += 1
 
 if __name__ == '__main__':
     pass
