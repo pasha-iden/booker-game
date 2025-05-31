@@ -52,6 +52,7 @@ class Game:
         self.wow_fade_animation = None
         self.chapter_info = None
         self.chapter_timer = None
+        self.wait = None
 
 
     def menu_window(self, scene_surface, hero, scene):
@@ -216,6 +217,8 @@ class Game:
             elif act[scene.act][0] == 'акт':
                 self.chapter_info = act[scene.act][1]
                 self.chapter_timer = 0
+            elif act[scene.act][0] == 'ожидание':
+                self.wait = 0
             scene.act_started = True
 
         if scene.act_started == True:
@@ -250,9 +253,18 @@ class Game:
                     self.chapter_timer = None
                     scene.act = scene.act + 1
                     scene.act_started = False
+            elif act[scene.act][0] == 'ожидание':
+                if self.wait < act[scene.act][1]:
+                    if self.timer:
+                        self.wait += 1
+                else:
+                    self.wait = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
 
 
 
+    # рендер всей сцены
     def render (self, scene_surface, hero, scene):
         # отрисовка сцены
         scene.draw(scene_surface, self.timer, False) # False - значит, что рисуется не листва
@@ -336,9 +348,9 @@ class Game:
                 self.fade_animation += 1
 
 
+    # cюжетные спецэффекты
+    def cut_effects_render(self, scene_surface, hero, scene):
 
-
-        # cюжетные спецэффекты
         # wow-переход
         if self.wow_fade_animation != None:
             fade_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)

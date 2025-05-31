@@ -74,6 +74,7 @@ while game.running:
 
             #рендер всех объектов
             game.render(scene_surface, hero, scene)
+            game.cut_effects_render(scene_surface, hero, scene)
 
 
         # тесты
