@@ -33,13 +33,15 @@ while game.running:
 
             # перемещение между комнатами
             if pygame.key.get_pressed()[pygame.K_SPACE]:
-                game.transfering_room_animation(hero, scene)
+                game.transfering_room_initiation(hero, scene)
             if game.fade_animation == 0:
-                game.fade_animation = None
                 hero, scene = game.transfering_room(hero, scene)
+                game.fade_animation = 1
+            if game.fade_animation == 12:
+                game.fade_animation = None
 
             # управление игроком
-            if pygame.key.get_pressed() != None:
+            if game.fade_animation == None and pygame.key.get_pressed() != None:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
 
