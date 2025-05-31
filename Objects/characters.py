@@ -208,6 +208,17 @@ class Character(Sub_character):
         return  interactive, go_away
 
 
+class Plot_character(Sub_character):
+    def __init__(self, parameters):
+        super().__init__()
+        self.type = 'plot_character'
+        self.skin = parameters[0]
+        self.name = parameters[1]
+        self.x = parameters[2]
+        self.y = parameters[3]
+        self.on_chair = False
+
+
 class Hero(Sub_character):
     def __init__ (self):
         super().__init__()

@@ -217,6 +217,8 @@ class Game:
                 self.chapter_timer = 0
             elif act[scene.act][0] == 'ожидание':
                 self.wait = 0
+            elif act[scene.act][0] == 'появление персонажа':
+                scene.placing_plot_characters(act[scene.act][1])
             scene.act_started = True
 
         if scene.act_started == True:
@@ -242,7 +244,7 @@ class Game:
                     hero.x = act[scene.act][1]
                     hero.y = act[scene.act][2]
                     hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
-                    hero, scene = self.transfering_room(hero, scene)
+                    self.transfering_room(hero, scene)
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'акт':
@@ -259,6 +261,9 @@ class Game:
                     self.wait = None
                     scene.act = scene.act + 1
                     scene.act_started = False
+            elif act[scene.act][0] == 'появление персонажа':
+                scene.act = scene.act + 1
+                scene.act_started = False
 
 
     # рендер всей сцены
@@ -274,8 +279,10 @@ class Game:
         rendering_objects = []
         for object in scene.characters[scene.room - 1]:
             if not object.on_chair:
-                rendering_objects.append(
-                    (object.y + hero.height * 1.5, object.type, scene.characters[scene.room - 1].index(object)))
+                rendering_objects.append((object.y + hero.height * 1.5, object.type, scene.characters[scene.room - 1].index(object)))
+        for object in scene.plot_characters[scene.room - 1]:
+            if not object.on_chair:
+                rendering_objects.append((object.y + hero.height * 1.5, object.type, scene.plot_characters[scene.room - 1].index(object)))
         for object in scene.furniture:
             if object.table == 0:
                 rendering_objects.append((object.y + object.height, object.type, scene.furniture.index(object)))
@@ -288,6 +295,8 @@ class Game:
         for object in rendering_objects:
             if object[1] == 'character':
                 scene.characters[scene.room - 1][object[2]].draw(scene_surface, self.timer)
+            elif object[1] == 'plot_character':
+                scene.plot_characters[scene.room - 1][object[2]].draw(scene_surface, self.timer)
             elif object[1] == 'furniture':
                 scene.furniture[object[2]].draw(scene_surface, self.timer)
             elif object[1] == 'table':
@@ -319,9 +328,16 @@ class Game:
 
         # отрисовка реплик
         if scene.replica != None:
+
+            # окно речи и имя персонажа
             message_lines, tutorial, lines_before_tutorial = self.message_preparing(scene.replica, True)
             pygame.draw.rect(scene_surface, 'Gray', (200 - 4, 600, 600, 200))
             pygame.draw.rect(scene_surface, (80, 80, 80), (200 - 4, 600, 600, 200), 2)
+            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+            message = game_font.render(act[scene.act][1], False, 'Black')
+            scene_surface.blit(message, (200, 600))
+
+            # реплика
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             l = 0
             for line in message_lines:
@@ -329,7 +345,7 @@ class Game:
                     message = game_font.render(line, False, 'Black')
                 else:
                     message = game_font.render(line, False, (125, 125, 125))
-                scene_surface.blit(message, (200, 600 + l * 20))
+                scene_surface.blit(message, (200, 630 + l * 20))
                 l += 1
 
         # затемнение при переходе между комнатами

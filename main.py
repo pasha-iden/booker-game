@@ -4,8 +4,6 @@ from Objects.game import Game
 from Objects.scene import Scene
 from Objects.characters import Hero, Character
 
-from Objects.acts import act
-
 
 
 game = Game()
@@ -72,6 +70,7 @@ while game.running:
 
 
 
+
             #рендер всех объектов
             game.render(scene_surface, hero, scene)
             game.cut_effects_render(scene_surface, hero, scene)
@@ -79,6 +78,9 @@ while game.running:
 
         # тесты
         # print(pygame.mouse.get_pos())
+        # if scene.plot_characters[scene.room-1] != []:
+        #     print(scene.plot_characters[scene.room-1])
+
 
         # рендер графики и обновление экрана
         game.screen.blit(scene_surface, (0, 0))

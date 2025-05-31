@@ -3,7 +3,7 @@ import pygame
 from random import randint
 
 from Objects.chairs import Chairs
-from Objects.characters import Character
+from Objects.characters import Character, Plot_character
 from Objects.furniture import Furniture
 from Objects.interactives import Interactive
 
@@ -30,6 +30,7 @@ class Scene:
         self.room_map = None
         self.empty_chairs = [[],[],[]]
         self.characters = [[],[],[]]
+        self.plot_characters = [[],[],[]]
 
 
     def draw(self, scene_surface, timer, leaves):
@@ -100,6 +101,10 @@ class Scene:
                 Character(objects, self.room_map, self.empty_chairs[self.room-1][current_chair])
                 self.empty_chairs[self.room-1].pop(current_chair)
             self.characters[self.room-1] = objects
+
+
+    def placing_plot_characters(self, character_data):
+        self.plot_characters[self.room-1].append(Plot_character(character_data))
 
 
     def adding_character(self, timer):
