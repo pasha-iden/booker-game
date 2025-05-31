@@ -12,7 +12,7 @@ from Objects.acts import act
 
 class Game:
     def __init__(self):
-        #инициация игры: системные параметры
+        # инициация игры: системные параметры
         pygame.init()
         self.SCREEN_WIDTH = 1024
         self.SCREEN_HEIGHT = 768
@@ -27,13 +27,13 @@ class Game:
         self.clock_on = pygame.time.Clock()
         self.FPS = 60
 
-        #переменные параметры игры
+        # переменные параметры игры
         self.running = True
         self.just_started = True
         self.pause = False
         self.timer = False
 
-        #опции меню
+        # опции меню
         self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350, 280, 200, 50)),
                              ('Продолжить', (350, 350), pygame.Rect(350, 350, 220, 50)),
                              ('Сохранить', (350, 420), pygame.Rect(350, 420, 220, 50)),
@@ -41,7 +41,11 @@ class Game:
                              ('Выйти', (350, 560), pygame.Rect(350, 560, 120, 50)),
                              )
 
+        # нажатые клавиши
         self.pushed_SPACE = False
+
+        # технические состояния
+        self.fade_animation = None
 
 
     def menu_window(self, scene_surface, hero, scene):
@@ -121,6 +125,11 @@ class Game:
 
             if event.type == pygame.QUIT:
                 self.running = False
+
+
+    def transfering_room_animation (self, hero, scene):
+        if (hero.hitbox.collidepoint((30, 570)) and scene.room == 3) or (hero.hitbox.collidepoint((630, 90)) and scene.room == 2) or (hero.hitbox.collidepoint((445, 620)) and scene.room == 2) or (hero.hitbox.collidepoint((595, 300)) and scene.room == 1):
+            self.fade_animation = 3
 
 
     def transfering_room (self, hero, scene):
@@ -282,6 +291,13 @@ class Game:
                     message = game_font.render(line, False, (125, 125, 125))
                 scene_surface.blit(message, (200, 600 + l * 20))
                 l += 1
+
+        if self.fade_animation != None:
+            fade_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)
+            pygame.draw.rect(fade_surface, (0, 0, 0, 255 - 64 * self.fade_animation), (0, 0, 1024, 768))
+            scene_surface.blit(fade_surface, (0, 0))
+            if self.timer:
+                self.fade_animation += -1
 
 if __name__ == '__main__':
     pass

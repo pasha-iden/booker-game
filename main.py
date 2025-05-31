@@ -33,6 +33,9 @@ while game.running:
 
             # перемещение между комнатами
             if pygame.key.get_pressed()[pygame.K_SPACE]:
+                game.transfering_room_animation(hero, scene)
+            if game.fade_animation == 0:
+                game.fade_animation = None
                 hero, scene = game.transfering_room(hero, scene)
 
             # управление игроком
@@ -68,6 +71,7 @@ while game.running:
 
 
         # print(pygame.mouse.get_pos())
+        print (game.fade_animation)
 
         # рендер графики и обновление экрана
         game.screen.blit(scene_surface, (0, 0))
