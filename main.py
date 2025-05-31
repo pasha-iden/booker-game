@@ -4,6 +4,8 @@ from Objects.game import Game
 from Objects.scene import Scene
 from Objects.characters import Hero, Character
 
+from Objects.acts import act
+
 
 
 game = Game()
@@ -30,6 +32,8 @@ while game.running:
             # менеджер кат-сцены
             game.cut_scene(hero, scene, pygame.key.get_pressed())
             game.pushed_SPACE = False
+
+
 
             # перемещение между комнатами
             if pygame.key.get_pressed()[pygame.K_SPACE]:
@@ -72,8 +76,8 @@ while game.running:
             game.render(scene_surface, hero, scene)
 
 
+        # тесты
         # print(pygame.mouse.get_pos())
-        print (game.fade_animation)
 
         # рендер графики и обновление экрана
         game.screen.blit(scene_surface, (0, 0))

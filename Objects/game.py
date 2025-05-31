@@ -49,6 +49,7 @@ class Game:
 
         # технические состояния
         self.fade_animation = None
+        self.wow_fade_animation = None
 
 
     def menu_window(self, scene_surface, hero, scene):
@@ -208,6 +209,8 @@ class Game:
                 scene.replica = act[scene.act][2]
             elif act[scene.act][0] == 'мысли героя':
                 hero.thoughts = act[scene.act][1]
+            elif act[scene.act][0] == 'погружение':
+                self.wow_fade_animation = 0
             scene.act_started = True
 
         if scene.act_started == True:
@@ -227,6 +230,16 @@ class Game:
                     hero.thoughts = None
                     scene.act = scene.act + 1
                     scene.act_started = False
+            elif act[scene.act][0] == 'погружение':
+                if self.wow_fade_animation == 7:
+                    self.wow_fade_animation = None
+                    hero.x = act[scene.act][1]
+                    hero.y = act[scene.act][2]
+                    hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
+                    hero, scene = self.transfering_room(hero, scene)
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
 
 
     def render (self, scene_surface, hero, scene):
@@ -299,9 +312,9 @@ class Game:
                 scene_surface.blit(message, (200, 600 + l * 20))
                 l += 1
 
+        # затемнение при переходе между комнатами
         if self.fade_animation != None:
             fade_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)
-            print (min(255 - 25,5 * abs(self.fade_animation), 255))
             if abs(self.fade_animation) <= 2:
                 fade = 255
             else:
@@ -310,6 +323,21 @@ class Game:
             scene_surface.blit(fade_surface, (0, 0))
             if self.timer_005:
                 self.fade_animation += 1
+
+        # cюжетные спецэффекты
+        # wow-переход
+        if self.wow_fade_animation != None:
+            fade_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)
+            # if self.wow_fade_animation < 7:
+            if self.wow_fade_animation < 5:
+                fade = 64 * self.wow_fade_animation - 1 * (self.wow_fade_animation > 0)
+            if self.wow_fade_animation >= 5:
+                fade = 255
+            # print (fade)
+            pygame.draw.rect(fade_surface, (0, 0, 0, fade), (0, 0, 1024, 768))
+            scene_surface.blit(fade_surface, (0, 0))
+            if self.timer:
+                self.wow_fade_animation += 1
 
 if __name__ == '__main__':
     pass
