@@ -145,19 +145,19 @@ class Game:
         scene_before = scene.room
         if hero.hitbox.collidepoint((30, 570)) and scene.room == 3:
             scene.room = 2
-            hero.x = 650
+            hero.x = 652
             hero.y = 80
         if hero.hitbox.collidepoint((630, 90)) and scene.room == 2:
             scene.room = 3
-            hero.x = 25
-            hero.y = 560
+            hero.x = 28
+            hero.y = 556
         if hero.hitbox.collidepoint((445, 620)) and scene.room == 2:
             scene.room = 1
             hero.x = 580
             hero.y = 296
         if hero.hitbox.collidepoint((595, 300)) and scene.room == 1:
             scene.room = 2
-            hero.x = 425
+            hero.x = 424
             hero.y = 600
 
         if scene_before != scene.room:
@@ -275,10 +275,12 @@ class Game:
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'персонаж идет':
+                walk_characters = False
                 for plot_character in scene.plot_characters[scene.room-1]:
                     if plot_character.path_to_deal != []:
                         plot_character.walk()
-                else:
+                        walk_characters = True
+                if walk_characters == False:
                     scene.act = scene.act + 1
                     scene.act_started = False
 

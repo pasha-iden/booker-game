@@ -77,7 +77,7 @@ while game.running:
 
 
         # тесты
-        print(pygame.mouse.get_pos())
+        # print(pygame.mouse.get_pos())
 
 
         # рендер графики и обновление экрана
