@@ -77,9 +77,7 @@ while game.running:
 
 
         # тесты
-        # print(pygame.mouse.get_pos())
-        # if scene.plot_characters[scene.room-1] != []:
-        #     print(scene.plot_characters[scene.room-1])
+        print(pygame.mouse.get_pos())
 
 
         # рендер графики и обновление экрана

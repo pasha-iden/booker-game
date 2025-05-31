@@ -1,5 +1,3 @@
-from re import split
-
 import pygame
 
 from Objects.characters import Hero
@@ -219,6 +217,14 @@ class Game:
                 self.wait = 0
             elif act[scene.act][0] == 'появление персонажа':
                 scene.placing_plot_characters(act[scene.act][1])
+            elif act[scene.act][0] == 'затемнение и обратно':
+                self.fade_animation = -12
+            elif act[scene.act][0] == 'персонаж идет':
+                i = 0
+                while scene.plot_characters[scene.room-1][i].name != act[scene.act][1]:
+                    i += 1
+                scene.plot_characters[scene.room-1][i].destination = Cut_interactive(act[scene.act][2], act[scene.act][3])
+                scene.plot_characters[scene.room-1][i].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][i].destination)
             scene.act_started = True
 
         if scene.act_started == True:
@@ -264,7 +270,17 @@ class Game:
             elif act[scene.act][0] == 'появление персонажа':
                 scene.act = scene.act + 1
                 scene.act_started = False
-
+            elif act[scene.act][0] == 'затемнение и обратно':
+                if self.fade_animation == None:
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+            elif act[scene.act][0] == 'персонаж идет':
+                for plot_character in scene.plot_characters[scene.room-1]:
+                    if plot_character.path_to_deal != []:
+                        plot_character.walk()
+                else:
+                    scene.act = scene.act + 1
+                    scene.act_started = False
 
     # рендер всей сцены
     def render (self, scene_surface, hero, scene):
@@ -361,18 +377,16 @@ class Game:
                 self.fade_animation += 1
 
 
-    # cюжетные спецэффекты
+    # рендер cюжетных спецэффектов
     def cut_effects_render(self, scene_surface, hero, scene):
 
         # wow-переход
         if self.wow_fade_animation != None:
             fade_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)
-            # if self.wow_fade_animation < 7:
             if self.wow_fade_animation < 52:
                 fade = 0 + 5 * self.wow_fade_animation
             else:
                 fade = 255
-            # print (fade)
             pygame.draw.rect(fade_surface, (0, 0, 0, fade), (0, 0, 1024, 768))
             scene_surface.blit(fade_surface, (0, 0))
             if self.timer_005:
