@@ -397,31 +397,10 @@ class Game:
         # название главы
         if self.chapter_info != None:
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=60)
-
-            # левые
-            message = game_font.render(self.chapter_info[0], False, 'Orange')
-            scene_surface.blit(message, (400-4, 300-4))
-            message = game_font.render(self.chapter_info[0], False, 'Orange')
-            scene_surface.blit(message, (400 - 4, 300))
-            message = game_font.render(self.chapter_info[0], False, 'Orange')
-            scene_surface.blit(message, (400-4, 300+4))
-
-            # центральные
-            message = game_font.render(self.chapter_info[0], False, 'Orange')
-            scene_surface.blit(message, (400, 300-4))
-            message = game_font.render(self.chapter_info[0], False, 'Orange')
-            scene_surface.blit(message, (400, 300+4))
-
-            # правые
-            message = game_font.render(self.chapter_info[0], False, 'Orange')
-            scene_surface.blit(message, (400+4, 300-4))
-            message = game_font.render(self.chapter_info[0], False, 'Orange')
-            scene_surface.blit(message, (400+4, 300))
-            message = game_font.render(self.chapter_info[0], False, 'Red')
-            scene_surface.blit(message, (400+4, 300+4))
-
-            message = game_font.render(self.chapter_info[0], False, 'Yellow')
-            scene_surface.blit(message, (400, 300))
+            print_info = ((-4, -4, 'Orange'), (0, -4, 'Orange'), (4, -4, 'Orange'), (-4, 0, 'Orange'), (4, 0, 'Orange'), (-4, 4, 'Orange'), (0, 4, 'Orange'), (4, 4, 'Red'), (0, 0, 'Yellow'))
+            for record in print_info:
+                message = game_font.render(self.chapter_info[0], False, record[2])
+                scene_surface.blit(message, (400 + record[0], 300 + record[1]))
             if self.timer:
                 self.chapter_timer += 1
 
