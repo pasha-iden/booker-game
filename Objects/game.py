@@ -44,6 +44,11 @@ class Game:
 
         # нажатые клавиши
         self.pushed_SPACE = False
+        self.pushed_BACKSPACE = False
+        self.pushed_w = False
+        self.pushed_a = False
+        self.pushed_s = False
+        self.pushed_d = False
 
         # технические состояния
         self.fade_animation = None
@@ -51,6 +56,14 @@ class Game:
         self.chapter_info = None
         self.chapter_timer = None
         self.wait = None
+
+        # переменные для игры бариста
+        self.barista_game = False
+        self.barista_direction = None
+        self.barista_speach = None
+        self.barista_to_say = None
+        self.barista_says = None
+        self.barista_guest = None
 
 
     def menu_window(self, scene_surface, hero, scene):
@@ -77,7 +90,7 @@ class Game:
                         self.just_started = False
 
                     if option[0] == 'Сохранить':
-                        save_data = str(hero.x) + '\n' + str(hero.y) + '\n' + str(scene.room)
+                        save_data = str(hero.x) + '\n' + str(hero.y) + '\n' + str(scene.room) + '\n' + str(scene.act)
                         save_file = open("save.txt", 'w', encoding="UTF-8")
                         print(save_data, file=save_file)
                         save_file.close()
@@ -94,7 +107,9 @@ class Game:
                         hero.x = int(save_data[0])
                         hero.y = int(save_data[1])
                         scene.room = int(save_data[2])
+                        scene.act = int(save_data[3])
                         scene.image = pygame.image.load(stages[scene.stage]['ФОНЫ'][scene.room][0]).convert()
+
                         scene.placing_furniture()
                         scene.placing_interactive()
                         scene.placing_chairs()
@@ -117,6 +132,14 @@ class Game:
     def events_tracking(self):
         self.timer = False
         self.timer_005 = False
+
+        self.pushed_SPACE = False
+        self.pushed_BACKSPACE = False
+        self.pushed_w = False
+        self.pushed_a = False
+        self.pushed_s = False
+        self.pushed_d = False
+
         for event in pygame.event.get():
 
             if event.type == self.timer_1000:
@@ -131,6 +154,16 @@ class Game:
 
                 if event.key == pygame.K_SPACE and not self.pause:
                     self.pushed_SPACE = True
+                if event.key == pygame.K_BACKSPACE and not self.pause:
+                    self.pushed_BACKSPACE = True
+                if event.key == pygame.K_w and not self.pause:
+                    self.pushed_w = True
+                if event.key == pygame.K_s and not self.pause:
+                    self.pushed_s = True
+                if event.key == pygame.K_a and not self.pause:
+                    self.pushed_a = True
+                if event.key == pygame.K_d and not self.pause:
+                    self.pushed_d = True
 
             if event.type == pygame.QUIT:
                 self.running = False
@@ -225,7 +258,17 @@ class Game:
                     i += 1
                 scene.plot_characters[scene.room-1][i].destination = Cut_interactive(act[scene.act][2], act[scene.act][3])
                 scene.plot_characters[scene.room-1][i].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][i].destination)
+            elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
+                self.barista_game = True
+                hero.x = 400
+                hero.y = 300
+                hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
+                self.barista_direction = 'вниз'
+                self.barista_says = ''
+                self.barista_to_say = ''
             scene.act_started = True
+
+
 
         if scene.act_started == True:
             if act[scene.act][0] == 'герой идет':
@@ -283,6 +326,58 @@ class Game:
                 if walk_characters == False:
                     scene.act = scene.act + 1
                     scene.act_started = False
+            elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
+                if key[pygame.K_r]:
+                    self.barista_game = False
+                    self.barista_direction = None
+                    self.barista_says = None
+                    self.barista_to_say = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+
+    def barista_work (self, scene_surface, hero, scene):
+        if hero.path_to_deal != []:
+            hero.walk()
+        else:
+            hero.direction = self.barista_direction
+        if not self.barista_speach:
+            if self.pushed_w:
+                hero.destination = Cut_interactive(420, 172)
+                hero.find_path_to_deal(scene.room_map, hero.destination)
+                self.barista_direction = 'вверх'
+            elif self.pushed_a:
+                hero.destination = Cut_interactive(360, 364)
+                hero.find_path_to_deal(scene.room_map, hero.destination)
+                self.barista_direction = 'влево'
+            elif self.pushed_d:
+                hero.destination = Cut_interactive(400, 412)
+                hero.find_path_to_deal(scene.room_map, hero.destination)
+                self.barista_direction = 'вправо'
+            elif self.pushed_s:
+                hero.destination = Cut_interactive(392, 436)
+                hero.find_path_to_deal(scene.room_map, hero.destination)
+                self.barista_direction = 'вниз'
+
+        if hero.x == 392 and hero.y == 436 and self.pushed_SPACE:
+            self.barista_speach = True
+
+        if self.barista_speach:
+            self.barista_to_say = 'цццц'
+            if self.barista_to_say == self.barista_says:
+                self.barista_says = ''
+                self.barista_speach = False
+            else:
+                l = ''
+                if self.pushed_BACKSPACE:
+                    if len(self.barista_says) < 2:
+                        self.barista_says = ''
+                    else:
+                        self.barista_says = self.barista_says[0: len(self.barista_says) - 1]
+                if self.pushed_w:
+                    l = 'ц'
+                self.barista_says = self.barista_says + l
+
 
     # рендер всей сцены
     def render (self, scene_surface, hero, scene):
@@ -403,6 +498,21 @@ class Game:
                 scene_surface.blit(message, (400 + record[0], 300 + record[1]))
             if self.timer:
                 self.chapter_timer += 1
+
+        if self.barista_speach:
+            pygame.draw.rect(scene_surface, 'Gray', (200 - 4, 150, 600, 200))
+            pygame.draw.rect(scene_surface, (80, 80, 80), (200 - 4, 150, 600, 200), 2)
+            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+            message = game_font.render('Гость', False, 'Black')
+            scene_surface.blit(message, (200, 150))
+            message = game_font.render('Здравствуйте', False, 'Black')
+            scene_surface.blit(message, (200, 175))
+            message = game_font.render('Полина', False, 'Black')
+            scene_surface.blit(message, (700, 200))
+            message = game_font.render(self.barista_says, False, 'Black')
+            scene_surface.blit(message, (700, 225))
+            message = game_font.render(self.barista_to_say, False, (80, 80, 80))
+            scene_surface.blit(message, (700, 250))
 
 if __name__ == '__main__':
     pass

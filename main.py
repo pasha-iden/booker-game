@@ -2,7 +2,7 @@ import pygame
 
 from Objects.game import Game
 from Objects.scene import Scene
-from Objects.characters import Hero, Character
+from Objects.characters import Hero
 
 
 
@@ -16,7 +16,7 @@ scene_surface = pygame.Surface((game.SCREEN_WIDTH, game.SCREEN_HEIGHT))
 while game.running:
     scene_surface.fill('Black')
 
-    #отслеживание событий: --Таймер, --Кнопка Escape, --Выход из игры
+    # отслеживание событий: --Таймер, --Кнопка Escape, --Выход из игры
     game.events_tracking()
 
     if game.running:
@@ -29,12 +29,11 @@ while game.running:
 
             # менеджер кат-сцены
             game.cut_scene(hero, scene, pygame.key.get_pressed())
-            game.pushed_SPACE = False
 
 
 
             # перемещение между комнатами
-            if pygame.key.get_pressed()[pygame.K_SPACE]:
+            if game.pushed_SPACE and game.fade_animation == None:
                 game.transfering_room_initiation(hero, scene)
             if game.fade_animation == 0:
                 game.transfering_room(hero, scene)
@@ -43,7 +42,7 @@ while game.running:
                 game.fade_animation = None
 
             # управление игроком
-            if game.fade_animation == None and pygame.key.get_pressed() != None:
+            if (game.fade_animation == None and game.barista_game == False) and pygame.key.get_pressed() != None:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
 
@@ -70,8 +69,13 @@ while game.running:
 
 
 
+            # МИНИ-ИГРЫ
+            if game.barista_game:
+                game.barista_work(scene_surface, hero, scene)
 
-            #рендер всех объектов
+
+
+            # рендер всех объектов
             game.render(scene_surface, hero, scene)
             game.cut_effects_render(scene_surface, hero, scene)
 
