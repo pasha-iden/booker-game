@@ -1,5 +1,7 @@
 import pygame
 
+from random import randint
+
 from Objects.characters import Hero
 from Objects.scene import Scene
 from Objects.interactives import Cut_interactive
@@ -426,6 +428,8 @@ class Game:
 
 
     def barista_work (self, scene_surface, hero, scene):
+
+        # передвижение между точками бара
         if hero.path_to_deal != []:
             hero.walk()
         else:
@@ -448,15 +452,26 @@ class Game:
                 hero.find_path_to_deal(scene.room_map, hero.destination)
                 self.barista_direction = 'вниз'
 
-        if hero.x == 392 and hero.y == 436 and self.pushed_SPACE:
+        # инициация игры: диалог с гостем
+        if hero.x == 392 and hero.y == 436 and self.pushed_SPACE and not self.barista_speach:
             self.pushed_SPACE = False
             self.barista_speach = True
 
+        # игра: диалог с гостем
         if self.barista_speach:
-            self.barista_to_say = 'Здравствуйте'
+
+            # определение, что нужно сказать
+            if self.barista_to_say == None:
+                to_say = ('Здравствуйте', 'Привет', 'Рады вас видеть')
+                self.barista_to_say = to_say[randint(0, 2)]
+
+            # завершение диалога с гостем, если фраза введена правильно
             if self.barista_to_say == self.barista_says:
                 self.barista_says = ''
+                self.barista_to_say = None
                 self.barista_speach = False
+
+            # добавление буквы в высказывание героини
             else:
                 l = ''
                 if self.pushed_BACKSPACE:
@@ -464,75 +479,75 @@ class Game:
                         self.barista_says = ''
                     else:
                         self.barista_says = self.barista_says[0: len(self.barista_says) - 1]
-                # перечисление всех клавиш
-                else:
+                else: # перечисление всех клавиш
                     if self.pushed_SPACE:
-                        l = l + ' '
+                        l = ' '
                     elif self.pushed_q:
-                        l = l + 'й'
+                        l = 'й'
                     elif self.pushed_w:
-                        l = l + 'ц'
+                        l = 'ц'
                     elif self.pushed_e:
-                        l = l + 'у'
+                        l = 'у'
                     elif self.pushed_r:
-                        l = l + 'к'
+                        l = 'к'
                     elif self.pushed_t:
-                        l = l + 'е'
+                        l = 'е'
                     elif self.pushed_y:
-                        l = l + 'н'
+                        l = 'н'
                     elif self.pushed_u:
-                        l = l + 'г'
+                        l = 'г'
                     elif self.pushed_i:
-                        l = l + 'ш'
+                        l = 'ш'
                     elif self.pushed_o:
-                        l = l + 'щ'
+                        l = 'щ'
                     elif self.pushed_p:
-                        l = l + 'з'
+                        l = 'з'
                     elif self.pushed_LEFTBRACKET:
-                        l = l + 'х'
+                        l = 'х'
                     elif self.pushed_RIGHTBRACKET:
-                        l = l + 'ъ'
+                        l = 'ъ'
                     elif self.pushed_a:
-                        l = l + 'ф'
+                        l = 'ф'
                     elif self.pushed_s:
-                        l = l + 'ы'
+                        l = 'ы'
                     elif self.pushed_d:
-                        l = l + 'в'
+                        l = 'в'
                     elif self.pushed_f:
-                        l = l + 'а'
+                        l = 'а'
                     elif self.pushed_g:
-                        l = l + 'п'
+                        l = 'п'
                     elif self.pushed_h:
-                        l = l + 'р'
+                        l = 'р'
                     elif self.pushed_j:
-                        l = l + 'о'
+                        l = 'о'
                     elif self.pushed_k:
-                        l = l + 'л'
+                        l = 'л'
                     elif self.pushed_l:
-                        l = l + 'д'
+                        l = 'д'
                     elif self.pushed_SEMICOLON:
-                        l = l + 'ж'
+                        l = 'ж'
                     elif self.pushed_QUOTE:
-                        l = l + 'э'
+                        l = 'э'
                     elif self.pushed_z:
-                        l = l + 'я'
+                        l = 'я'
                     elif self.pushed_x:
-                        l = l + 'ч'
+                        l = 'ч'
                     elif self.pushed_c:
-                        l = l + 'с'
+                        l = 'с'
                     elif self.pushed_v:
-                        l = l + 'м'
+                        l = 'м'
                     elif self.pushed_b:
-                        l = l + 'и'
+                        l = 'и'
                     elif self.pushed_n:
-                        l = l + 'т'
+                        l = 'т'
                     elif self.pushed_m:
-                        l = l + 'ь'
+                        l = 'ь'
                     elif self.pushed_COMMA:
-                        l = l + 'б'
+                        l = 'б'
                     elif self.pushed_PERIOD:
-                        l = l + 'ю'
+                        l = 'ю'
                 self.barista_says = self.barista_says + l
+                # заглавная первая буква
                 if len(self.barista_says) == 1:
                     self.barista_says = self.barista_says.capitalize()
 
