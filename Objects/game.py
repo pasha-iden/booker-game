@@ -43,12 +43,8 @@ class Game:
                              )
 
         # нажатые клавиши
-        self.pushed_SPACE = False
-        self.pushed_BACKSPACE = False
-        self.pushed_w = False
-        self.pushed_a = False
-        self.pushed_s = False
-        self.pushed_d = False
+        self.key_pushed = False
+        self.keys_clear()
 
         # технические состояния
         self.fade_animation = None
@@ -129,16 +125,50 @@ class Game:
         return hero, scene
 
 
+    def keys_clear(self):
+        self.pushed_SPACE = False
+        self.pushed_BACKSPACE = False
+        self.pushed_q = False
+        self.pushed_w = False
+        self.pushed_e = False
+        self.pushed_r = False
+        self.pushed_t = False
+        self.pushed_y = False
+        self.pushed_u = False
+        self.pushed_i = False
+        self.pushed_o = False
+        self.pushed_p = False
+        self.pushed_LEFTBRACKET = False  # клавиша [ х
+        self.pushed_RIGHTBRACKET = False  # клавиша ] ъ
+        self.pushed_a = False
+        self.pushed_s = False
+        self.pushed_d = False
+        self.pushed_f = False
+        self.pushed_g = False
+        self.pushed_h = False
+        self.pushed_j = False
+        self.pushed_k = False
+        self.pushed_l = False
+        self.pushed_SEMICOLON = False  # клавиша ; ж
+        self.pushed_QUOTE = False  # клавиша ' э
+        self.pushed_z = False
+        self.pushed_x = False
+        self.pushed_c = False
+        self.pushed_v = False
+        self.pushed_b = False
+        self.pushed_n = False
+        self.pushed_m = False
+        self.pushed_COMMA = False
+        self.pushed_PERIOD = False
+
+
     def events_tracking(self):
         self.timer = False
         self.timer_005 = False
 
-        self.pushed_SPACE = False
-        self.pushed_BACKSPACE = False
-        self.pushed_w = False
-        self.pushed_a = False
-        self.pushed_s = False
-        self.pushed_d = False
+        if self.key_pushed:
+            self.key_pushed = False
+            self.keys_clear()
 
         for event in pygame.event.get():
 
@@ -148,22 +178,81 @@ class Game:
             if event.type == self.timer_50:
                 self.timer_005 = True
 
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
+                self.key_pushed = True
+
                 if event.key == pygame.K_ESCAPE and not self.just_started:
                     self.pause = not self.pause
-
-                if event.key == pygame.K_SPACE and not self.pause:
-                    self.pushed_SPACE = True
-                if event.key == pygame.K_BACKSPACE and not self.pause:
-                    self.pushed_BACKSPACE = True
-                if event.key == pygame.K_w and not self.pause:
-                    self.pushed_w = True
-                if event.key == pygame.K_s and not self.pause:
-                    self.pushed_s = True
-                if event.key == pygame.K_a and not self.pause:
-                    self.pushed_a = True
-                if event.key == pygame.K_d and not self.pause:
-                    self.pushed_d = True
+                # перечисление всех клавиш
+                else:
+                    if event.key == pygame.K_SPACE and not self.pause:
+                        self.pushed_SPACE = True
+                    elif event.key == pygame.K_BACKSPACE and not self.pause:
+                        self.pushed_BACKSPACE = True
+                    elif event.key == pygame.K_q and not self.pause:
+                        self.pushed_q = True
+                    elif event.key == pygame.K_w and not self.pause:
+                        self.pushed_w = True
+                    elif event.key == pygame.K_e and not self.pause:
+                        self.pushed_e = True
+                    elif event.key == pygame.K_r and not self.pause:
+                        self.pushed_r = True
+                    elif event.key == pygame.K_t and not self.pause:
+                        self.pushed_t = True
+                    elif event.key == pygame.K_y and not self.pause:
+                        self.pushed_y = True
+                    elif event.key == pygame.K_u and not self.pause:
+                        self.pushed_u = True
+                    elif event.key == pygame.K_i and not self.pause:
+                        self.pushed_i = True
+                    elif event.key == pygame.K_o and not self.pause:
+                        self.pushed_o = True
+                    elif event.key == pygame.K_p and not self.pause:
+                        self.pushed_p = True
+                    elif event.key == pygame.K_LEFTBRACKET and not self.pause:
+                        self.pushed_LEFTBRACKET = True  # клавиша [ х
+                    elif event.key == pygame.K_RIGHTBRACKET and not self.pause:
+                        self.pushed_RIGHTBRACKET = True  # клавиша ] ъ
+                    elif event.key == pygame.K_a and not self.pause:
+                        self.pushed_a = True
+                    elif event.key == pygame.K_s and not self.pause:
+                        self.pushed_s = True
+                    elif event.key == pygame.K_d and not self.pause:
+                        self.pushed_d = True
+                    elif event.key == pygame.K_f and not self.pause:
+                        self.pushed_f = True
+                    elif event.key == pygame.K_g and not self.pause:
+                        self.pushed_g = True
+                    elif event.key == pygame.K_h and not self.pause:
+                        self.pushed_h = True
+                    elif event.key == pygame.K_j and not self.pause:
+                        self.pushed_j = True
+                    elif event.key == pygame.K_k and not self.pause:
+                        self.pushed_k = True
+                    elif event.key == pygame.K_l and not self.pause:
+                        self.pushed_l = True
+                    elif event.key == pygame.K_SEMICOLON and not self.pause:
+                        self.pushed_SEMICOLON = True  # клавиша ; ж
+                    elif event.key == pygame.K_QUOTE and not self.pause:
+                        self.pushed_QUOTE = True  # клавиша ' э
+                    elif event.key == pygame.K_z and not self.pause:
+                        self.pushed_z = True
+                    elif event.key == pygame.K_x and not self.pause:
+                        self.pushed_x = True
+                    elif event.key == pygame.K_c and not self.pause:
+                        self.pushed_c = True
+                    elif event.key == pygame.K_v and not self.pause:
+                        self.pushed_v = True
+                    elif event.key == pygame.K_b and not self.pause:
+                        self.pushed_b = True
+                    elif event.key == pygame.K_n and not self.pause:
+                        self.pushed_n = True
+                    elif event.key == pygame.K_m and not self.pause:
+                        self.pushed_m = True
+                    elif event.key == pygame.K_COMMA and not self.pause:
+                        self.pushed_COMMA = True
+                    elif event.key == pygame.K_PERIOD and not self.pause:
+                        self.pushed_PERIOD = True
 
             if event.type == pygame.QUIT:
                 self.running = False
@@ -360,10 +449,11 @@ class Game:
                 self.barista_direction = 'вниз'
 
         if hero.x == 392 and hero.y == 436 and self.pushed_SPACE:
+            self.pushed_SPACE = False
             self.barista_speach = True
 
         if self.barista_speach:
-            self.barista_to_say = 'цццц'
+            self.barista_to_say = 'Здравствуйте'
             if self.barista_to_say == self.barista_says:
                 self.barista_says = ''
                 self.barista_speach = False
@@ -374,9 +464,77 @@ class Game:
                         self.barista_says = ''
                     else:
                         self.barista_says = self.barista_says[0: len(self.barista_says) - 1]
-                if self.pushed_w:
-                    l = 'ц'
+                # перечисление всех клавиш
+                else:
+                    if self.pushed_SPACE:
+                        l = l + ' '
+                    elif self.pushed_q:
+                        l = l + 'й'
+                    elif self.pushed_w:
+                        l = l + 'ц'
+                    elif self.pushed_e:
+                        l = l + 'у'
+                    elif self.pushed_r:
+                        l = l + 'к'
+                    elif self.pushed_t:
+                        l = l + 'е'
+                    elif self.pushed_y:
+                        l = l + 'н'
+                    elif self.pushed_u:
+                        l = l + 'г'
+                    elif self.pushed_i:
+                        l = l + 'ш'
+                    elif self.pushed_o:
+                        l = l + 'щ'
+                    elif self.pushed_p:
+                        l = l + 'з'
+                    elif self.pushed_LEFTBRACKET:
+                        l = l + 'х'
+                    elif self.pushed_RIGHTBRACKET:
+                        l = l + 'ъ'
+                    elif self.pushed_a:
+                        l = l + 'ф'
+                    elif self.pushed_s:
+                        l = l + 'ы'
+                    elif self.pushed_d:
+                        l = l + 'в'
+                    elif self.pushed_f:
+                        l = l + 'а'
+                    elif self.pushed_g:
+                        l = l + 'п'
+                    elif self.pushed_h:
+                        l = l + 'р'
+                    elif self.pushed_j:
+                        l = l + 'о'
+                    elif self.pushed_k:
+                        l = l + 'л'
+                    elif self.pushed_l:
+                        l = l + 'д'
+                    elif self.pushed_SEMICOLON:
+                        l = l + 'ж'
+                    elif self.pushed_QUOTE:
+                        l = l + 'э'
+                    elif self.pushed_z:
+                        l = l + 'я'
+                    elif self.pushed_x:
+                        l = l + 'ч'
+                    elif self.pushed_c:
+                        l = l + 'с'
+                    elif self.pushed_v:
+                        l = l + 'м'
+                    elif self.pushed_b:
+                        l = l + 'и'
+                    elif self.pushed_n:
+                        l = l + 'т'
+                    elif self.pushed_m:
+                        l = l + 'ь'
+                    elif self.pushed_COMMA:
+                        l = l + 'б'
+                    elif self.pushed_PERIOD:
+                        l = l + 'ю'
                 self.barista_says = self.barista_says + l
+                if len(self.barista_says) == 1:
+                    self.barista_says = self.barista_says.capitalize()
 
 
     # рендер всей сцены
@@ -510,9 +668,9 @@ class Game:
             message = game_font.render('Полина', False, 'Black')
             scene_surface.blit(message, (700, 200))
             message = game_font.render(self.barista_says, False, 'Black')
-            scene_surface.blit(message, (700, 225))
+            scene_surface.blit(message, (760 - len(self.barista_says) * 10, 225))
             message = game_font.render(self.barista_to_say, False, (80, 80, 80))
-            scene_surface.blit(message, (700, 250))
+            scene_surface.blit(message, (760 - len(self.barista_to_say) * 10, 250))
 
 if __name__ == '__main__':
     pass
