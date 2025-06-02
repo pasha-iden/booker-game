@@ -71,7 +71,7 @@ while game.running:
 
             # МИНИ-ИГРЫ
             if game.barista_game:
-                game.barista_work(scene_surface, hero, scene)
+                game.barista_work(hero, scene)
 
 
 
