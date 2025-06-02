@@ -591,11 +591,18 @@ class Game:
                 self.barista_preparing[i][self.barista_preparing[i].index(cooking)] = None
                 # закрытие позиции, если заказ готов
                 if self.barista_preparing[i].count(None) == len(self.barista_preparing[i]):
-                    self.barista_preparing.pop(i)
-                    self.barista_list.pop(i)
+                    self.barista_done_animation = [60, i]
+                    # self.barista_preparing.pop(i)
+                    # self.barista_list.pop(i)
 
-        print (self.barista_list)
-        print (self.barista_preparing)
+        # удаление позиции из списка заказов после анимации засчитывания
+        if self.barista_done_animation != None and self.barista_done_animation[0] == 255:
+            self.barista_list.pop(self.barista_done_animation[1])
+            self.barista_preparing.pop(self.barista_done_animation[1])
+            self.barista_done_animation = None
+
+        # print (self.barista_list)
+        # print (self.barista_preparing)
 
 
     # рендер всей сцены
@@ -725,7 +732,12 @@ class Game:
 
                 # заголовки позиций в заказе
                 for line in range(len(self.barista_list)):
-                    pygame.draw.rect(scene_surface, 'Gray', (200 - 4, 150 + 50 * line, 300, 50))
+                    if self.barista_done_animation == None or self.barista_done_animation[1] != line:
+                        pygame.draw.rect(scene_surface, 'Gray', (200 - 4, 150 + 50 * line, 300, 50))
+                    else:
+                        if self.barista_done_animation[1] == line:
+                            pygame.draw.rect(scene_surface, (self.barista_done_animation[0], self.barista_done_animation[0], self.barista_done_animation[0]), (200 - 4, 150 + 50 * line, 300, 50))
+                            self.barista_done_animation[0] += 5
                     pygame.draw.rect(scene_surface, (80, 80, 80), (200 - 4, 150 + 50 * line, 300, 50), 2)
                     game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
                     message = game_font.render(self.barista_list[line][0], False, 'Black')
