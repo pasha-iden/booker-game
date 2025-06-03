@@ -850,19 +850,23 @@ class Game:
 
             # окно диалога с гостем
             if self.barista_speach:
-                pygame.draw.rect(scene_surface, 'Gray', (200 - 4, 150, 600, 200))
-                pygame.draw.rect(scene_surface, (80, 80, 80), (200 - 4, 150, 600, 200), 2)
+                x = 220 # 200
+                y = 150
+                w = 400 # 600
+                h = 200
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, w, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, w, h), 2)
                 game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
                 message = game_font.render('Гость', False, 'Black')
-                scene_surface.blit(message, (200, 150))
+                scene_surface.blit(message, (x, y))
                 message = game_font.render('Здравствуйте', False, 'Black')
-                scene_surface.blit(message, (200, 175))
+                scene_surface.blit(message, (x, y + 25))
                 message = game_font.render('Полина', False, 'Black')
-                scene_surface.blit(message, (700, 200))
+                scene_surface.blit(message, (x + w - 80 , y + 50))
                 message = game_font.render(self.barista_says, False, 'Black')
-                scene_surface.blit(message, (760 - len(self.barista_says) * 10, 225))
+                scene_surface.blit(message, (x + w - 20 - len(self.barista_says) * 10, y + 75))
                 message = game_font.render(self.barista_to_say, False, (80, 80, 80))
-                scene_surface.blit(message, (760 - len(self.barista_to_say) * 10, 250))
+                scene_surface.blit(message, (x + w - 20 - len(self.barista_to_say) * 10, y + 100))
 
             # интерфейс опций кофе-машины
             if self.barista_machine:

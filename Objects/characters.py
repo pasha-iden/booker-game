@@ -264,5 +264,6 @@ class Hero(Sub_character):
                 action_message = game_font.render('взаимодействовать', False, 'Green')
                 scene_surface.blit(action_message, (self.x - 50, self.y - 85))
 
+
 if __name__ == '__main__':
     pass
