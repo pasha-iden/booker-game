@@ -86,24 +86,24 @@ while game.running:
 
 
         # scale изображения и рамки
-        # scale_value = 1.4
-        # final_surface = pygame.transform.smoothscale(scene_surface, ((1024*scale_value)//1, (768*scale_value)//1))
+        final_surface = pygame.transform.smoothscale(scene_surface, ((1024*game.scale_value)//1, (768*game.scale_value)//1))
         #
-        # if not game.pause:
-        #     if scene.room == 1:
-        #         pygame.draw.rect(scene_surface, (80, 80, 80), (0, 84, 1024, 606), 4)
-        #         pygame.draw.rect(scene_surface, 'Gray', (0 + 4, 84 + 4, 1024 - 8, 606 - 8), 4)
-        #
-        #     if scene.room == 2:
-        #         pygame.draw.rect(scene_surface, (80, 80, 80), (206, 0, 644, 768), 4)
-        #         pygame.draw.rect(scene_surface, 'Gray', (206 + 4, 0 + 4, 644 - 8, 768 - 8), 4)
-        #
-        #     if scene.room == 3:
-        #         pygame.draw.rect(scene_surface, (80, 80, 80), (0, 0, 1024, 768), 4)
-        #         pygame.draw.rect(scene_surface, 'Gray', (0 + 4, 0 + 4, 1024 - 8, 768 - 8), 4)
+        if game.screen_mod == 2:
+            if not game.pause:
+                if scene.room == 1:
+                    pygame.draw.rect(final_surface, (80, 80, 80), (0, 84, 1024, 606), 4)
+                    pygame.draw.rect(final_surface, 'Gray', (0 + 4, 84 + 4, 1024 - 8, 606 - 8), 4)
+
+                if scene.room == 2:
+                    pygame.draw.rect(final_surface, (80, 80, 80), (206, 0, 644, 768), 4)
+                    pygame.draw.rect(final_surface, 'Gray', (206 + 4, 0 + 4, 644 - 8, 768 - 8), 4)
+
+                if scene.room == 3:
+                    pygame.draw.rect(final_surface, (80, 80, 80), (0, 0, 1024, 768), 4)
+                    pygame.draw.rect(final_surface, 'Gray', (0 + 4, 0 + 4, 1024 - 8, 768 - 8), 4)
 
         # рендер графики и обновление экрана
-        game.screen.blit(scene_surface, (game.shift_x, game.shift_y))
+        game.screen.blit(final_surface, (game.shift_x, game.shift_y))
         pygame.display.update()
 
 

@@ -16,9 +16,11 @@ class Game:
         pygame.init()
         self.SCREEN_WIDTH = 1024
         self.SCREEN_HEIGHT = 768
+        self.shift_x = 0
+        self.shift_y = 0
+        self.scale_value = 1
+        self.screen_mod = 1
         print(pygame.display.list_modes())
-        self.shift_x = 0 #260
-        self.shift_y = 0 #100
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), flags=pygame.NOFRAME)  # базовое разрешение
         pygame.display.set_caption('Booker - The Coffee Adventure')
         icon = pygame.image.load('Booker.png')
@@ -33,23 +35,23 @@ class Game:
         # переменные параметры игры
         self.running = True
         self.just_started = True
-        self.pause = False
+        self.pause = True
         self.settings = False
         self.timer = False
         self.timer_005 = False
 
         # опции меню
-        self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350 + self.shift_x, 280 + self.shift_y, 200, 50)),
-                             ('Продолжить', (350, 350), pygame.Rect(350 + self.shift_x, 350 + self.shift_y, 220, 50)),
-                             ('Сохранить', (350, 420), pygame.Rect(350 + self.shift_x, 420 + self.shift_y, 220, 50)),
-                             ('Загрузить', (350, 490), pygame.Rect(350 + self.shift_x, 490 + self.shift_y, 180, 50)),
-                             ('Настройки', (350, 560), pygame.Rect(350 + self.shift_x, 560 + self.shift_y, 180, 50)),
-                             ('Выйти', (350, 630), pygame.Rect(350 + self.shift_x, 630 + self.shift_y, 120, 50)),
+        self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350, 280, 200, 50)),
+                             ('Продолжить', (350, 350), pygame.Rect(350, 350, 220, 50)),
+                             ('Сохранить', (350, 420), pygame.Rect(350, 420, 220, 50)),
+                             ('Загрузить', (350, 490), pygame.Rect(350, 490, 180, 50)),
+                             ('Настройки', (350, 560), pygame.Rect(350, 560, 180, 50)),
+                             ('Выйти', (350, 630), pygame.Rect(350, 630, 120, 50)),
                              )
 
-        self.menu_settings = (('Полноэкранный режим', (350, 280), pygame.Rect(350 + self.shift_x, 280 + self.shift_y, 400, 50)),
-                              ('Оконный режим (без рамок)', (350, 350), pygame.Rect(350 + self.shift_x, 350 + self.shift_y, 470, 50)),
-                              ('Оконный режим (с рамками)', (350, 420), pygame.Rect(350 + self.shift_x, 420 + self.shift_y, 470, 50)),
+        self.menu_settings = (('Полноэкранный режим', (350, 280), pygame.Rect(350, 280, 400, 50)),
+                              ('Оконный режим (без рамок)', (350, 350), pygame.Rect(350, 350, 470, 50)),
+                              ('Оконный режим (с рамками)', (350, 420), pygame.Rect(350, 420, 470, 50)),
                               )
 
         # нажатые клавиши
@@ -98,6 +100,7 @@ class Game:
 
                 # if pygame.mouse.get_pressed()[0]:
                 if self.mouse_left:
+                    screen_mod_before = self.screen_mod
                     if option[0] == 'Новая игра':
                         scene = Scene()
                         hero = Hero()
@@ -146,17 +149,53 @@ class Game:
                     elif option[0] == 'Настройки':
                         self.settings = True
                     elif option[0] == 'Полноэкранный режим':
-                        self.screen = pygame.display.set_mode((1920, 1200), pygame.FULLSCREEN) # или 1200
+                        self.screen = pygame.display.set_mode((1920, 1200), pygame.FULLSCREEN) # или 1080
+                        self.screen_mod = 2
                         self.settings = False
                     elif option[0] == 'Оконный режим (без рамок)':
                         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), flags=pygame.NOFRAME)
+                        self.screen_mod = 1
                         self.settings = False
                     elif option[0] == 'Оконный режим (с рамками)':
                         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+                        self.screen_mod = 1
                         self.settings = False
 
                     elif option[0] == 'Выйти':
                         self.running = False
+
+                    if screen_mod_before != self.screen_mod:
+                        if self.screen_mod == 1:
+                            self.shift_x = 0
+                            self.shift_y = 0
+                            self.scale_value = 1
+                            self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350, 280, 200, 50)),
+                                                 ('Продолжить', (350, 350), pygame.Rect(350, 350, 220, 50)),
+                                                 ('Сохранить', (350, 420), pygame.Rect(350, 420, 220, 50)),
+                                                 ('Загрузить', (350, 490), pygame.Rect(350, 490, 180, 50)),
+                                                 ('Настройки', (350, 560), pygame.Rect(350, 560, 180, 50)),
+                                                 ('Выйти', (350, 630), pygame.Rect(350, 630, 120, 50)),
+                                                 )
+
+                            self.menu_settings = (('Полноэкранный режим', (350, 280), pygame.Rect(350, 280, 400, 50)),
+                                                  ('Оконный режим (без рамок)', (350, 350), pygame.Rect(350, 350, 470, 50)),
+                                                  ('Оконный режим (с рамками)', (350, 420), pygame.Rect(350, 420, 470, 50)),
+                                                  )
+                        if self.screen_mod == 2:
+                            self.shift_x = 260
+                            self.shift_y = 100
+                            self.scale_value = 1
+                            self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350 + self.shift_x, 280 + self.shift_y, 200, 50)),
+                                                 ('Продолжить', (350, 350), pygame.Rect(350 + self.shift_x, 350 + self.shift_y, 220, 50)),
+                                                 ('Сохранить', (350, 420), pygame.Rect(350 + self.shift_x, 420 + self.shift_y, 220, 50)),
+                                                 ('Загрузить', (350, 490), pygame.Rect(350 + self.shift_x, 490 + self.shift_y, 180, 50)),
+                                                 ('Настройки', (350, 560), pygame.Rect(350 + self.shift_x, 560 + self.shift_y, 180, 50)),
+                                                 ('Выйти', (350, 630), pygame.Rect(350 + self.shift_x, 630 + self.shift_y, 120, 50)),
+                                                 )
+                            self.menu_settings = (('Полноэкранный режим', (350, 280), pygame.Rect(350 + self.shift_x, 280 + self.shift_y, 400, 50)),
+                                                  ('Оконный режим (без рамок)', (350, 350), pygame.Rect(350 + self.shift_x, 350 + self.shift_y, 470, 50)),
+                                                  ('Оконный режим (с рамками)', (350, 420), pygame.Rect(350 + self.shift_x, 420 + self.shift_y, 470, 50)),
+                                                  )
 
 
             else:
@@ -708,14 +747,19 @@ class Game:
 
         # отрисовка реплик
         if scene.replica != None:
+            x = 220
+            if scene.room == 1:
+                y = 480
+            else:
+                y = 555
 
             # окно речи и имя персонажа
             message_lines, tutorial, lines_before_tutorial = self.message_preparing(scene.replica, True)
-            pygame.draw.rect(scene_surface, 'Gray', (200 - 4, 600, 600, 200))
-            pygame.draw.rect(scene_surface, (80, 80, 80), (200 - 4, 600, 600, 200), 2)
+            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 600, 200))
+            pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 600, 200), 2)
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             message = game_font.render(act[scene.act][1], False, 'Black')
-            scene_surface.blit(message, (200, 600))
+            scene_surface.blit(message, (x, y))
 
             # реплика
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
@@ -725,7 +769,7 @@ class Game:
                     message = game_font.render(line, False, 'Black')
                 else:
                     message = game_font.render(line, False, (125, 125, 125))
-                scene_surface.blit(message, (200, 630 + l * 20))
+                scene_surface.blit(message, (x, y + 30 + l * 20))
                 l += 1
 
         # рамки сцен
