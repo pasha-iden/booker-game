@@ -16,9 +16,10 @@ class Game:
         pygame.init()
         self.SCREEN_WIDTH = 1024
         self.SCREEN_HEIGHT = 768
-        # screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        print(pygame.display.list_modes())
+        self.shift_x = 0 #260
+        self.shift_y = 0 #100
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), flags=pygame.NOFRAME)  # базовое разрешение
-        # screen = pygame.display.set_mode((1920, 1040), pygame.FULLSCREEN)
         pygame.display.set_caption('Booker - The Coffee Adventure')
         icon = pygame.image.load('Booker.png')
         pygame.display.set_icon(icon)
@@ -33,19 +34,27 @@ class Game:
         self.running = True
         self.just_started = True
         self.pause = False
+        self.settings = False
         self.timer = False
         self.timer_005 = False
 
         # опции меню
-        self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350, 280, 200, 50)),
-                             ('Продолжить', (350, 350), pygame.Rect(350, 350, 220, 50)),
-                             ('Сохранить', (350, 420), pygame.Rect(350, 420, 220, 50)),
-                             ('Загрузить', (350, 490), pygame.Rect(350, 490, 180, 50)),
-                             ('Выйти', (350, 560), pygame.Rect(350, 560, 120, 50)),
+        self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350 + self.shift_x, 280 + self.shift_y, 200, 50)),
+                             ('Продолжить', (350, 350), pygame.Rect(350 + self.shift_x, 350 + self.shift_y, 220, 50)),
+                             ('Сохранить', (350, 420), pygame.Rect(350 + self.shift_x, 420 + self.shift_y, 220, 50)),
+                             ('Загрузить', (350, 490), pygame.Rect(350 + self.shift_x, 490 + self.shift_y, 180, 50)),
+                             ('Настройки', (350, 560), pygame.Rect(350 + self.shift_x, 560 + self.shift_y, 180, 50)),
+                             ('Выйти', (350, 630), pygame.Rect(350 + self.shift_x, 630 + self.shift_y, 120, 50)),
                              )
+
+        self.menu_settings = (('Полноэкранный режим', (350, 280), pygame.Rect(350 + self.shift_x, 280 + self.shift_y, 400, 50)),
+                              ('Оконный режим (без рамок)', (350, 350), pygame.Rect(350 + self.shift_x, 350 + self.shift_y, 470, 50)),
+                              ('Оконный режим (с рамками)', (350, 420), pygame.Rect(350 + self.shift_x, 420 + self.shift_y, 470, 50)),
+                              )
 
         # нажатые клавиши
         self.key_pushed = False
+        self.mouse_left = False
         self.keys_clear()
 
         # технические состояния
@@ -69,15 +78,26 @@ class Game:
 
 
     def menu_window(self, scene_surface, hero, scene):
-        self.pause = True
+        if not self.just_started and self.pushed_ESCAPE and not self.settings:
+            self.pause = not self.pause
+            self.pushed_ESCAPE = False
         game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=40)
 
-        for option in self.menu_options:
+        if self.settings:
+            options = self.menu_settings
+            if self.pushed_ESCAPE:
+                self.settings = False
+                self.pushed_ESCAPE = False
+        else:
+            options = self.menu_options
+
+        for option in options:
             if option[2].collidepoint(pygame.mouse.get_pos()):
                 menu_option = game_font.render(option[0], False, 'Red')
                 scene_surface.blit(menu_option, option[1])
 
-                if pygame.mouse.get_pressed()[0]:
+                # if pygame.mouse.get_pressed()[0]:
+                if self.mouse_left:
                     if option[0] == 'Новая игра':
                         scene = Scene()
                         hero = Hero()
@@ -87,18 +107,21 @@ class Game:
                         scene.mapping_room()
                         scene.placing_characters()
                         self.just_started = False
+                        self.pause = False
 
-                    if option[0] == 'Продолжить':
+                    elif option[0] == 'Продолжить' and not self.just_started:
                         self.just_started = False
+                        self.pause = False
 
-                    if option[0] == 'Сохранить':
+                    elif option[0] == 'Сохранить' and not self.just_started:
                         save_data = str(hero.x) + '\n' + str(hero.y) + '\n' + str(scene.room) + '\n' + str(scene.act)
                         save_file = open("save.txt", 'w', encoding="UTF-8")
                         print(save_data, file=save_file)
                         save_file.close()
                         self.just_started = False
+                        self.pause = False
 
-                    if option[0] == 'Загрузить':
+                    elif option[0] == 'Загрузить':
                         hero = Hero()
                         scene = Scene()
                         save_file = open("save.txt", encoding="UTF-8")
@@ -118,11 +141,23 @@ class Game:
                         scene.mapping_room()
                         scene.placing_characters()
                         self.just_started = False
+                        self.pause = False
 
-                    if option[0] == 'Выйти':
+                    elif option[0] == 'Настройки':
+                        self.settings = True
+                    elif option[0] == 'Полноэкранный режим':
+                        self.screen = pygame.display.set_mode((1920, 1200), pygame.FULLSCREEN) # или 1200
+                        self.settings = False
+                    elif option[0] == 'Оконный режим (без рамок)':
+                        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), flags=pygame.NOFRAME)
+                        self.settings = False
+                    elif option[0] == 'Оконный режим (с рамками)':
+                        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+                        self.settings = False
+
+                    elif option[0] == 'Выйти':
                         self.running = False
 
-                    self.pause = False
 
             else:
                 menu_option = game_font.render(option[0], False, 'Yellow')
@@ -132,6 +167,7 @@ class Game:
 
 
     def keys_clear(self):
+        self.pushed_ESCAPE = False
         self.pushed_SPACE = False
         self.pushed_BACKSPACE = False
         self.pushed_q = False
@@ -172,6 +208,7 @@ class Game:
         self.timer = False
         self.timer_005 = False
 
+        self.mouse_left = False
         if self.key_pushed:
             self.key_pushed = False
             self.keys_clear()
@@ -184,11 +221,15 @@ class Game:
             if event.type == self.timer_50:
                 self.timer_005 = True
 
+            elif event.type == pygame.MOUSEBUTTONDOWN:  # Нажата кнопка мыши
+                if event.button == 1:
+                    self.mouse_left = True
+
             if event.type == pygame.KEYDOWN:
                 self.key_pushed = True
 
-                if event.key == pygame.K_ESCAPE and not self.just_started:
-                    self.pause = not self.pause
+                if event.key == pygame.K_ESCAPE:
+                    self.pushed_ESCAPE = True
                 # перечисление всех клавиш
                 else:
                     if event.key == pygame.K_SPACE and not self.pause:
@@ -686,6 +727,14 @@ class Game:
                     message = game_font.render(line, False, (125, 125, 125))
                 scene_surface.blit(message, (200, 630 + l * 20))
                 l += 1
+
+        # рамки сцен
+        if scene.room == 1:
+            pygame.draw.rect(scene_surface, 'Black', (0, 0, 1024, 92))
+            pygame.draw.rect(scene_surface, 'Black', (0, 682, 1024, 86))
+        if scene.room == 2:
+            pygame.draw.rect(scene_surface, 'Black', (0, 0, 207, 768))
+            pygame.draw.rect(scene_surface, 'Black', (847, 0, 177, 768))
 
         # затемнение при переходе между комнатами
         if self.fade_animation != None:

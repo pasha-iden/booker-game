@@ -13,6 +13,7 @@ scene_surface = pygame.Surface((game.SCREEN_WIDTH, game.SCREEN_HEIGHT))
 
 
 
+
 while game.running:
     scene_surface.fill('Black')
 
@@ -22,7 +23,7 @@ while game.running:
     if game.running:
 
         # меню игры
-        if game.just_started or game.pause:
+        if game.just_started or game.pause or game.pushed_ESCAPE:
             hero, scene = game.menu_window(scene_surface, hero, scene)
         else:
 
@@ -84,8 +85,25 @@ while game.running:
         # print(pygame.mouse.get_pos())
 
 
+        # scale изображения и рамки
+        # scale_value = 1.4
+        # final_surface = pygame.transform.smoothscale(scene_surface, ((1024*scale_value)//1, (768*scale_value)//1))
+        #
+        # if not game.pause:
+        #     if scene.room == 1:
+        #         pygame.draw.rect(scene_surface, (80, 80, 80), (0, 84, 1024, 606), 4)
+        #         pygame.draw.rect(scene_surface, 'Gray', (0 + 4, 84 + 4, 1024 - 8, 606 - 8), 4)
+        #
+        #     if scene.room == 2:
+        #         pygame.draw.rect(scene_surface, (80, 80, 80), (206, 0, 644, 768), 4)
+        #         pygame.draw.rect(scene_surface, 'Gray', (206 + 4, 0 + 4, 644 - 8, 768 - 8), 4)
+        #
+        #     if scene.room == 3:
+        #         pygame.draw.rect(scene_surface, (80, 80, 80), (0, 0, 1024, 768), 4)
+        #         pygame.draw.rect(scene_surface, 'Gray', (0 + 4, 0 + 4, 1024 - 8, 768 - 8), 4)
+
         # рендер графики и обновление экрана
-        game.screen.blit(scene_surface, (0, 0))
+        game.screen.blit(scene_surface, (game.shift_x, game.shift_y))
         pygame.display.update()
 
 
