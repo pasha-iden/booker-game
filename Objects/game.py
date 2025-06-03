@@ -794,7 +794,7 @@ class Game:
 
 
     # рендер cюжетных спецэффектов
-    def cut_effects_render(self, scene_surface, hero, scene):
+    def cut_effects_render (self, scene_surface, hero, scene):
 
         # wow-переход
         if self.wow_fade_animation != None:
@@ -873,6 +873,22 @@ class Game:
                     game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
                     message = game_font.render(record[2], False, 'Black')
                     scene_surface.blit(message, (record[0] + 5, record[1] + 5))
+
+
+    def frames_render (self, final_surface, scene):
+        if self.screen_mod == 2:
+            if not self.pause:
+                if scene.room == 1:
+                    pygame.draw.rect(final_surface, (80, 80, 80), (0, 84, 1024, 606), 4)
+                    pygame.draw.rect(final_surface, 'Gray', (0 + 4, 84 + 4, 1024 - 8, 606 - 8), 4)
+
+                if scene.room == 2:
+                    pygame.draw.rect(final_surface, (80, 80, 80), (206, 0, 644, 768), 4)
+                    pygame.draw.rect(final_surface, 'Gray', (206 + 4, 0 + 4, 644 - 8, 768 - 8), 4)
+
+                if scene.room == 3:
+                    pygame.draw.rect(final_surface, (80, 80, 80), (0, 0, 1024, 768), 4)
+                    pygame.draw.rect(final_surface, 'Gray', (0 + 4, 0 + 4, 1024 - 8, 768 - 8), 4)
 
 
 if __name__ == '__main__':
