@@ -210,6 +210,7 @@ class Game:
 
     def keys_clear(self):
         self.pushed_ESCAPE = False
+        self.pushed_TAB = False
         self.pushed_SPACE = False
         self.pushed_BACKSPACE = False
         self.pushed_q = False
@@ -274,73 +275,75 @@ class Game:
                     self.pushed_ESCAPE = True
                 # перечисление всех клавиш
                 else:
-                    if event.key == pygame.K_SPACE and not self.pause:
+                    if event.key == pygame.K_SPACE:
                         self.pushed_SPACE = True
-                    elif event.key == pygame.K_BACKSPACE and not self.pause:
+                    elif event.key == pygame.K_TAB:
+                        self.pushed_TAB = True
+                    elif event.key == pygame.K_BACKSPACE:
                         self.pushed_BACKSPACE = True
-                    elif event.key == pygame.K_q and not self.pause:
+                    elif event.key == pygame.K_q:
                         self.pushed_q = True
-                    elif event.key == pygame.K_w and not self.pause:
+                    elif event.key == pygame.K_w:
                         self.pushed_w = True
-                    elif event.key == pygame.K_e and not self.pause:
+                    elif event.key == pygame.K_e:
                         self.pushed_e = True
-                    elif event.key == pygame.K_r and not self.pause:
+                    elif event.key == pygame.K_r:
                         self.pushed_r = True
-                    elif event.key == pygame.K_t and not self.pause:
+                    elif event.key == pygame.K_t:
                         self.pushed_t = True
-                    elif event.key == pygame.K_y and not self.pause:
+                    elif event.key == pygame.K_y:
                         self.pushed_y = True
-                    elif event.key == pygame.K_u and not self.pause:
+                    elif event.key == pygame.K_u:
                         self.pushed_u = True
-                    elif event.key == pygame.K_i and not self.pause:
+                    elif event.key == pygame.K_i:
                         self.pushed_i = True
-                    elif event.key == pygame.K_o and not self.pause:
+                    elif event.key == pygame.K_o:
                         self.pushed_o = True
-                    elif event.key == pygame.K_p and not self.pause:
+                    elif event.key == pygame.K_p:
                         self.pushed_p = True
-                    elif event.key == pygame.K_LEFTBRACKET and not self.pause:
+                    elif event.key == pygame.K_LEFTBRACKET:
                         self.pushed_LEFTBRACKET = True  # клавиша [ х
-                    elif event.key == pygame.K_RIGHTBRACKET and not self.pause:
+                    elif event.key == pygame.K_RIGHTBRACKET:
                         self.pushed_RIGHTBRACKET = True  # клавиша ] ъ
-                    elif event.key == pygame.K_a and not self.pause:
+                    elif event.key == pygame.K_a:
                         self.pushed_a = True
-                    elif event.key == pygame.K_s and not self.pause:
+                    elif event.key == pygame.K_s:
                         self.pushed_s = True
-                    elif event.key == pygame.K_d and not self.pause:
+                    elif event.key == pygame.K_d:
                         self.pushed_d = True
-                    elif event.key == pygame.K_f and not self.pause:
+                    elif event.key == pygame.K_f:
                         self.pushed_f = True
-                    elif event.key == pygame.K_g and not self.pause:
+                    elif event.key == pygame.K_g:
                         self.pushed_g = True
-                    elif event.key == pygame.K_h and not self.pause:
+                    elif event.key == pygame.K_h:
                         self.pushed_h = True
-                    elif event.key == pygame.K_j and not self.pause:
+                    elif event.key == pygame.K_j:
                         self.pushed_j = True
-                    elif event.key == pygame.K_k and not self.pause:
+                    elif event.key == pygame.K_k:
                         self.pushed_k = True
-                    elif event.key == pygame.K_l and not self.pause:
+                    elif event.key == pygame.K_l:
                         self.pushed_l = True
-                    elif event.key == pygame.K_SEMICOLON and not self.pause:
+                    elif event.key == pygame.K_SEMICOLON:
                         self.pushed_SEMICOLON = True  # клавиша ; ж
-                    elif event.key == pygame.K_QUOTE and not self.pause:
+                    elif event.key == pygame.K_QUOTE:
                         self.pushed_QUOTE = True  # клавиша ' э
-                    elif event.key == pygame.K_z and not self.pause:
+                    elif event.key == pygame.K_z:
                         self.pushed_z = True
-                    elif event.key == pygame.K_x and not self.pause:
+                    elif event.key == pygame.K_x:
                         self.pushed_x = True
-                    elif event.key == pygame.K_c and not self.pause:
+                    elif event.key == pygame.K_c:
                         self.pushed_c = True
-                    elif event.key == pygame.K_v and not self.pause:
+                    elif event.key == pygame.K_v:
                         self.pushed_v = True
-                    elif event.key == pygame.K_b and not self.pause:
+                    elif event.key == pygame.K_b:
                         self.pushed_b = True
-                    elif event.key == pygame.K_n and not self.pause:
+                    elif event.key == pygame.K_n:
                         self.pushed_n = True
-                    elif event.key == pygame.K_m and not self.pause:
+                    elif event.key == pygame.K_m:
                         self.pushed_m = True
-                    elif event.key == pygame.K_COMMA and not self.pause:
+                    elif event.key == pygame.K_COMMA:
                         self.pushed_COMMA = True
-                    elif event.key == pygame.K_PERIOD and not self.pause:
+                    elif event.key == pygame.K_PERIOD:
                         self.pushed_PERIOD = True
 
             if event.type == pygame.QUIT:
@@ -444,6 +447,7 @@ class Game:
                 self.barista_direction = 'вниз'
                 self.barista_list = []
                 self.barista_preparing = []
+                self.barista_done_animation = [[], []]
             scene.act_started = True
 
 
@@ -505,11 +509,12 @@ class Game:
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
-                if key[pygame.K_r]:
+                if self.pushed_TAB:
                     self.barista_game = False
                     self.barista_direction = None
                     self.barista_list = None
                     self.barista_preparing = None
+                    self.barista_done_animation = None
                     scene.act = scene.act + 1
                     scene.act_started = False
 
@@ -535,10 +540,12 @@ class Game:
             elif self.pushed_d:
                 hero.destination = Cut_interactive(400, 412)
                 hero.find_path_to_deal(scene.room_map, hero.destination)
+                self.barista_machine = True
                 self.barista_direction = 'вправо'
             elif self.pushed_s:
                 hero.destination = Cut_interactive(392, 436)
                 hero.find_path_to_deal(scene.room_map, hero.destination)
+                self.barista_speach = True
                 self.barista_direction = 'вниз'
             self.pushed_w = False
             self.pushed_a = False
@@ -655,6 +662,8 @@ class Game:
 
         # игра: кофе-машина
         if self.barista_machine:
+            if len(self.barista_list) == 1 and self.barista_done_animation != [[], []] or self.barista_list == [] or self.pushed_SPACE:
+                self.barista_machine = False
             if self.pushed_w:
                 cooking = 'Эс'
             elif self.pushed_a:
@@ -662,7 +671,8 @@ class Game:
             elif self.pushed_d:
                 cooking = 'Ки'
             elif self.pushed_s:
-                self.barista_machine = False
+                cooking = 'Сл'
+
 
         # сверка корректности добавляемого ингредиента
         if cooking != None:
@@ -674,18 +684,30 @@ class Game:
                 self.barista_preparing[i][self.barista_preparing[i].index(cooking)] = None
                 # закрытие позиции, если заказ готов
                 if self.barista_preparing[i].count(None) == len(self.barista_preparing[i]):
-                    self.barista_done_animation = [60, i]
-                    # self.barista_preparing.pop(i)
-                    # self.barista_list.pop(i)
+                    self.barista_done_animation[0].append(60)
+                    self.barista_done_animation[1].append(i)
 
         # удаление позиции из списка заказов после анимации засчитывания
-        if self.barista_done_animation != None and self.barista_done_animation[0] == 255:
-            self.barista_list.pop(self.barista_done_animation[1])
-            self.barista_preparing.pop(self.barista_done_animation[1])
-            self.barista_done_animation = None
+        if self.barista_done_animation != [[], []]:
+            i = 0
+            done = False
+            while i <= len(self.barista_done_animation[1]) - 1 and done == False:
+                if self.barista_done_animation[0][i] == 255:
+                    for j in range(len(self.barista_done_animation[1])):
+                        if self.barista_done_animation[1][j] > self.barista_done_animation[1][i]:
+                            self.barista_done_animation[1][j] += -1
+                    self.barista_list.pop(self.barista_done_animation[1][i])
+                    self.barista_preparing.pop(self.barista_done_animation[1][i])
+                    self.barista_done_animation[0].pop(i)
+                    self.barista_done_animation[1].pop(i)
+                    done = True
+                i += 1
+            for i in range(len(self.barista_done_animation[0])):
+                self.barista_done_animation[0][i] += 5
 
         # print (self.barista_list)
         # print (self.barista_preparing)
+
 
 
     # рендер всей сцены
@@ -846,16 +868,19 @@ class Game:
             if self.barista_list != []:
 
                 # заголовки позиций в заказе
+                x = 500
+                y = 150
+                h = 50
                 for line in range(len(self.barista_list)):
-                    x = 500
-                    y = 150
-                    h = 50
-                    if self.barista_done_animation == None or self.barista_done_animation[1] != line:
+                    # отображение фона полей заказов, если это не выполненный заказ
+                    if self.barista_done_animation == [[], []] or line not in self.barista_done_animation[1]:
                         pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + h * line, 300, h))
-                    else:
-                        if self.barista_done_animation[1] == line:
-                            pygame.draw.rect(scene_surface, (self.barista_done_animation[0], self.barista_done_animation[0], self.barista_done_animation[0]), (x - 4, y + h * line, 300, h))
-                            self.barista_done_animation[0] += 5
+                    # отображение фона поля заказа, если заказ выполнен
+                    elif self.barista_done_animation != [[], []] and line in self.barista_done_animation[1]:
+                        ind = self.barista_done_animation[1].index(line)
+                        pygame.draw.rect(scene_surface, (self.barista_done_animation[0][ind], self.barista_done_animation[0][ind], self.barista_done_animation[0][ind]), (x - 4, y + h * line, 300, h))
+                        # self.barista_done_animation[0][ind] += 5
+                    # отображение названия заказа
                     pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y + h * line, 300, h), 2)
                     game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
                     message = game_font.render(self.barista_list[line][0], False, 'Black')
@@ -863,8 +888,10 @@ class Game:
 
                     # перечисление ингредиентов
                     for i in range(1, len(self.barista_list[line])):
+                        # отображение засчитанного ингредиента темной иконкой
                         if self.barista_preparing[line][i-1] == None:
                             pygame.draw.rect(scene_surface, (100, 100, 100), (x + 100 - 4 + h * (i-1), y + h * line, h, h))
+                        # отображение остальных иконок
                         pygame.draw.rect(scene_surface, (80, 80, 80), (x + 100 - 4 + h * (i-1), y + h * line, h, h), 2)
                         game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
                         message = game_font.render(self.barista_list[line][i], False, 'Black')
@@ -894,7 +921,8 @@ class Game:
             if self.barista_machine:
                 x = 500
                 y = 377
-                print_info = ((x, y, 'Эс'), (x, y + 86, 'Х'), (x - 43, y + 43, 'Мо'), (x + 43, y + 43, 'Ки'))
+                w = 43
+                print_info = ((x, y, 'Эс'), (x, y + w * 2, 'Сл'), (x - w, y + w, 'Мо'), (x + w, y + w, 'Ки'))
                 for record in print_info:
                     pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
                     pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
