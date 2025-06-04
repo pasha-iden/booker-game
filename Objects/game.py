@@ -892,7 +892,9 @@ class Game:
 
             # интерфейс опций кофе-машины
             if self.barista_machine:
-                print_info = ((500, 377, 'Эс'), (500, 463, 'Х'), (457, 420, 'Мо'), (543, 420, 'Ки'))
+                x = 500
+                y = 377
+                print_info = ((x, y, 'Эс'), (x, y + 86, 'Х'), (x - 43, y + 43, 'Мо'), (x + 43, y + 43, 'Ки'))
                 for record in print_info:
                     pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
                     pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
