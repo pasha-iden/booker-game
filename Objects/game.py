@@ -735,8 +735,20 @@ class Game:
 
         # отрисовка мыслей
         if act[scene.act][0] == 'мысли героя' and self.prepared_message != None:
-            pygame.draw.rect(scene_surface, 'Gray', (hero.x - 100 - 4, hero.y - 85 - len(self.prepared_message[0]) * 22, len(max(self.prepared_message[0], key=len)) * 11, len(self.prepared_message[0]) * 22 + 6))
-            pygame.draw.rect(scene_surface, (80, 80 ,80), (hero.x - 100 - 4, hero.y - 85 - len(self.prepared_message[0]) * 22, len(max(self.prepared_message[0], key=len)) * 11, len(self.prepared_message[0]) * 22 + 6), 2)
+            x = hero.x + 33 - (len(max(self.prepared_message[0], key=len)) * 10) // 2
+            y = hero.y - 85
+            if scene.room == 1 or scene.room == 3:
+                if x < 5: x = 5
+                if (x + len(max(self.prepared_message[0], key=len)) * 10) > 1020: x = 1020 - len(max(self.prepared_message[0], key=len)) * 10
+            else:
+                if x < 207: x = 212
+                if (x + len(max(self.prepared_message[0], key=len)) * 10) > 842: x = 842 - len(max(self.prepared_message[0], key=len)) * 10
+            if scene.room == 2 or scene.room == 3:
+                if y - len(self.prepared_message[0]) * 21 < 5: y = len(self.prepared_message[0]) * 21 + 5
+            else:
+                if y - len(self.prepared_message[0]) * 21 < 97: y = len(self.prepared_message[0]) * 21 + 97
+            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y - len(self.prepared_message[0]) * 21, len(max(self.prepared_message[0], key=len)) * 10, len(self.prepared_message[0]) * 22 + 6))
+            pygame.draw.rect(scene_surface, (80, 80 ,80), (x - 4, y - len(self.prepared_message[0]) * 21, len(max(self.prepared_message[0], key=len)) * 10, len(self.prepared_message[0]) * 22 + 6), 2)
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             l = 0
             for line in self.prepared_message[0]:
@@ -744,7 +756,7 @@ class Game:
                     message = game_font.render(line, False, 'Black')
                 else:
                     message = game_font.render(line, False, (125, 125, 125))
-                scene_surface.blit(message, (hero.x - 100, hero.y - 85 - (len(self.prepared_message[0]) -l) * 20))
+                scene_surface.blit(message, (x, y - (len(self.prepared_message[0]) -l) * 20))
                 l += 1
 
         # отрисовка реплик
