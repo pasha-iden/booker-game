@@ -66,6 +66,9 @@ class Game:
         self.chapter_timer = None
         self.wait = None
 
+        # мысли и реплики
+        self.prepared_message = None
+
         # переменные для игры бариста
         self.barista_game = False
         self.barista_direction = None
@@ -394,7 +397,7 @@ class Game:
                 tutorial = True
 
             else:
-                if len(message_lines[line]) + len(word) + 1 > 30 * (1 + is_replica):
+                if len(message_lines[line]) + len(word) + 1 > 30 * (1 + is_replica) - is_replica * 10:
                     message_lines.append('')
                     line += 1
                     if tutorial == False:
@@ -402,7 +405,7 @@ class Game:
                 elif len(message_lines[line]) != 0:
                     message_lines[line] += ' '
                 message_lines[line] = message_lines[line] + word
-        return message_lines, tutorial, lines_before_tutorial
+        self.prepared_message = (message_lines, tutorial, lines_before_tutorial)
 
 
     def cut_scene (self, hero, scene, key):
@@ -412,10 +415,10 @@ class Game:
             if act[scene.act][0] == 'герой идет':
                 hero.destination = Cut_interactive(act[scene.act][1], act[scene.act][2])
                 hero.find_path_to_deal(scene.room_map, hero.destination)
-            elif act[scene.act][0] == 'реплика':
-                scene.replica = act[scene.act][2]
+            elif act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя':
+                self.message_preparing(act[scene.act][2], True)
             elif act[scene.act][0] == 'мысли героя':
-                hero.thoughts = act[scene.act][1]
+                self.message_preparing(act[scene.act][1], False)
             elif act[scene.act][0] == 'погружение':
                 self.wow_fade_animation = 0
             elif act[scene.act][0] == 'акт':
@@ -452,14 +455,14 @@ class Game:
                 else:
                     scene.act = scene.act + 1
                     scene.act_started = False
-            elif act[scene.act][0] == 'реплика':
+            elif act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя' :
                 if self.pushed_SPACE:
-                    scene.replica = None
+                    self.prepared_message = None
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'мысли героя':
                 if self.pushed_SPACE:
-                    hero.thoughts = None
+                    self.prepared_message = None
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'погружение':
@@ -731,45 +734,52 @@ class Game:
             hero.action(scene_surface, scene.interactive)
 
         # отрисовка мыслей
-        if hero.thoughts != None:
-            message_lines, tutorial, lines_before_tutorial = self.message_preparing(hero.thoughts, False)
-            pygame.draw.rect(scene_surface, 'Gray', (hero.x - 100 - 4, hero.y - 85 - len(message_lines) * 22, len(max(message_lines, key=len)) * 11, len(message_lines) * 22 + 6))
-            pygame.draw.rect(scene_surface, (80, 80 ,80), (hero.x - 100 - 4, hero.y - 85 - len(message_lines) * 22, len(max(message_lines, key=len)) * 11, len(message_lines) * 22 + 6), 2)
+        if act[scene.act][0] == 'мысли героя' and self.prepared_message != None:
+            pygame.draw.rect(scene_surface, 'Gray', (hero.x - 100 - 4, hero.y - 85 - len(self.prepared_message[0]) * 22, len(max(self.prepared_message[0], key=len)) * 11, len(self.prepared_message[0]) * 22 + 6))
+            pygame.draw.rect(scene_surface, (80, 80 ,80), (hero.x - 100 - 4, hero.y - 85 - len(self.prepared_message[0]) * 22, len(max(self.prepared_message[0], key=len)) * 11, len(self.prepared_message[0]) * 22 + 6), 2)
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             l = 0
-            for line in message_lines:
-                if (tutorial == False) or (tutorial == True and l < lines_before_tutorial):
+            for line in self.prepared_message[0]:
+                if (self.prepared_message[1] == False) or (self.prepared_message[1] == True and l < self.prepared_message[2]):
                     message = game_font.render(line, False, 'Black')
                 else:
                     message = game_font.render(line, False, (125, 125, 125))
-                scene_surface.blit(message, (hero.x - 100, hero.y - 85 - (len(message_lines) -l) * 20))
+                scene_surface.blit(message, (hero.x - 100, hero.y - 85 - (len(self.prepared_message[0]) -l) * 20))
                 l += 1
 
         # отрисовка реплик
-        if scene.replica != None:
+        if (act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя') and self.prepared_message != None :
             x = 220
             if scene.room == 1:
                 y = 480
             else:
                 y = 555
+            w = 600
 
             # окно речи и имя персонажа
-            message_lines, tutorial, lines_before_tutorial = self.message_preparing(scene.replica, True)
-            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 600, 200))
-            pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 600, 200), 2)
+            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, w, 200))
+            pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, w, 200), 2)
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             message = game_font.render(act[scene.act][1], False, 'Black')
-            scene_surface.blit(message, (x, y))
+            scene_surface.blit(message, (x + (act[scene.act][0] == 'реплика') * 120, y))
+
+            # портрет персонажа
+            if act[scene.act][0] == 'реплика':
+                for character in scene.plot_characters[scene.room-1]:
+                    if character.name == act[scene.act][1]:
+                        scene_surface.blit(character.head, (x + 10, y + 20))
+            else:
+                scene_surface.blit(hero.head, (x + w - 100 - 10, y + 20))
 
             # реплика
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             l = 0
-            for line in message_lines:
-                if (tutorial == False) or (tutorial == True and l < lines_before_tutorial):
+            for line in self.prepared_message[0]:
+                if (self.prepared_message[1] == False) or (self.prepared_message[1] == True and l < self.prepared_message[2]):
                     message = game_font.render(line, False, 'Black')
                 else:
                     message = game_font.render(line, False, (125, 125, 125))
-                scene_surface.blit(message, (x, y + 30 + l * 20))
+                scene_surface.blit(message, (x + (act[scene.act][0] == 'реплика') * 120, y + 30 + l * 20))
                 l += 1
 
         # рамки сцен
