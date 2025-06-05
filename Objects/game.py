@@ -72,6 +72,9 @@ class Game:
         # переменные для игры бариста
         self.barista_game = False
         self.barista_direction = None
+        self.barista_skill = 1
+        self.barista_rules = (20, 4)
+        self.barista_score = None
         self.barista_list = None
         self.barista_preparing = None
         self.barista_done_animation = None
@@ -258,16 +261,23 @@ class Game:
 
         for event in pygame.event.get():
 
+            # таймеры
             if event.type == self.timer_1000:
                 self.timer = True
-
             if event.type == self.timer_50:
                 self.timer_005 = True
+            if self.barista_list != None and self.barista_list != []:
+                for i in range(len(self.barista_list)):
+                    if event.type == self.barista_list[i][-2]:
+                        if self.barista_list[i][-1] != None and self.barista_list[i][-1] != 'неудача':
+                            self.barista_list[i][-1] += -1
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:  # Нажата кнопка мыши
+            # левая клавиша мыши
+            if event.type == pygame.MOUSEBUTTONDOWN:  # Нажата кнопка мыши
                 if event.button == 1:
                     self.mouse_left = True
 
+            # нажатые клавиши
             if event.type == pygame.KEYDOWN:
                 self.key_pushed = True
 
@@ -447,7 +457,8 @@ class Game:
                 self.barista_direction = 'вниз'
                 self.barista_list = []
                 self.barista_preparing = []
-                self.barista_done_animation = [[], []]
+                self.barista_done_animation = [[], [], []]
+                self.barista_score = [0, 0, None]
             scene.act_started = True
 
 
@@ -509,18 +520,19 @@ class Game:
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
-                if self.pushed_TAB:
+                if self.pushed_TAB or self.barista_score[2] == True:
                     self.barista_game = False
                     self.barista_direction = None
                     self.barista_list = None
                     self.barista_preparing = None
                     self.barista_done_animation = None
+                    self.barista_score = None
                     scene.act = scene.act + 1
                     scene.act_started = False
 
 
     def barista_work (self, hero, scene):
-        dishes = (('Эспрессо', 'Эс'), ('Американо', 'Эс', 'Ки'), ('Капучино', 'Эс', 'Мо'), ('Латте', 'Мо', 'Эс'))
+        dishes = (('Эспрессо', 'Эс'), ('Американо', 'Эс', 'Ки'), ('Капучино', 'Эс', 'Мо'), ('Латте', 'Мо', 'Эс'), ('Раф', 'Эс', 'Сл'))
         cooking = None
 
         # передвижение между точками бара
@@ -565,8 +577,8 @@ class Game:
 
             # определение, что нужно сказать
             if self.barista_to_say == None:
-                to_say = ('Здравствуйте', 'Привет', 'Рады вас видеть')
-                self.barista_to_say = to_say[randint(0, 2)]
+                to_say = ('Здравствуйте', 'Привет', 'Добрый день', 'Рады вас видеть')
+                self.barista_to_say = to_say[randint(0, len(to_say)-1)]
                 self.barista_says = ''
 
             # завершение диалога с гостем, если фраза введена правильно
@@ -574,10 +586,15 @@ class Game:
                 self.barista_says = None
                 self.barista_to_say = None
                 self.barista_speach = False
+
+                # добавление напитков в заказ
                 t = randint(1, 3)
                 for i in range(t):
                     new_dish = dishes[randint(0, len(dishes) - 1)]
-                    self.barista_list.append(new_dish)
+                    self.barista_list.append(list(new_dish))
+                    self.barista_list[-1].append(pygame.USEREVENT + 2 + len(self.barista_list))
+                    pygame.time.set_timer(self.barista_list[-1][-1], 1000)
+                    self.barista_list[-1].append(10)
                     self.barista_preparing.append(list(new_dish[1: len(new_dish)]))
 
             # добавление буквы в высказывание героини
@@ -662,33 +679,66 @@ class Game:
 
         # игра: кофе-машина
         if self.barista_machine:
-            if len(self.barista_list) == 1 and self.barista_done_animation != [[], []] or self.barista_list == [] or self.pushed_SPACE:
+            if len(self.barista_list) == len(self.barista_done_animation[1]) or self.barista_list == [] or self.pushed_SPACE:
                 self.barista_machine = False
             if self.pushed_w:
                 cooking = 'Эс'
             elif self.pushed_a:
-                cooking = 'Мо'
-            elif self.pushed_d:
                 cooking = 'Ки'
+            elif self.pushed_d:
+                cooking = 'Мо'
             elif self.pushed_s:
                 cooking = 'Сл'
 
+        # неудача, если время вышло
+        for i in range(len(self.barista_list)):
+            if self.barista_list[i][-1] == 0:
+                self.barista_score[1] += 1
+                self.barista_list[i][-1] = 'неудача'
+                for j in range(len(self.barista_preparing[i])):
+                    self.barista_preparing[i][j] = None
+                self.barista_done_animation[0].append(60)
+                self.barista_done_animation[1].append(i)
+                self.barista_done_animation[2].append(False)
+        # print(self.barista_list, self.barista_preparing, self.barista_done_animation)
 
         # сверка корректности добавляемого ингредиента
         if cooking != None:
             i = 0
-            while i <= len(self.barista_preparing) and (i < len(self.barista_preparing) and cooking not in self.barista_preparing[i]):
+            while i < len(self.barista_preparing) and i < self.barista_skill + len(self.barista_done_animation[1]) and cooking not in self.barista_preparing[i]:
                 i += 1
-            # добавление ингредиента, если он корректен
-            if i < len(self.barista_preparing):
+            # добавление ингредиента, если он корректен и не превышает скилл
+            if i < len(self.barista_preparing) and i < self.barista_skill + len(self.barista_done_animation[1]):
                 self.barista_preparing[i][self.barista_preparing[i].index(cooking)] = None
                 # закрытие позиции, если заказ готов
-                if self.barista_preparing[i].count(None) == len(self.barista_preparing[i]):
+                if self.barista_preparing[i].count(None) == len(self.barista_preparing[i]) and self.barista_list[i][-1] != 'неудача':
+                    self.barista_score[0] += 1
+                    self.barista_list[i][-1] = None
                     self.barista_done_animation[0].append(60)
                     self.barista_done_animation[1].append(i)
+                    self.barista_done_animation[2].append(True)
+            else:
+                self.barista_score[1] += 1
 
-        # удаление позиции из списка заказов после анимации засчитывания
-        if self.barista_done_animation != [[], []]:
+        # удаление позиции из списка заказов
+        if self.barista_done_animation != [[], [], []]:
+            # после анимации неудачи
+            if False in self.barista_done_animation[2]:
+                i = 0
+                while i <= len(self.barista_done_animation[1]) - 1:
+                    if self.barista_done_animation[0][i] == 255 and self.barista_done_animation[2][i] == False:
+                        for j in range(len(self.barista_done_animation[1])):
+                            if self.barista_done_animation[1][j] > self.barista_done_animation[1][i]:
+                                self.barista_done_animation[1][j] += -1
+                        self.barista_list.pop(self.barista_done_animation[1][i])
+                        self.barista_preparing.pop(self.barista_done_animation[1][i])
+                        self.barista_done_animation[0].pop(i)
+                        self.barista_done_animation[1].pop(i)
+                        self.barista_done_animation[2].pop(i)
+                    else:
+                        i += 1
+
+            # после анимации засчитывания
             i = 0
             done = False
             while i <= len(self.barista_done_animation[1]) - 1 and done == False:
@@ -700,14 +750,16 @@ class Game:
                     self.barista_preparing.pop(self.barista_done_animation[1][i])
                     self.barista_done_animation[0].pop(i)
                     self.barista_done_animation[1].pop(i)
+                    self.barista_done_animation[2].pop(i)
                     done = True
                 i += 1
             for i in range(len(self.barista_done_animation[0])):
                 self.barista_done_animation[0][i] += 5
 
-        # print (self.barista_list)
-        # print (self.barista_preparing)
-
+        if self.barista_score[0] >= self.barista_rules[0]:
+            self.barista_score[2] = True
+        elif self.barista_score[1] >= self.barista_rules[1]:
+            self.barista_score[2] = False
 
 
     # рендер всей сцены
@@ -864,45 +916,88 @@ class Game:
 
         if self.barista_game:
 
+            # счет игры
+            x = 240
+            y = 500
+            h = 50
+            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 150, h))
+            pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 150, h), 2)
+            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+            message = game_font.render('Заказов:', False, 'Black')
+            scene_surface.blit(message, (x, y + 10))
+            message = game_font.render(str(self.barista_score[0]) + '/' + str(self.barista_rules[0]), False, 'Black')
+            scene_surface.blit(message, (x + 100 - (len(str(self.barista_score[0])) - 1) * 10, y + 10))
+
+            x = 450
+            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 150, h))
+            pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 150, h), 2)
+            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+            message = game_font.render('Ошибок:', False, 'Black')
+            scene_surface.blit(message, (x, y + 10))
+            message = game_font.render(str(self.barista_score[1]) + '/' + str(self.barista_rules[1]), False, 'Black')
+            scene_surface.blit(message, (x + 100 - (len(str(self.barista_score[0])) - 1) * 10, y + 10))
+
             # интерфейс списка заказов
             if self.barista_list != []:
 
-                # заголовки позиций в заказе
                 x = 500
                 y = 150
                 h = 50
+                # строка "Выполняемые заказы"
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 300, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 300, h), 2)
+                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                message = game_font.render('Выполняемые заказы:', False, 'Black')
+                scene_surface.blit(message, (x, y + 10))
+                # строка "Заказы в очереди"
+                if self.barista_skill + len(self.barista_done_animation[1]) < len(self.barista_list):
+                    pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + h * (self.barista_skill + len(self.barista_done_animation[1]) + 1), 300, h))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y + h * (self.barista_skill + len(self.barista_done_animation[1])  + 1), 300, h), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render('В очереди:', False, 'Black')
+                    scene_surface.blit(message, (x, y + 10 + h * (self.barista_skill + len(self.barista_done_animation[1]) + 1)))
+
+                # поля позиций в заказе
                 for line in range(len(self.barista_list)):
+                    rlc = h * (line + 1 + (self.barista_skill + len(self.barista_done_animation[1]) < line + 1)) # relative line coordinate
                     # отображение фона полей заказов, если это не выполненный заказ
-                    if self.barista_done_animation == [[], []] or line not in self.barista_done_animation[1]:
-                        pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + h * line, 300, h))
+                    if self.barista_done_animation == [[], [], []] or line not in self.barista_done_animation[1]:
+                        pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + rlc, 300, h))
                     # отображение фона поля заказа, если заказ выполнен
-                    elif self.barista_done_animation != [[], []] and line in self.barista_done_animation[1]:
+                    elif self.barista_done_animation != [[], [], []] and line in self.barista_done_animation[1] and self.barista_done_animation[2][line] == True:
                         ind = self.barista_done_animation[1].index(line)
-                        pygame.draw.rect(scene_surface, (self.barista_done_animation[0][ind], self.barista_done_animation[0][ind], self.barista_done_animation[0][ind]), (x - 4, y + h * line, 300, h))
-                        # self.barista_done_animation[0][ind] += 5
-                    # отображение названия заказа
-                    pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y + h * line, 300, h), 2)
+                        pygame.draw.rect(scene_surface, (self.barista_done_animation[0][ind], self.barista_done_animation[0][ind], self.barista_done_animation[0][ind]), (x - 4, y + rlc, 300, h))
+                    # отображение фона поля заказа, если таймер вышел
+                    elif self.barista_done_animation != [[], [], []] and line in self.barista_done_animation[1] and self.barista_done_animation[2][line] == False:
+                        ind = self.barista_done_animation[1].index(line)
+                        pygame.draw.rect(scene_surface, (255, self.barista_done_animation[0][ind], self.barista_done_animation[0][ind]), (x - 4, y + rlc, 300, h))
+
+                    # названия заказа и его таймеры
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y + rlc, 300, h), 2)
                     game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
                     message = game_font.render(self.barista_list[line][0], False, 'Black')
-                    scene_surface.blit(message, (x, y + 10 + h * line))
+                    scene_surface.blit(message, (x, y + 10 + rlc))
+                    if self.barista_list[line][-1] != None and self.barista_list[line][-1] != 'неудача':
+                        message = game_font.render(str(self.barista_list[line][-1]), False, 'Black')
+                        scene_surface.blit(message, (x + 270 - self.barista_list[line][-1]//10 * 11, y + 10 + rlc))
 
                     # перечисление ингредиентов
-                    for i in range(1, len(self.barista_list[line])):
+                    for i in range(1, len(self.barista_list[line]) -2):
                         # отображение засчитанного ингредиента темной иконкой
                         if self.barista_preparing[line][i-1] == None:
-                            pygame.draw.rect(scene_surface, (100, 100, 100), (x + 100 - 4 + h * (i-1), y + h * line, h, h))
+                            pygame.draw.rect(scene_surface, (100, 100, 100), (x + 100 - 4 + h * (i-1), y + rlc, h, h))
                         # отображение остальных иконок
-                        pygame.draw.rect(scene_surface, (80, 80, 80), (x + 100 - 4 + h * (i-1), y + h * line, h, h), 2)
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (x + 100 - 4 + h * (i-1), y + rlc, h, h), 2)
                         game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
                         message = game_font.render(self.barista_list[line][i], False, 'Black')
-                        scene_surface.blit(message, (x + 100 + 5 + h * (i-1), y + 10 + h * line))
+                        scene_surface.blit(message, (x + 100 + 5 + h * (i-1), y + 10 + rlc))
 
             # окно диалога с гостем
             if self.barista_speach:
                 x = 220 # 200
                 y = 150
                 w = 400 # 600
-                h = 200
+                h = 150
                 pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, w, h))
                 pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, w, h), 2)
                 game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
@@ -922,7 +1017,7 @@ class Game:
                 x = 500
                 y = 377
                 w = 43
-                print_info = ((x, y, 'Эс'), (x, y + w * 2, 'Сл'), (x - w, y + w, 'Мо'), (x + w, y + w, 'Ки'))
+                print_info = ((x, y, 'Эс'), (x, y + w * 2, 'Сл'), (x - w, y + w, 'Ки'), (x + w, y + w, 'Мо'))
                 for record in print_info:
                     pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
                     pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
