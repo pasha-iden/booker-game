@@ -72,7 +72,7 @@ class Game:
         # переменные для игры бариста
         self.barista_game = False
         self.barista_direction = None
-        self.barista_skill = 1
+        self.barista_skill = 2
         self.barista_rules = (10, 4)
         self.barista_score = None
         self.barista_queue = None
@@ -550,9 +550,7 @@ class Game:
         self.s_barista_initiation(hero)
         # добавление гостя в очередь
         self.s_barista_queue_add(scene)
-
-        print (self.barista_queue)
-
+        # print (self.barista_queue)
         # игра: диалог с гостем
         self.s_barista_speach()
         # игра: готовка ингредиентов
@@ -644,7 +642,7 @@ class Game:
                     new_dish = dishes[randint(0, len(dishes) - 1)]
                     # добавление напитка в лист заказов
                     self.barista_list.append(list(new_dish))
-                    self.barista_list[-1].append(pygame.USEREVENT + 20 + len(self.barista_list))
+                    self.barista_list[-1].append(pygame.USEREVENT + 21 + self.barista_score[0])
                     pygame.time.set_timer(self.barista_list[-1][-1], 1000)
                     self.barista_list[-1].append(10)
                     # добавление напитка в список готовящихся напитков
@@ -770,8 +768,7 @@ class Game:
             if i < len(self.barista_preparing) and i < self.barista_skill + len(self.barista_done_animation[1]):
                 self.barista_preparing[i][self.barista_preparing[i].index(self.barista_cooking)] = None
                 # закрытие позиции, если заказ готов
-                if self.barista_preparing[i].count(None) == len(self.barista_preparing[i]) and self.barista_list[i][
-                    -1] != 'неудача':
+                if self.barista_preparing[i].count(None) == len(self.barista_preparing[i]) and self.barista_list[i][-1] != 'неудача':
                     self.barista_score[0] += 1
                     for j in range(len(self.barista_queue)):
                         if i in self.barista_queue[j][-1]:
@@ -786,6 +783,7 @@ class Game:
     def s_barista_dishes_management(self):
         # удаление позиции из списка заказов
         if self.barista_done_animation != [[], [], []]:
+
             # после анимации неудачи
             if False in self.barista_done_animation[2]:
                 i = 0
@@ -796,9 +794,9 @@ class Game:
                                 self.barista_done_animation[1][j] += -1
                         self.barista_list.pop(self.barista_done_animation[1][i])
                         self.barista_preparing.pop(self.barista_done_animation[1][i])
-                        self.barista_done_animation[0].pop(i)
-                        self.barista_done_animation[1].pop(i)
-                        self.barista_done_animation[2].pop(i)
+                        self.barista_done_animation[0].pop(i) # как бы таймер анимации этой позиции
+                        self.barista_done_animation[1].pop(i) # индекс этой позиции
+                        self.barista_done_animation[2].pop(i) # причина анимации позиции (готово или время)
                     else:
                         i += 1
 
@@ -819,6 +817,7 @@ class Game:
                 i += 1
             for i in range(len(self.barista_done_animation[0])):
                 self.barista_done_animation[0][i] += 5
+            # print (self.barista_done_animation)
     def s_barista_result(self):
         if self.barista_score[0] >= self.barista_rules[0]:
             self.barista_score[2] = True
@@ -1025,15 +1024,18 @@ class Game:
                 # поля позиций в заказе
                 for line in range(len(self.barista_list)):
                     rlc = h * (line + 1 + (self.barista_skill + len(self.barista_done_animation[1]) < line + 1)) # relative line coordinate
+
                     # отображение фона полей заказов, если это не выполненный заказ
                     if self.barista_done_animation == [[], [], []] or line not in self.barista_done_animation[1]:
                         pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + rlc, 300, h))
+
                     # отображение фона поля заказа, если заказ выполнен
-                    elif self.barista_done_animation != [[], [], []] and line in self.barista_done_animation[1] and self.barista_done_animation[2][line] == True:
+                    elif self.barista_done_animation != [[], [], []] and line in self.barista_done_animation[1] and self.barista_done_animation[2][self.barista_done_animation[1].index(line)] == True:
                         ind = self.barista_done_animation[1].index(line)
                         pygame.draw.rect(scene_surface, (self.barista_done_animation[0][ind], self.barista_done_animation[0][ind], self.barista_done_animation[0][ind]), (x - 4, y + rlc, 300, h))
+
                     # отображение фона поля заказа, если таймер вышел
-                    elif self.barista_done_animation != [[], [], []] and line in self.barista_done_animation[1] and self.barista_done_animation[2][line] == False:
+                    elif self.barista_done_animation != [[], [], []] and line in self.barista_done_animation[1] and self.barista_done_animation[2][self.barista_done_animation[1].index(line)] == False:
                         ind = self.barista_done_animation[1].index(line)
                         pygame.draw.rect(scene_surface, (255, self.barista_done_animation[0][ind], self.barista_done_animation[0][ind]), (x - 4, y + rlc, 300, h))
 
