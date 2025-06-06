@@ -72,8 +72,8 @@ class Game:
         # переменные для игры бариста
         self.barista_game = False
         self.barista_direction = None
-        self.barista_skill = 1
-        self.barista_rules = (20, 4)
+        self.barista_skill = 2
+        self.barista_rules = (50, 4)
         self.barista_score = None
         self.barista_queue = None
         self.barista_list = None
@@ -81,6 +81,7 @@ class Game:
         self.barista_done_animation = None
         self.barista_speach = None
         self.barista_machine = None
+        self.barista_teatable = None
         self.barista_to_say = None
         self.barista_says = None
         self.barista_speach_timer = None
@@ -569,7 +570,7 @@ class Game:
             hero.walk()
         else:
             hero.direction = self.barista_direction
-        if not self.barista_speach and not self.barista_machine:
+        if not self.barista_speach and not self.barista_machine and not self.barista_teatable:
             if self.pushed_w:
                 hero.destination = Cut_interactive(420, 172)
                 hero.find_path_to_deal(scene.room_map, hero.destination)
@@ -577,6 +578,7 @@ class Game:
             elif self.pushed_a:
                 hero.destination = Cut_interactive(360, 364)
                 hero.find_path_to_deal(scene.room_map, hero.destination)
+                self.barista_teatable = True
                 self.barista_direction = 'влево'
             elif self.pushed_d:
                 hero.destination = Cut_interactive(400, 412)
@@ -599,6 +601,9 @@ class Game:
         elif hero.x == 400 and hero.y == 412 and self.pushed_SPACE and not self.barista_machine:
             self.pushed_SPACE = False
             self.barista_machine = True
+        elif hero.x == 360 and hero.y == 364 and self.pushed_SPACE and not self.barista_teatable:
+            self.pushed_SPACE = False
+            self.barista_teatable = True
     def s_barista_queue_add (self, scene):
         if self.barista_queue == None:
             scene.placing_plot_characters((1, 'очередь', 400, 568))
@@ -635,7 +640,7 @@ class Game:
 
                 # добавление напитков в заказ
                 t = randint(1, 3)
-                dishes = (('Эспрессо', 'Эс'), ('Американо', 'Эс', 'Ки'), ('Капучино', 'Эс', 'Мо'), ('Латте', 'Мо', 'Эс'), ('Раф', 'Эс', 'Сл'))
+                dishes = (('Эспрессо', 'Эс'), ('Американо', 'Эс', 'Ки'), ('Капучино', 'Эс', 'Мо'), ('Латте', 'Мо', 'Эс'), ('Раф', 'Эс', 'Сл'), ('Чай', 'Ча', 'Ки'), ('Фильтр', 'Фи'))
                 self.barista_queue[0][-1] = []
                 for i in range(t):
                     new_dish = dishes[randint(0, len(dishes) - 1)]
@@ -730,6 +735,7 @@ class Game:
                     self.barista_says = self.barista_says.capitalize() #
     def s_barista_slots(self):
         self.barista_cooking = None
+
         if self.barista_machine:
             if len(self.barista_list) == len(self.barista_done_animation[1]) or self.barista_list == [] or self.pushed_SPACE:
                 self.barista_machine = False
@@ -741,6 +747,18 @@ class Game:
                 self.barista_cooking = 'Мо'
             elif self.pushed_s:
                 self.barista_cooking = 'Сл'
+
+        if self.barista_teatable:
+            if len(self.barista_list) == len(self.barista_done_animation[1]) or self.barista_list == [] or self.pushed_SPACE:
+                self.barista_teatable = False
+            if self.pushed_w:
+                self.barista_cooking = 'Ча'
+            elif self.pushed_a:
+                self.barista_cooking = 'Си'
+            elif self.pushed_d:
+                self.barista_cooking = 'Са'
+            elif self.pushed_s:
+                self.barista_cooking = 'Фи'
     def s_barista_cooking_time_lose(self):
         # неудача, если время готовки вышло
         for i in range(len(self.barista_list)):
@@ -776,6 +794,9 @@ class Game:
                     self.barista_done_animation[2].append(True)
             else:
                 self.barista_score[1] += 1
+    def s_barista_guest_away(self):
+        pass
+        # !!!!!!!!!!!!!!! (если заказов нет)
     def s_barista_dishes_management(self):
         # удаление позиции из списка заказов
         if self.barista_done_animation != [[], [], []]:
@@ -1092,6 +1113,19 @@ class Game:
                 y = 377
                 w = 43
                 print_info = ((x, y, 'Эс'), (x, y + w * 2, 'Сл'), (x - w, y + w, 'Ки'), (x + w, y + w, 'Мо'))
+                for record in print_info:
+                    pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render(record[2], False, 'Black')
+                    scene_surface.blit(message, (record[0] + 5, record[1] + 5))
+
+            # интерфейс опций чайного столика
+            if self.barista_teatable:
+                x = 280
+                y = 327
+                w = 43
+                print_info = ((x, y, 'Ча'), (x, y + w * 2, 'Фи'), (x - w, y + w, 'Си'), (x + w, y + w, 'Са'))
                 for record in print_info:
                     pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
                     pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
