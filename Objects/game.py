@@ -72,8 +72,8 @@ class Game:
         # переменные для игры бариста
         self.barista_game = False
         self.barista_direction = None
-        self.barista_skill = 2
-        self.barista_rules = (10, 4)
+        self.barista_skill = 1
+        self.barista_rules = (20, 4)
         self.barista_score = None
         self.barista_queue = None
         self.barista_list = None
@@ -550,7 +550,7 @@ class Game:
         self.s_barista_initiation(hero)
         # добавление гостя в очередь
         self.s_barista_queue_add(scene)
-        # print (self.barista_queue)
+        print (self.barista_queue)
         # игра: диалог с гостем
         self.s_barista_speach()
         # игра: готовка ингредиентов
@@ -605,7 +605,6 @@ class Game:
             self.barista_queue = []
             self.barista_queue.append([scene.plot_characters[scene.room-1][-1], len(self.barista_queue), pygame.USEREVENT + 10 + len(self.barista_queue), 10, None])
             pygame.time.set_timer(self.barista_queue[0][2], 1000)
-    # учет происходит здесь:
     def s_barista_speach (self):
         if self.barista_speach:
             # определение, что нужно сказать
@@ -742,7 +741,6 @@ class Game:
                 self.barista_cooking = 'Мо'
             elif self.pushed_s:
                 self.barista_cooking = 'Сл'
-    # учет происходит здесь:
     def s_barista_cooking_time_lose(self):
         # неудача, если время готовки вышло
         for i in range(len(self.barista_list)):
@@ -757,7 +755,6 @@ class Game:
                 self.barista_done_animation[0].append(60)
                 self.barista_done_animation[1].append(i)
                 self.barista_done_animation[2].append(False)
-    # учет происходит здесь:
     def s_barista_cooking(self):
         # сверка корректности добавляемого ингредиента
         if self.barista_cooking != None:
@@ -779,7 +776,6 @@ class Game:
                     self.barista_done_animation[2].append(True)
             else:
                 self.barista_score[1] += 1
-    # учет происходит здесь:
     def s_barista_dishes_management(self):
         # удаление позиции из списка заказов
         if self.barista_done_animation != [[], [], []]:
@@ -794,6 +790,11 @@ class Game:
                                 self.barista_done_animation[1][j] += -1
                         self.barista_list.pop(self.barista_done_animation[1][i])
                         self.barista_preparing.pop(self.barista_done_animation[1][i])
+                        # цикл перенумерации заказов в списке заказов гостей
+                        for j in range(len(self.barista_queue)):
+                            for p in range(len(self.barista_queue[j][-1])):
+                                if self.barista_queue[j][-1][p] > i:
+                                    self.barista_queue[j][-1][p] += -1
                         self.barista_done_animation[0].pop(i) # как бы таймер анимации этой позиции
                         self.barista_done_animation[1].pop(i) # индекс этой позиции
                         self.barista_done_animation[2].pop(i) # причина анимации позиции (готово или время)
@@ -810,6 +811,11 @@ class Game:
                             self.barista_done_animation[1][j] += -1
                     self.barista_list.pop(self.barista_done_animation[1][i])
                     self.barista_preparing.pop(self.barista_done_animation[1][i])
+                    # цикл перенумерации заказов в списке заказов гостей
+                    for j in range(len(self.barista_queue)):
+                        for p in range(len(self.barista_queue[j][-1])):
+                            if self.barista_queue[j][-1][p] > i:
+                                self.barista_queue[j][-1][p] += -1
                     self.barista_done_animation[0].pop(i)
                     self.barista_done_animation[1].pop(i)
                     self.barista_done_animation[2].pop(i)
@@ -817,7 +823,6 @@ class Game:
                 i += 1
             for i in range(len(self.barista_done_animation[0])):
                 self.barista_done_animation[0][i] += 5
-            # print (self.barista_done_animation)
     def s_barista_result(self):
         if self.barista_score[0] >= self.barista_rules[0]:
             self.barista_score[2] = True
