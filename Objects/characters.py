@@ -213,11 +213,12 @@ class Plot_character(Sub_character):
         super().__init__()
         self.type = 'plot_character'
         self.skin = parameters[0]
-        self.head = pygame.image.load(skins[self.skin]['вниз-вправо']['голова']).convert_alpha()
-        head_surface = pygame.Surface((67, 67), pygame.SRCALPHA)
-        head_surface.blit(self.head, (0, 0))
-        self.head = pygame.transform.smoothscale(head_surface, (100, 100))
         self.name = parameters[1]
+        if self.name != 'очередь':
+            self.head = pygame.image.load(skins[self.skin]['вниз-вправо']['голова']).convert_alpha()
+            head_surface = pygame.Surface((67, 67), pygame.SRCALPHA)
+            head_surface.blit(self.head, (0, 0))
+            self.head = pygame.transform.smoothscale(head_surface, (100, 100))
         self.x = parameters[2]
         self.y = parameters[3]
         self.on_chair = False
