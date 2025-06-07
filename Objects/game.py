@@ -72,10 +72,13 @@ class Game:
         # переменные для игры бариста
         self.barista_game = False
         self.barista_direction = None
-        self.barista_skill = 2
+        self.barista_skill = 1
         self.barista_rules = (50, 4)
         self.barista_score = None
         self.barista_queue = None
+        self.barista_queue_wait = None
+        self.barista_queue_away = None
+        self.barista_guests = None
         self.barista_list = None
         self.barista_preparing = None
         self.barista_done_animation = None
@@ -85,8 +88,6 @@ class Game:
         self.barista_to_say = None
         self.barista_says = None
         self.barista_speach_timer = None
-        self.barista_guest = None
-
 
     def menu_window(self, scene_surface, hero, scene):
         if not self.just_started and self.pushed_ESCAPE and not self.settings:
@@ -277,10 +278,9 @@ class Game:
             if self.barista_speach_timer != None:
                 if event.type == self.barista_speach_timer[0]:
                     self.barista_speach_timer[1] += -1
-            if self.barista_queue != None:
-                for i in range(len(self.barista_queue)):
-                    if event.type == self.barista_queue[i][2]:
-                        self.barista_queue[i][3] += -1
+            if self.barista_queue != None and self.barista_queue != [] and not self.barista_speach:
+                if event.type == self.barista_queue[0][1]:
+                    self.barista_queue[0][2] += -1
 
             # левая клавиша мыши
             if event.type == pygame.MOUSEBUTTONDOWN:  # Нажата кнопка мыши
@@ -469,7 +469,10 @@ class Game:
                 self.barista_preparing = []
                 self.barista_done_animation = [[], [], []]
                 self.barista_score = [0, 0, None]
-                self.barista_queue = None
+                self.barista_queue = []
+                self.barista_queue_wait = []
+                self.barista_queue_away = []
+                self.barista_guests = 0
             scene.act_started = True
 
 
@@ -539,6 +542,9 @@ class Game:
                     self.barista_done_animation = None
                     self.barista_score = None
                     self.barista_queue = None
+                    self.barista_queue_wait = None
+                    self.barista_queue_away = None
+                    self.barista_guests = None
                     scene.act = scene.act + 1
                     scene.act_started = False
 
@@ -551,9 +557,8 @@ class Game:
         self.s_barista_initiation(hero)
         # добавление гостя в очередь
         self.s_barista_queue_add(scene)
-        print (self.barista_queue)
         # игра: диалог с гостем
-        self.s_barista_speach()
+        self.s_barista_speach(scene)
         # игра: готовка ингредиентов
         self.s_barista_slots()
         # неудача, если время готовки вышло
@@ -562,6 +567,10 @@ class Game:
         self.s_barista_cooking()
         # менеджмент удаления напитков из списков
         self.s_barista_dishes_management()
+        # передвижение ожидающих гостей
+        self.s_barista_wait_guests_walk(scene)
+        # уход гостей
+        self.s_barista_away_guests_walk(scene)
         # победа или поражение
         self.s_barista_result()
 
@@ -604,135 +613,151 @@ class Game:
         elif hero.x == 360 and hero.y == 364 and self.pushed_SPACE and not self.barista_teatable:
             self.pushed_SPACE = False
             self.barista_teatable = True
+    # таймер на прием заказа у человека в очереди задается здесь
     def s_barista_queue_add (self, scene):
-        if self.barista_queue == None:
-            scene.placing_plot_characters((1, 'очередь', 400, 568))
-            self.barista_queue = []
-            self.barista_queue.append([scene.plot_characters[scene.room-1][-1], len(self.barista_queue), pygame.USEREVENT + 10 + len(self.barista_queue), 10, None])
-            pygame.time.set_timer(self.barista_queue[0][2], 1000)
-    def s_barista_speach (self):
+        if (self.barista_queue == [] or (self.timer and randint(1, 2) == 1)) and len(self.barista_queue) < 4:
+            self.barista_guests += 1
+            places = ((392, 568), (444, 580), (500, 560), (540, 600))
+            scene.placing_plot_characters((1, 'очередь ' + str(self.barista_guests), places[len(self.barista_queue)][0], places[len(self.barista_queue)][1]))
+            self.barista_queue.append([scene.plot_characters[scene.room-1][-1].name, pygame.USEREVENT + 5 + self.barista_guests - self.barista_guests//5 * 5, 7, [None]])
+            pygame.time.set_timer(self.barista_queue[-1][1], 1000)
+    # таймеры на заказ и разговор задаются здесь
+    def s_barista_speach (self, scene):
         if self.barista_speach:
-            # определение, что нужно сказать
-            if self.barista_to_say == None:
-                to_say = ('Здравствуйте', 'Привет', 'Добрый день', 'Рады вас видеть')
-                self.barista_to_say = to_say[randint(0, len(to_say) - 1)]
-                self.barista_says = ''
+            current_guest = 0
+            while current_guest < len(self.barista_queue) and self.barista_queue[current_guest][-1] != [None]:
+                current_guest += 1
+            if current_guest < len(self.barista_queue):
+                # определение, что нужно сказать
+                if self.barista_to_say == None:
+                    to_say = ('Здравствуйте', 'Привет', 'Добрый день', 'Рады вас видеть')
+                    self.barista_to_say = to_say[randint(0, len(to_say) - 1)]
+                    self.barista_says = ''
 
-            # взведение таймера разговора
-            if self.barista_speach_timer == None:
-                self.barista_speach_timer = [pygame.USEREVENT + 20, 10]
-                pygame.time.set_timer(self.barista_speach_timer[0], 1000)
+                # взведение таймера разговора
+                if self.barista_speach_timer == None:
+                    self.barista_speach_timer = [pygame.USEREVENT + 3, 10]
+                    pygame.time.set_timer(self.barista_speach_timer[0], 1000)
 
-            # неудача, если таймер вышел
-            if self.barista_speach_timer[1] == 0:
-                self.barista_score[1] += 1
-                self.barista_says = None
-                self.barista_to_say = None
-                self.barista_speach_timer = None
-                self.barista_speach = False
+                # неудача, если таймер вышел
+                if self.barista_speach_timer[1] == 0:
+                    self.barista_score[1] += 1
+                    self.barista_says = None
+                    self.barista_to_say = None
+                    self.barista_speach_timer = None
+                    self.barista_speach = False
+                    self.barista_queue_away.append(self.barista_queue[current_guest])
+                    self.barista_queue.pop(current_guest)
 
-            # завершение диалога с гостем, если фраза введена правильно
-            elif self.barista_to_say == self.barista_says:
-                self.barista_says = None
-                self.barista_to_say = None
-                self.barista_speach_timer = None
-                self.barista_speach = False
+                # завершение диалога с гостем, если фраза введена правильно
+                elif self.barista_to_say == self.barista_says:
+                    self.barista_says = None
+                    self.barista_to_say = None
+                    self.barista_speach_timer = None
+                    self.barista_speach = False
 
-                # добавление напитков в заказ
-                t = randint(1, 3)
-                dishes = (('Эспрессо', 'Эс'), ('Американо', 'Эс', 'Ки'), ('Капучино', 'Эс', 'Мо'), ('Латте', 'Мо', 'Эс'), ('Раф', 'Эс', 'Сл'), ('Чай', 'Ча', 'Ки'), ('Фильтр', 'Фи'))
-                self.barista_queue[0][-1] = []
-                for i in range(t):
-                    new_dish = dishes[randint(0, len(dishes) - 1)]
-                    # добавление напитка в лист заказов
-                    self.barista_list.append(list(new_dish))
-                    self.barista_list[-1].append(pygame.USEREVENT + 21 + self.barista_score[0])
-                    pygame.time.set_timer(self.barista_list[-1][-1], 1000)
-                    self.barista_list[-1].append(10)
-                    # добавление напитка в список готовящихся напитков
-                    self.barista_preparing.append(list(new_dish[1: len(new_dish)]))
-                    # добавление номера напитка в список напитков гостя
-                    self.barista_queue[0][-1].append(len(self.barista_list)-1)
+                    # добавление напитков в заказ
+                    t = randint(1, 3)
+                    dishes = (('Эспрессо', 'Эс'), ('Американо', 'Эс', 'Ки'), ('Капучино', 'Эс', 'Мо'), ('Латте', 'Мо', 'Эс'), ('Раф', 'Эс', 'Сл'), ('Чай', 'Ча', 'Ки'), ('Какао', 'Ка', 'Мо'))
+                    for i in range(t):
+                        new_dish = dishes[randint(0, len(dishes) - 1)]
+                        # добавление напитка в лист заказов
+                        self.barista_list.append(list(new_dish))
+                        self.barista_list[-1].append(pygame.USEREVENT + 11 + self.barista_score[0] - self.barista_score[0]//15 * 15)
+                        pygame.time.set_timer(self.barista_list[-1][-1], 1000)
+                        self.barista_list[-1].append(10)
+                        # добавление напитка в список готовящихся напитков
+                        self.barista_preparing.append(list(new_dish[1: len(new_dish)]))
+                        # добавление номера напитка в список напитков гостя
+                        if self.barista_queue[current_guest][-1] == [None]:
+                            self.barista_queue[current_guest][-1] = []
+                        self.barista_queue[current_guest][-1].append(len(self.barista_list)-1)
+                    self.barista_queue_wait.append(self.barista_queue[current_guest])
+                    self.barista_queue.pop(current_guest)
+                    if self.barista_queue == []:
+                        self.s_barista_queue_add(scene)
 
-            # добавление буквы в высказывание героини
+                # добавление буквы в высказывание героини
+                else:
+                    l = ''
+                    if self.pushed_BACKSPACE:
+                        if len(self.barista_says) < 2:
+                            self.barista_says = ''
+                        else:
+                            self.barista_says = self.barista_says[0: len(self.barista_says) - 1]
+                    else:  # перечисление всех клавиш
+                        if self.pushed_SPACE:
+                            l = ' '
+                        elif self.pushed_q:
+                            l = 'й'
+                        elif self.pushed_w:
+                            l = 'ц'
+                        elif self.pushed_e:
+                            l = 'у'
+                        elif self.pushed_r:
+                            l = 'к'
+                        elif self.pushed_t:
+                            l = 'е'
+                        elif self.pushed_y:
+                            l = 'н'
+                        elif self.pushed_u:
+                            l = 'г'
+                        elif self.pushed_i:
+                            l = 'ш'
+                        elif self.pushed_o:
+                            l = 'щ'
+                        elif self.pushed_p:
+                            l = 'з'
+                        elif self.pushed_LEFTBRACKET:
+                            l = 'х'
+                        elif self.pushed_RIGHTBRACKET:
+                            l = 'ъ'
+                        elif self.pushed_a:
+                            l = 'ф'
+                        elif self.pushed_s:
+                            l = 'ы'
+                        elif self.pushed_d:
+                            l = 'в'
+                        elif self.pushed_f:
+                            l = 'а'
+                        elif self.pushed_g:
+                            l = 'п'
+                        elif self.pushed_h:
+                            l = 'р'
+                        elif self.pushed_j:
+                            l = 'о'
+                        elif self.pushed_k:
+                            l = 'л'
+                        elif self.pushed_l:
+                            l = 'д'
+                        elif self.pushed_SEMICOLON:
+                            l = 'ж'
+                        elif self.pushed_QUOTE:
+                            l = 'э'
+                        elif self.pushed_z:
+                            l = 'я'
+                        elif self.pushed_x:
+                            l = 'ч'
+                        elif self.pushed_c:
+                            l = 'с'
+                        elif self.pushed_v:
+                            l = 'м'
+                        elif self.pushed_b:
+                            l = 'и'
+                        elif self.pushed_n:
+                            l = 'т'
+                        elif self.pushed_m:
+                            l = 'ь'
+                        elif self.pushed_COMMA:
+                            l = 'б'
+                        elif self.pushed_PERIOD:
+                            l = 'ю'
+                    self.barista_says = self.barista_says + l
+                    # заглавная первая буква
+                    if len(self.barista_says) == 1:
+                        self.barista_says = self.barista_says.capitalize() #
             else:
-                l = ''
-                if self.pushed_BACKSPACE:
-                    if len(self.barista_says) < 2:
-                        self.barista_says = ''
-                    else:
-                        self.barista_says = self.barista_says[0: len(self.barista_says) - 1]
-                else:  # перечисление всех клавиш
-                    if self.pushed_SPACE:
-                        l = ' '
-                    elif self.pushed_q:
-                        l = 'й'
-                    elif self.pushed_w:
-                        l = 'ц'
-                    elif self.pushed_e:
-                        l = 'у'
-                    elif self.pushed_r:
-                        l = 'к'
-                    elif self.pushed_t:
-                        l = 'е'
-                    elif self.pushed_y:
-                        l = 'н'
-                    elif self.pushed_u:
-                        l = 'г'
-                    elif self.pushed_i:
-                        l = 'ш'
-                    elif self.pushed_o:
-                        l = 'щ'
-                    elif self.pushed_p:
-                        l = 'з'
-                    elif self.pushed_LEFTBRACKET:
-                        l = 'х'
-                    elif self.pushed_RIGHTBRACKET:
-                        l = 'ъ'
-                    elif self.pushed_a:
-                        l = 'ф'
-                    elif self.pushed_s:
-                        l = 'ы'
-                    elif self.pushed_d:
-                        l = 'в'
-                    elif self.pushed_f:
-                        l = 'а'
-                    elif self.pushed_g:
-                        l = 'п'
-                    elif self.pushed_h:
-                        l = 'р'
-                    elif self.pushed_j:
-                        l = 'о'
-                    elif self.pushed_k:
-                        l = 'л'
-                    elif self.pushed_l:
-                        l = 'д'
-                    elif self.pushed_SEMICOLON:
-                        l = 'ж'
-                    elif self.pushed_QUOTE:
-                        l = 'э'
-                    elif self.pushed_z:
-                        l = 'я'
-                    elif self.pushed_x:
-                        l = 'ч'
-                    elif self.pushed_c:
-                        l = 'с'
-                    elif self.pushed_v:
-                        l = 'м'
-                    elif self.pushed_b:
-                        l = 'и'
-                    elif self.pushed_n:
-                        l = 'т'
-                    elif self.pushed_m:
-                        l = 'ь'
-                    elif self.pushed_COMMA:
-                        l = 'б'
-                    elif self.pushed_PERIOD:
-                        l = 'ю'
-                self.barista_says = self.barista_says + l
-                # заглавная первая буква
-                if len(self.barista_says) == 1:
-                    self.barista_says = self.barista_says.capitalize() #
+                self.barista_speach = False
     def s_barista_slots(self):
         self.barista_cooking = None
 
@@ -758,16 +783,16 @@ class Game:
             elif self.pushed_d:
                 self.barista_cooking = 'Са'
             elif self.pushed_s:
-                self.barista_cooking = 'Фи'
+                self.barista_cooking = 'Ка'
     def s_barista_cooking_time_lose(self):
         # неудача, если время готовки вышло
         for i in range(len(self.barista_list)):
             if self.barista_list[i][-1] == 0:
                 self.barista_score[1] += 1
                 self.barista_list[i][-1] = 'неудача'
-                for j in range(len(self.barista_queue)):
-                    if i in self.barista_queue[j][-1]:
-                        self.barista_queue[j][-1].pop(self.barista_queue[j][-1].index(i))
+                for j in range(len(self.barista_queue_wait)):
+                    if i in self.barista_queue_wait[j][-1]:
+                        self.barista_queue_wait[j][-1].pop(self.barista_queue_wait[j][-1].index(i))
                 for j in range(len(self.barista_preparing[i])):
                     self.barista_preparing[i][j] = None
                 self.barista_done_animation[0].append(60)
@@ -785,18 +810,76 @@ class Game:
                 # закрытие позиции, если заказ готов
                 if self.barista_preparing[i].count(None) == len(self.barista_preparing[i]) and self.barista_list[i][-1] != 'неудача':
                     self.barista_score[0] += 1
-                    for j in range(len(self.barista_queue)):
-                        if i in self.barista_queue[j][-1]:
-                            self.barista_queue[j][-1].pop(self.barista_queue[j][-1].index(i))
+                    for j in range(len(self.barista_queue_wait)):
+                        if i in self.barista_queue_wait[j][-1]:
+                            self.barista_queue_wait[j][-1].pop(self.barista_queue_wait[j][-1].index(i))
                     self.barista_list[i][-1] = None
                     self.barista_done_animation[0].append(60)
                     self.barista_done_animation[1].append(i)
                     self.barista_done_animation[2].append(True)
             else:
                 self.barista_score[1] += 1
-    def s_barista_guest_away(self):
-        pass
-        # !!!!!!!!!!!!!!! (если заказов нет)
+    def s_barista_wait_guests_walk(self, scene):
+        # передвижение людей в очереди на кассу
+        places = ((392, 568), (444, 580), (500, 560), (540, 600))
+        for i in range(len(self.barista_queue)):
+            for j in range(len(scene.plot_characters[scene.room - 1])):
+                if scene.plot_characters[scene.room-1][j].name == self.barista_queue[i][0]:
+                    if scene.plot_characters[scene.room-1][j].x != places[i][0] and scene.plot_characters[scene.room-1][j].y != places[i][1] and scene.plot_characters[scene.room-1][j].path_to_deal == []:
+                        scene.plot_characters[scene.room-1][j].destination = Cut_interactive(places[i][0], places[i][1])
+                        scene.plot_characters[scene.room-1][j].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][j].destination)
+                    elif scene.plot_characters[scene.room-1][j].x != places[i][0] and scene.plot_characters[scene.room-1][j].y != places[i][1] and scene.plot_characters[scene.room-1][j].path_to_deal != []:
+                        scene.plot_characters[scene.room-1][j].walk()
+
+        # передвижение людей в очереди за заказом
+        places = ((576, 540), (560, 512), (588, 488), (568, 472))
+        for i in range(len(self.barista_queue_wait)):
+            for j in range(len(scene.plot_characters[scene.room - 1])):
+                if scene.plot_characters[scene.room - 1][j].name == self.barista_queue_wait[i][0]:
+                    if scene.plot_characters[scene.room - 1][j].x != places[i][0] and scene.plot_characters[scene.room - 1][j].y != places[i][1] and scene.plot_characters[scene.room - 1][j].path_to_deal == []:
+                        scene.plot_characters[scene.room - 1][j].destination = Cut_interactive(places[i][0], places[i][1])
+                        scene.plot_characters[scene.room - 1][j].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room - 1][j].destination)
+                    elif scene.plot_characters[scene.room - 1][j].x != places[i][0] and scene.plot_characters[scene.room - 1][j].y != places[i][1] and scene.plot_characters[scene.room - 1][j].path_to_deal != []:
+                        scene.plot_characters[scene.room - 1][j].walk()
+    def s_barista_away_guests_walk(self, scene):
+
+        i = 0
+        # определение гостей, которые уже ничего не ждут (с выполненным или просроченным заказом)
+        while i < len(self.barista_queue_wait):
+            while i < len(self.barista_queue_wait) and self.barista_queue_wait[i][-1] != []:
+                i += 1
+            # если он есть
+            if i < len(self.barista_queue_wait):
+                # передача индекса сюжетного персонажа из очереди на_заказ/ожидающих в очередь уходящих
+                self.barista_queue_away.append(self.barista_queue_wait[i])
+                self.barista_queue_wait.pop(i)
+        # если очередь уходящих гостей не пустая
+        if self.barista_queue_away != []:
+            places = (444, 628)
+            for i in range(len(self.barista_queue_away)):
+                for j in range(len(scene.plot_characters[scene.room - 1])):
+                    if scene.plot_characters[scene.room-1][j].name == self.barista_queue_away[i][0]:
+                        if scene.plot_characters[scene.room-1][j].x != places[0] and scene.plot_characters[scene.room-1][j].y != places[1] and scene.plot_characters[scene.room-1][j].path_to_deal == []:
+                            scene.plot_characters[scene.room-1][j].destination = Cut_interactive(places[0], places[1])
+                            scene.plot_characters[scene.room-1][j].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][j].destination)
+                        elif scene.plot_characters[scene.room-1][j].x != places[0] and scene.plot_characters[scene.room-1][j].y != places[0] and scene.plot_characters[scene.room-1][j].path_to_deal != []:
+                            scene.plot_characters[scene.room-1][j].walk()
+
+
+            # перебор всех уходящих гостей
+            k = 0
+            deleted = False
+            while k < len(self.barista_queue_away):
+                # удаление гостя из списка персонажей сцены по индексу, хранящемуся в очереди уходящих гостей
+                i = 0
+                while i < len(scene.plot_characters[scene.room-1]) and not deleted:
+                    if scene.plot_characters[scene.room-1][i].x == places[0] and scene.plot_characters[scene.room-1][i].y == places[1]:
+                        scene.plot_characters[scene.room-1].pop(i)
+                        self.barista_queue_away.pop(k)
+                        deleted = True
+                    i += 1
+                if not deleted:
+                    k += 1
     def s_barista_dishes_management(self):
         # удаление позиции из списка заказов
         if self.barista_done_animation != [[], [], []]:
@@ -812,10 +895,10 @@ class Game:
                         self.barista_list.pop(self.barista_done_animation[1][i])
                         self.barista_preparing.pop(self.barista_done_animation[1][i])
                         # цикл перенумерации заказов в списке заказов гостей
-                        for j in range(len(self.barista_queue)):
-                            for p in range(len(self.barista_queue[j][-1])):
-                                if self.barista_queue[j][-1][p] > i:
-                                    self.barista_queue[j][-1][p] += -1
+                        for j in range(len(self.barista_queue_wait)):
+                            for p in range(len(self.barista_queue_wait[j][-1])):
+                                if self.barista_queue_wait[j][-1] != [None] and self.barista_queue_wait[j][-1][p] > i:
+                                    self.barista_queue_wait[j][-1][p] += -1
                         self.barista_done_animation[0].pop(i) # как бы таймер анимации этой позиции
                         self.barista_done_animation[1].pop(i) # индекс этой позиции
                         self.barista_done_animation[2].pop(i) # причина анимации позиции (готово или время)
@@ -833,10 +916,10 @@ class Game:
                     self.barista_list.pop(self.barista_done_animation[1][i])
                     self.barista_preparing.pop(self.barista_done_animation[1][i])
                     # цикл перенумерации заказов в списке заказов гостей
-                    for j in range(len(self.barista_queue)):
-                        for p in range(len(self.barista_queue[j][-1])):
-                            if self.barista_queue[j][-1][p] > i:
-                                self.barista_queue[j][-1][p] += -1
+                    for j in range(len(self.barista_queue_wait)):
+                        for p in range(len(self.barista_queue_wait[j][-1])):
+                            if self.barista_queue_wait[j][-1] != [None] and self.barista_queue_wait[j][-1][p] > i:
+                                self.barista_queue_wait[j][-1][p] += -1
                     self.barista_done_animation[0].pop(i)
                     self.barista_done_animation[1].pop(i)
                     self.barista_done_animation[2].pop(i)
@@ -1006,9 +1089,9 @@ class Game:
 
         if self.barista_game:
 
-            # счет игры
-            x = 240
-            y = 500
+            # счет игры: заказы
+            x = 235
+            y = 473 # 473
             h = 50
             pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 150, h))
             pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 150, h), 2)
@@ -1018,7 +1101,8 @@ class Game:
             message = game_font.render(str(self.barista_score[0]) + '/' + str(self.barista_rules[0]), False, 'Black')
             scene_surface.blit(message, (x + 100 - (len(str(self.barista_score[0])) - 1) * 10, y + 10))
 
-            x = 450
+            # счет игры: ошибки
+            y = y + 50
             pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 150, h))
             pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 150, h), 2)
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
@@ -1027,10 +1111,21 @@ class Game:
             message = game_font.render(str(self.barista_score[1]) + '/' + str(self.barista_rules[1]), False, 'Black')
             scene_surface.blit(message, (x + 100 - (len(str(self.barista_score[0])) - 1) * 10, y + 10))
 
+
+            # таймер ожидающих в очереди
+            x = 335
+            y = y + 55
+            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, h, h))
+            pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, h, h), 2)
+            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+            message = game_font.render(str(self.barista_queue[0][2]), False, 'Black')
+            scene_surface.blit(message, (x + 20 - (self.barista_queue[0][2] > 9) * 10 , y + 10))
+
+
             # интерфейс списка заказов
             if self.barista_list != []:
 
-                x = 500
+                x = 505
                 y = 150
                 h = 50
                 # строка "Выполняемые заказы"
@@ -1089,7 +1184,7 @@ class Game:
             if self.barista_speach:
                 x = 220 # 200
                 y = 150
-                w = 400 # 600
+                w = 280 # 600
                 h = 150
                 pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, w, h))
                 pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, w, h), 2)
@@ -1099,7 +1194,7 @@ class Game:
                 message = game_font.render('Здравствуйте', False, 'Black')
                 scene_surface.blit(message, (x, y + 25))
                 message = game_font.render(str(self.barista_speach_timer[1]), False, 'Black')
-                scene_surface.blit(message, (x + 370 - self.barista_speach_timer[1] //10 * 11, y + 25))
+                scene_surface.blit(message, (x + w - 30 - self.barista_speach_timer[1] //10 * 11, y + 25))
                 message = game_font.render('Полина', False, 'Black')
                 scene_surface.blit(message, (x + w - 80 , y + 50))
                 message = game_font.render(self.barista_says, False, 'Black')
@@ -1125,7 +1220,7 @@ class Game:
                 x = 280
                 y = 327
                 w = 43
-                print_info = ((x, y, 'Ча'), (x, y + w * 2, 'Фи'), (x - w, y + w, 'Си'), (x + w, y + w, 'Са'))
+                print_info = ((x, y, 'Ча'), (x, y + w * 2, 'Ка'), (x - w, y + w, 'Си'), (x + w, y + w, 'Са'))
                 for record in print_info:
                     pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
                     pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)

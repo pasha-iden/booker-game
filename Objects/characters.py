@@ -214,7 +214,7 @@ class Plot_character(Sub_character):
         self.type = 'plot_character'
         self.skin = parameters[0]
         self.name = parameters[1]
-        if self.name != 'очередь':
+        if self.name[0:6] != 'очередь':
             self.head = pygame.image.load(skins[self.skin]['вниз-вправо']['голова']).convert_alpha()
             head_surface = pygame.Surface((67, 67), pygame.SRCALPHA)
             head_surface.blit(self.head, (0, 0))
