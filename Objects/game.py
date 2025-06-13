@@ -96,8 +96,6 @@ class Game:
 
         # переменные для обучения игре бариста
         self.tutorial_barista_game = False
-        self.tutorial_cook_chronometer = None
-        self.tutorial_order_chronometer = None
         self.tutorial_cook_time = None
         self.tutorial_order_time = None
 
@@ -659,7 +657,7 @@ class Game:
             self.barista_guests += 1
             places = ((392, 568), (444, 580), (500, 560), (540, 600))
             scene.placing_plot_characters((1, 'очередь ' + str(self.barista_guests), places[len(self.barista_queue)][0], places[len(self.barista_queue)][1]))
-            self.barista_queue.append([scene.plot_characters[scene.room-1][-1].name, pygame.USEREVENT + 5 + self.barista_guests - self.barista_guests//5 * 5, 7, [None]])
+            self.barista_queue.append([scene.plot_characters[scene.room-1][-1].name, pygame.USEREVENT + 5 + self.barista_guests - self.barista_guests//5 * 5, self.counted_cook_time + 1, [None]])
             pygame.time.set_timer(self.barista_queue[-1][1], 1000)
     # таймеры на заказ и разговор задаются здесь
     def s_barista_speach (self, scene):
@@ -676,7 +674,7 @@ class Game:
 
                 # взведение таймера разговора
                 if self.barista_speach_timer == None:
-                    self.barista_speach_timer = [pygame.USEREVENT + 3, 7]
+                    self.barista_speach_timer = [pygame.USEREVENT + 3, self.counted_order_time]
                     pygame.time.set_timer(self.barista_speach_timer[0], 1000)
 
                 # неудача, если таймер вышел
@@ -698,14 +696,14 @@ class Game:
 
                     # добавление напитков в заказ
                     t = randint(1, 3)
-                    dishes = (('Эспрессо', 'Эс'), ('Американо', 'Эс', 'Ки'), ('Капучино', 'Эс', 'Мо'), ('Латте', 'Мо', 'Эс'), ('Раф', 'Эс', 'Сл'), ('Чай', 'Ча', 'Ки'), ('Какао', 'Ка', 'Мо'))
+                    dishes = (('Эспрессо', 'Эс'), ('Американо', 'Эс', 'Ки'), ('Капучино', 'Эс', 'Мо'), ('Латте', 'Мо', 'Эс'), ('Раф', 'Эс', 'Сл'), ('Чай', 'Ча', 'Ки'), ('Какао', 'Ка', 'Мо'), ('Фильтр', 'Фи'))
                     for i in range(t):
                         new_dish = dishes[randint(0, len(dishes) - 1)]
                         # добавление напитка в лист заказов
                         self.barista_list.append(list(new_dish))
                         self.barista_list[-1].append(pygame.USEREVENT + 11 + self.barista_score[0] - self.barista_score[0]//15 * 15)
                         pygame.time.set_timer(self.barista_list[-1][-1], 1000)
-                        self.barista_list[-1].append(7)
+                        self.barista_list[-1].append(self.counted_cook_time)
                         # добавление напитка в список готовящихся напитков
                         self.barista_preparing.append(list(new_dish[1: len(new_dish)]))
                         # добавление номера напитка в список напитков гостя
@@ -1044,7 +1042,7 @@ class Game:
                 self.barista_list = []
                 self.barista_preparing = []
                 self.barista_done_animation = [[], [], []]
-                self.tutorial_barista_to_say = ['Здравствуйте', 'Привет', 'Добрый день', 'Рады вас видеть', 'Здравствуйте']
+                self.tutorial_barista_to_say = ['Здравствуйте', 'Рады вас видеть', 'Привет', 'Добрый день', 'Рады вас видеть']
                 self.tutorial_barista_list = [['Американо', 'Эс', 'Ки'],
                                                     ['Какао', 'Ка', 'Мо'],
                                                     ['Чай', 'Ча', 'Ки'], # 1
@@ -1056,12 +1054,8 @@ class Game:
                                                     ['Эс', 'Эс'],
                                                     ['Какао', 'Ка', 'Мо'] ] # 5
                 self.tutorial_barista_preparing = [['Эс', 'Ки'], ['Ка', 'Мо'], ['Ча', 'Ки'], ['Фи'], ['Эс', 'Мо'], ['Эс', 'Сл'],  ['Мо', 'Эс'], ['Ча', 'Ки'], ['Эс'], ['Ка', 'Мо']]
-                self.tutorial_cook_time = 0
-                self.tutorial_order_time = 0
-                # self.tutorial_cook_chronometer = [USEREVENT + 3, 0]
-                # pygame.time.set_timer(self.tutorial_cook_chronometer[0], 1000)
-                # self.tutorial_order_chronometer = [USEREVENT + 4, 0]
-                # pygame.time.set_timer(self.tutorial_order_chronometer[0], 1000)
+                self.counted_order_time = 0
+                self.counted_cook_time = 0
 
             elif act[scene.act][0] == 'обучение 32':
                 self.message_preparing(act[scene.act][2], True)
@@ -1331,6 +1325,8 @@ class Game:
                     self.tutorial_barista_preparing = None
                     self.tutorial_barista_list = None
                     self.tutorial_barista_to_say = None
+                    self.counted_cook_time = max(7, self.counted_cook_time // 120 + 1)
+                    self.counted_order_time = max(7, self.counted_order_time // 120 + 1)
                     scene.act = scene.act + 2
                     scene.act_started = False
 
@@ -1500,17 +1496,18 @@ class Game:
                 elif self.pushed_s:
                     hero.destination = Cut_interactive(392, 436)
                     hero.find_path_to_deal(scene.room_map, hero.destination)
-                    if self.tutorial_barista_to_say != []:
+                    if self.tutorial_barista_to_say != [] and (self.barista_list == [] or len(self.barista_list) == len(self.barista_done_animation[1])):
                         self.barista_speach = True
                     self.barista_direction = 'вниз'
                 self.pushed_a = False
                 self.pushed_s = False
                 self.pushed_d = False
 
+
             # инициация областей
             if hero.x == 392 and hero.y == 436 and self.pushed_SPACE and not self.barista_speach:
                 self.pushed_SPACE = False
-                if self.tutorial_barista_to_say != []:
+                if self.tutorial_barista_to_say != [] and (self.barista_list == [] or len(self.barista_list) == len(self.barista_done_animation)):
                     self.barista_speach = True
             elif hero.x == 400 and hero.y == 412 and self.pushed_SPACE and not self.barista_machine:
                 self.pushed_SPACE = False
@@ -1723,6 +1720,13 @@ class Game:
                 for i in range(len(self.barista_done_animation[0])):
                     self.barista_done_animation[0][i] += 5
 
+            # счет секундомеров
+            if act[scene.act][0] == 'обучение 31':
+                if (len(self.tutorial_barista_list) == 7 or len(self.tutorial_barista_list) == 0) and self.barista_list != []:
+                    self.counted_cook_time += 1
+                if self.barista_to_say == 'Рады вас видеть':
+                    self.counted_order_time += 1
+
 
     # рендер всей сцены
     def render (self, scene_surface, hero, scene):
@@ -1928,8 +1932,12 @@ class Game:
                 message = game_font.render(str(self.barista_score[1]), False, 'Black')
                 scene_surface.blit(message, (x + 330, y + 50))
                 # кнопки
-                message = game_font.render('Закончить [Q]     Повторить [E]', False, 'Black')
-                scene_surface.blit(message, (x + 60, y + 100))
+                if self.barista_score[0] >= self.barista_rules[0]:
+                    message = game_font.render('Закончить [Q]     Повторить [E]', False, 'Black')
+                    scene_surface.blit(message, (x + 60, y + 100))
+                else:
+                    message = game_font.render('               Повторить [E]', False, 'Black')
+                    scene_surface.blit(message, (x + 60, y + 100))
 
             # процесс игры бариста
             else:
