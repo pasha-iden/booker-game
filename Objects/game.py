@@ -96,8 +96,8 @@ class Game:
 
         # переменные для обучения игре бариста
         self.tutorial_barista_game = False
-        self.tutorial_cook_time = None
-        self.tutorial_order_time = None
+        self.counted_cook_time = None
+        self.counted_order_time = None
 
     def menu_window(self, scene_surface, hero, scene):
         if not self.just_started and self.pushed_ESCAPE and not self.settings:
@@ -1325,8 +1325,8 @@ class Game:
                     self.tutorial_barista_preparing = None
                     self.tutorial_barista_list = None
                     self.tutorial_barista_to_say = None
-                    self.counted_cook_time = max(7, self.counted_cook_time // 120 + 1)
-                    self.counted_order_time = max(7, self.counted_order_time // 120 + 1)
+                    self.counted_cook_time = max(11, self.counted_cook_time // 120 + 1)
+                    self.counted_order_time = max(11, self.counted_order_time // 120 + 1)
                     scene.act = scene.act + 2
                     scene.act_started = False
 
