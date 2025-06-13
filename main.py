@@ -43,7 +43,7 @@ while game.running:
                 game.fade_animation = None
 
             # управление игроком
-            if (game.fade_animation == None and game.barista_game == False) and pygame.key.get_pressed() != None:
+            if (game.fade_animation == None and game.barista_game == False and game.tutorial_barista_game == False) and pygame.key.get_pressed() != None:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
 
@@ -71,6 +71,8 @@ while game.running:
 
 
             # МИНИ-ИГРЫ
+            if game.tutorial_barista_game:
+                game.tutorial_barista_work(hero, scene)
             if game.barista_game:
                 game.barista_work(hero, scene)
 
@@ -79,7 +81,7 @@ while game.running:
             # рендер всех объектов
             game.render(scene_surface, hero, scene)
             game.cut_effects_render(scene_surface, hero, scene)
-
+            game.mini_game_render(scene_surface, hero, scene)
 
         # тесты
         # print(pygame.mouse.get_pos())
@@ -87,7 +89,7 @@ while game.running:
 
         # scale изображения и рамки
         final_surface = pygame.transform.smoothscale(scene_surface, ((1024*game.scale_value)//1, (768*game.scale_value)//1))
-        game.frames_render(final_surface, scene)
+
         # рендер графики и обновление экрана
         game.screen.blit(final_surface, (game.shift_x, game.shift_y))
         pygame.display.update()

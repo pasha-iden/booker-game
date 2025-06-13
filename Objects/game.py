@@ -2,6 +2,8 @@ import pygame
 
 from random import randint
 
+from pygame import USEREVENT
+
 from Objects.characters import Hero
 from Objects.scene import Scene
 from Objects.interactives import Cut_interactive
@@ -21,7 +23,7 @@ class Game:
         self.scale_value = 1
         self.screen_mod = 1
         # print(pygame.display.list_modes())
-        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), flags=pygame.NOFRAME)  # базовое разрешение
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))  # базовое разрешение
         pygame.display.set_caption('Booker - The Coffee Adventure')
         icon = pygame.image.load('Booker.png')
         pygame.display.set_icon(icon)
@@ -75,6 +77,8 @@ class Game:
         self.barista_direction = None
         self.barista_skill = 1
         self.barista_rules = (20, 4)
+        self.barista_cook_time = None
+        self.barista_order_time = None
         self.barista_score = None
         self.barista_queue = None
         self.barista_queue_wait = None
@@ -89,6 +93,13 @@ class Game:
         self.barista_to_say = None
         self.barista_says = None
         self.barista_speach_timer = None
+
+        # переменные для обучения игре бариста
+        self.tutorial_barista_game = False
+        self.tutorial_cook_chronometer = None
+        self.tutorial_order_chronometer = None
+        self.tutorial_cook_time = None
+        self.tutorial_order_time = None
 
     def menu_window(self, scene_surface, hero, scene):
         if not self.just_started and self.pushed_ESCAPE and not self.settings:
@@ -271,20 +282,21 @@ class Game:
                 self.timer = True
             if event.type == self.timer_50:
                 self.timer_005 = True
-            if self.barista_list != None and self.barista_list != []:
-                for i in range(len(self.barista_list)):
-                    if event.type == self.barista_list[i][-2]:
-                        if self.barista_list[i][-1] != None and self.barista_list[i][-1] != 'неудача':
-                            self.barista_list[i][-1] += -1
-            if self.barista_start_timer != None:
-                if event.type == self.barista_start_timer[0]:
-                    self.barista_start_timer[1] += -1
-            if self.barista_speach_timer != None:
-                if event.type == self.barista_speach_timer[0]:
-                    self.barista_speach_timer[1] += -1
-            if self.barista_queue != None and self.barista_queue != [] and not self.barista_speach:
-                if event.type == self.barista_queue[0][1]:
-                    self.barista_queue[0][2] += -1
+            if self.barista_game != False or self.tutorial_barista_game != False:
+                if self.barista_list != None and self.barista_list != []:
+                    for i in range(len(self.barista_list)):
+                        if event.type == self.barista_list[i][-2]:
+                            if self.barista_list[i][-1] != None and self.barista_list[i][-1] != 'неудача':
+                                self.barista_list[i][-1] += -1
+                if self.barista_start_timer != None:
+                    if event.type == self.barista_start_timer[0]:
+                        self.barista_start_timer[1] += -1
+                if self.barista_speach_timer != None:
+                    if event.type == self.barista_speach_timer[0]:
+                        self.barista_speach_timer[1] += -1
+                if self.barista_queue != None and self.barista_queue != [] and not self.barista_speach:
+                    if event.type == self.barista_queue[0][1]:
+                        self.barista_queue[0][2] += -1
 
             # левая клавиша мыши
             if event.type == pygame.MOUSEBUTTONDOWN:  # Нажата кнопка мыши
@@ -463,14 +475,19 @@ class Game:
                     i += 1
                 scene.plot_characters[scene.room-1][i].destination = Cut_interactive(act[scene.act][2], act[scene.act][3])
                 scene.plot_characters[scene.room-1][i].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][i].destination)
+            elif act[scene.act][0] == 'ОБУЧЕНИЕ БАРИСТА':
+                self.tutorial_barista_game = True
+                self.barista_direction = 'вниз'
             elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
                 self.barista_game = True
                 self.barista_start_timer = [pygame.USEREVENT + 3, 3]
                 pygame.time.set_timer(self.barista_start_timer[0], 1000)
                 hero.x = 400
                 hero.y = 300
+                hero.direction = 'вниз'
                 hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
                 self.barista_direction = 'вниз'
+                self.barista_rules = (20, 4)
                 self.barista_list = []
                 self.barista_preparing = []
                 self.barista_done_animation = [[], [], []]
@@ -479,7 +496,8 @@ class Game:
                 self.barista_queue_wait = []
                 self.barista_queue_away = []
                 self.barista_guests = 0
-            scene.act_started = True
+            if act[scene.act][0][0:8] != 'обучение':
+                scene.act_started = True
 
 
 
@@ -492,6 +510,7 @@ class Game:
                     scene.act_started = False
             elif act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя' :
                 if self.pushed_SPACE:
+                    self.pushed_SPACE = False
                     self.prepared_message = None
                     scene.act = scene.act + 1
                     scene.act_started = False
@@ -539,6 +558,13 @@ class Game:
                 if walk_characters == False:
                     scene.act = scene.act + 1
                     scene.act_started = False
+            elif act[scene.act][0] == 'ОБУЧЕНИЕ БАРИСТА':
+                scene.act = scene.act + 1
+                scene.act_started = False
+            elif act[scene.act][0] == 'ЗАВЕРШЕНИЕ ОБУЧЕНИЯ БАРИСТА':
+                self.tutorial_barista_game = False
+                scene.act = scene.act + 1
+                scene.act_started = False
             elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
                 if self.pushed_TAB or self.barista_score[2] == True:
                     self.barista_game = False
@@ -594,11 +620,11 @@ class Game:
         else:
             hero.direction = self.barista_direction
         if not self.barista_speach and not self.barista_machine and not self.barista_teatable:
-            if self.pushed_w:
-                hero.destination = Cut_interactive(420, 172)
-                hero.find_path_to_deal(scene.room_map, hero.destination)
-                self.barista_direction = 'вверх'
-            elif self.pushed_a:
+            # if self.pushed_w:
+            #     hero.destination = Cut_interactive(420, 172)
+            #     hero.find_path_to_deal(scene.room_map, hero.destination)
+            #     self.barista_direction = 'вверх'
+            if self.pushed_a:
                 hero.destination = Cut_interactive(360, 364)
                 hero.find_path_to_deal(scene.room_map, hero.destination)
                 self.barista_teatable = True
@@ -650,7 +676,7 @@ class Game:
 
                 # взведение таймера разговора
                 if self.barista_speach_timer == None:
-                    self.barista_speach_timer = [pygame.USEREVENT + 3, 10]
+                    self.barista_speach_timer = [pygame.USEREVENT + 3, 7]
                     pygame.time.set_timer(self.barista_speach_timer[0], 1000)
 
                 # неудача, если таймер вышел
@@ -679,7 +705,7 @@ class Game:
                         self.barista_list.append(list(new_dish))
                         self.barista_list[-1].append(pygame.USEREVENT + 11 + self.barista_score[0] - self.barista_score[0]//15 * 15)
                         pygame.time.set_timer(self.barista_list[-1][-1], 1000)
-                        self.barista_list[-1].append(10)
+                        self.barista_list[-1].append(7)
                         # добавление напитка в список готовящихся напитков
                         self.barista_preparing.append(list(new_dish[1: len(new_dish)]))
                         # добавление номера напитка в список напитков гостя
@@ -769,7 +795,9 @@ class Game:
                     self.barista_says = self.barista_says + l
                     # заглавная первая буква
                     if len(self.barista_says) == 1:
-                        self.barista_says = self.barista_says.capitalize() #
+                        self.barista_says = self.barista_says.capitalize()
+                    if self.barista_says == ' ':
+                        self.barista_says = ''
             else:
                 self.barista_speach = False
     def s_barista_slots(self):
@@ -793,11 +821,11 @@ class Game:
             if self.pushed_w:
                 self.barista_cooking = 'Ча'
             elif self.pushed_a:
-                self.barista_cooking = 'Си'
-            elif self.pushed_d:
-                self.barista_cooking = 'Са'
-            elif self.pushed_s:
                 self.barista_cooking = 'Ка'
+            elif self.pushed_d:
+                self.barista_cooking = 'Си'
+            elif self.pushed_s:
+                self.barista_cooking = 'Фи'
     def s_barista_cooking_time_lose(self):
         # неудача, если время готовки вышло
         for i in range(len(self.barista_list)):
@@ -960,6 +988,7 @@ class Game:
             pygame.time.set_timer(self.barista_start_timer[0], 1000)
             hero.x = 400
             hero.y = 300
+            hero.direction = 'вниз'
             hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
             self.barista_direction = 'вниз'
             self.barista_list = []
@@ -972,6 +1001,727 @@ class Game:
             self.barista_guests = 0
         elif self.pushed_q and self.barista_score[0] >= self.barista_rules[0]:
             self.barista_score[2] = True
+
+
+    def tutorial_barista_work (self, hero, scene):
+
+        if scene.act_started == False:
+            if act[scene.act][0][0:8] == 'обучение' and int(act[scene.act][0][9:11]) not in (29, 31):
+                self.message_preparing(act[scene.act][2], True)
+
+            if act[scene.act][0] == 'обучение 12':
+                self.barista_to_say = 'Здравствуйте'
+                self.barista_says = ''
+
+            elif act[scene.act][0] == 'обучение 16':
+                self.barista_machine = False
+                self.barista_list = [['Американо', 'Эс', 'Ки']]
+                self.barista_preparing = [['Эс', 'Ки']]
+
+            elif act[scene.act][0] == 'обучение 20':
+                self.barista_list = [['Эспрессо', 'Эс'], ['Чай', 'Ча', 'Ки']]
+                self.barista_preparing = [['Эс'], ['Ча', 'Ки']]
+
+            elif act[scene.act][0] == 'обучение 29':
+                self.barista_rules = [3]
+                self.barista_score = [0]
+                self.barista_speach = False
+                self.barista_machine = False
+                self.barista_teatable = False
+                self.barista_list = []
+                self.barista_preparing = []
+                self.barista_done_animation = [[], [], []]
+                self.tutorial_barista_to_say = ['Добрый день']
+                self.tutorial_barista_list = [['Латте', 'Мо', 'Эс'], ['Чай', 'Ча', 'Ки'], ['Фильтр', 'Фи']]
+                self.tutorial_barista_preparing = [['Мо', 'Эс'], ['Ча', 'Ки'], ['Фи']]
+
+            elif act[scene.act][0] == 'обучение 31':
+                self.barista_rules = [10, 3]
+                self.barista_score = [0, 0]
+                self.barista_speach = False
+                self.barista_machine = False
+                self.barista_teatable = False
+                self.barista_list = []
+                self.barista_preparing = []
+                self.barista_done_animation = [[], [], []]
+                self.tutorial_barista_to_say = ['Здравствуйте', 'Привет', 'Добрый день', 'Рады вас видеть', 'Здравствуйте']
+                self.tutorial_barista_list = [['Американо', 'Эс', 'Ки'],
+                                                    ['Какао', 'Ка', 'Мо'],
+                                                    ['Чай', 'Ча', 'Ки'], # 1
+                                                    ['Фильтр', 'Фи'], # 2
+                                                    ['Капучино', 'Эс', 'Мо'],
+                                                    ['Раф', 'Эс', 'Сл'], # 3
+                                                    ['Латте', 'Мо', 'Эс'], # 4
+                                                    ['Чай', 'Ча', 'Ки'],
+                                                    ['Эс', 'Эс'],
+                                                    ['Какао', 'Ка', 'Мо'] ] # 5
+                self.tutorial_barista_preparing = [['Эс', 'Ки'], ['Ка', 'Мо'], ['Ча', 'Ки'], ['Фи'], ['Эс', 'Мо'], ['Эс', 'Сл'],  ['Мо', 'Эс'], ['Ча', 'Ки'], ['Эс'], ['Ка', 'Мо']]
+                self.tutorial_cook_time = 0
+                self.tutorial_order_time = 0
+                # self.tutorial_cook_chronometer = [USEREVENT + 3, 0]
+                # pygame.time.set_timer(self.tutorial_cook_chronometer[0], 1000)
+                # self.tutorial_order_chronometer = [USEREVENT + 4, 0]
+                # pygame.time.set_timer(self.tutorial_order_chronometer[0], 1000)
+
+            elif act[scene.act][0] == 'обучение 32':
+                self.message_preparing(act[scene.act][2], True)
+
+            elif act[scene.act][0] == 'обучение 34':
+                self.barista_list = [['Эспрессо', 'Эс'], ['Чай', 'Ча', 'Ки']]
+                self.barista_preparing = [['Эс'], ['Ча', 'Ки']]
+
+            if act[scene.act][0][0:8] == 'обучение':
+                scene.act_started = True
+
+
+        if scene.act_started == True:
+            if act[scene.act][0] == 'обучение 01':
+                if self.pushed_d:
+                    self.prepared_message = None
+                    hero.destination = Cut_interactive(400, 412)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    self.barista_direction = 'вправо'
+                    self.pushed_d = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 02':
+                if self.pushed_a:
+                    self.prepared_message = None
+                    hero.destination = Cut_interactive(360, 364)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    self.barista_direction = 'влево'
+                    self.pushed_a = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 03':
+                if self.pushed_s:
+                    self.prepared_message = None
+                    hero.destination = Cut_interactive(392, 436)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    self.barista_direction = 'вниз'
+                    self.pushed_s = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 04':
+                if self.pushed_d:
+                    self.prepared_message = None
+                    hero.destination = Cut_interactive(400, 412)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    self.barista_direction = 'вправо'
+                    self.pushed_d = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 05':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 06':
+                if self.pushed_w:
+                    self.prepared_message = None
+                    self.pushed_w = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 07':
+                if self.pushed_d:
+                    self.prepared_message = None
+                    self.pushed_d = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 08':
+                if self.pushed_a:
+                    self.prepared_message = None
+                    hero.destination = Cut_interactive(360, 364)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    self.barista_direction = 'влево'
+                    self.pushed_a = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 09':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 10':
+                if self.pushed_s:
+                    self.prepared_message = None
+                    self.pushed_s = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 11':
+                if self.pushed_s:
+                    self.prepared_message = None
+                    hero.destination = Cut_interactive(392, 436)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    self.barista_direction = 'вниз'
+                    self.pushed_s = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 12':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 13':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 14':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 15':
+                if self.barista_says == self.barista_to_say:
+                    self.prepared_message = None
+                    self.barista_to_say = None
+                    self.barista_says = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 16':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 17':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 18':
+                if self.barista_preparing == [['Эс', None]] or self.barista_preparing == [[None, 'Ки']]:
+                    self.prepared_message = None
+                    self.barista_machine = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 19':
+                if self.barista_preparing == [[None, None]]:
+                    self.prepared_message = None
+                    self.barista_preparing = None
+                    self.barista_list = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 20':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 21':
+                if self.barista_preparing[0] == [None]:
+                    self.barista_list.pop(0)
+                    self.barista_preparing.pop(0)
+                    self.prepared_message = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 22':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 23':
+                if self.barista_preparing[0] == ['Ча', None]:
+                    self.prepared_message = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 24':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 25':
+                if self.pushed_a:
+                    self.prepared_message = None
+                    hero.destination = Cut_interactive(360, 364)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    self.barista_direction = 'влево'
+                    self.pushed_a = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 26':
+                if self.barista_preparing[0] == [None, None]:
+                    self.prepared_message = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 27':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.barista_list = None
+                    self.barista_preparing = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 28':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 29':
+                if self.barista_score[0] == self.barista_rules[0]:
+                    self.barista_machine = None
+                    self.barista_teatable = None
+                    self.barista_speach = None
+                    self.barista_score = None
+                    self.barista_rules = None
+                    self.barista_list = None
+                    self.barista_preparing = None
+                    self.barista_done_animation = None
+                    self.tutorial_barista_preparing = None
+                    self.tutorial_barista_list = None
+                    self.tutorial_barista_to_say = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 30':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 31':
+                if self.barista_score[1] == self.barista_rules[1]:
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+                if self.barista_score[0] == self.barista_rules[0]:
+                    self.barista_score = None
+                    self.barista_rules = None
+                    self.barista_machine = None
+                    self.barista_teatable = None
+                    self.barista_speach = None
+                    self.barista_list = None
+                    self.barista_preparing = None
+                    self.barista_done_animation = None
+                    self.tutorial_barista_preparing = None
+                    self.tutorial_barista_list = None
+                    self.tutorial_barista_to_say = None
+                    scene.act = scene.act + 2
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 32':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = None
+                    scene.act = scene.act - 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 33':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+            elif act[scene.act][0] == 'обучение 34':
+                if self.pushed_SPACE:
+                    self.prepared_message = None
+                    self.pushed_SPACE = False
+                    self.barista_list = None
+                    self.barista_preparing = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+
+        # передвижение персонажа в обучении
+        if act[scene.act][0] == 'реплика' or act[scene.act][0][0:8] == 'обучение' and int(act[scene.act][0][9:11]) < 29:
+            if hero.path_to_deal != []:
+                hero.walk()
+            else:
+                hero.direction = self.barista_direction
+
+        # ввод текста при первом обучении вводу текста
+        if act[scene.act][0] == 'обучение 15':
+            l = ''
+            if self.pushed_BACKSPACE:
+                if len(self.barista_says) < 2:
+                    self.barista_says = ''
+                else:
+                    self.barista_says = self.barista_says[0: len(self.barista_says) - 1]
+            else:
+                if self.pushed_SPACE:
+                    l = ' '
+                elif self.pushed_q:
+                    l = 'й'
+                elif self.pushed_w:
+                    l = 'ц'
+                elif self.pushed_e:
+                    l = 'у'
+                elif self.pushed_r:
+                    l = 'к'
+                elif self.pushed_t:
+                    l = 'е'
+                elif self.pushed_y:
+                    l = 'н'
+                elif self.pushed_u:
+                    l = 'г'
+                elif self.pushed_i:
+                    l = 'ш'
+                elif self.pushed_o:
+                    l = 'щ'
+                elif self.pushed_p:
+                    l = 'з'
+                elif self.pushed_LEFTBRACKET:
+                    l = 'х'
+                elif self.pushed_RIGHTBRACKET:
+                    l = 'ъ'
+                elif self.pushed_a:
+                    l = 'ф'
+                elif self.pushed_s:
+                    l = 'ы'
+                elif self.pushed_d:
+                    l = 'в'
+                elif self.pushed_f:
+                    l = 'а'
+                elif self.pushed_g:
+                    l = 'п'
+                elif self.pushed_h:
+                    l = 'р'
+                elif self.pushed_j:
+                    l = 'о'
+                elif self.pushed_k:
+                    l = 'л'
+                elif self.pushed_l:
+                    l = 'д'
+                elif self.pushed_SEMICOLON:
+                    l = 'ж'
+                elif self.pushed_QUOTE:
+                    l = 'э'
+                elif self.pushed_z:
+                    l = 'я'
+                elif self.pushed_x:
+                    l = 'ч'
+                elif self.pushed_c:
+                    l = 'с'
+                elif self.pushed_v:
+                    l = 'м'
+                elif self.pushed_b:
+                    l = 'и'
+                elif self.pushed_n:
+                    l = 'т'
+                elif self.pushed_m:
+                    l = 'ь'
+                elif self.pushed_COMMA:
+                    l = 'б'
+                elif self.pushed_PERIOD:
+                    l = 'ю'
+            self.barista_says = self.barista_says + l
+            if len(self.barista_says) == 1:
+                self.barista_says = self.barista_says.capitalize()
+            if self.barista_says == ' ':
+                self.barista_says = ''
+
+        # первое приготовление напитка
+        # приготовление эспрессо при первом приготовлении напитка
+        elif act[scene.act][0] == 'обучение 18':
+            if self.pushed_d and not self.barista_machine:
+                hero.destination = Cut_interactive(400, 412)
+                hero.find_path_to_deal(scene.room_map, hero.destination)
+                self.barista_machine = True
+                self.barista_direction = 'вправо'
+            if self.barista_machine:
+                if self.pushed_w:
+                    self.barista_preparing = [[None, 'Ки']]
+                elif self.pushed_a:
+                    self.barista_preparing = [['Эс', None]]
+        # продолжение первого приготовления
+        elif act[scene.act][0] == 'обучение 19':
+            if self.pushed_w:
+                self.barista_preparing [0][0] = None
+            elif self.pushed_a:
+                self.barista_preparing [0][1] = None
+
+        # приготовление эспрессо перед чаем
+        elif act[scene.act][0] == 'обучение 21':
+            if self.pushed_w:
+                self.barista_preparing[0] = [None]
+        # приготовление кипятка для чая
+        elif act[scene.act][0] == 'обучение 23':
+            if self.pushed_a:
+                self.barista_preparing[0][1] = None
+        # приготовление чая
+        elif act[scene.act][0] == 'обучение 26':
+            if self.pushed_w:
+                self.barista_preparing[0][0] = None
+
+        # первый и второй полный цикл
+        elif (act[scene.act][0] == 'обучение 29' or act[scene.act][0] == 'обучение 31') and scene.act_started == True:
+
+            # передвижение персонажа
+            if hero.path_to_deal != []:
+                hero.walk()
+            else:
+                hero.direction = self.barista_direction
+            if not self.barista_speach and not self.barista_machine and not self.barista_teatable:
+                if self.pushed_a:
+                    hero.destination = Cut_interactive(360, 364)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    self.barista_teatable = True
+                    self.barista_direction = 'влево'
+                elif self.pushed_d:
+                    hero.destination = Cut_interactive(400, 412)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    self.barista_machine = True
+                    self.barista_direction = 'вправо'
+                elif self.pushed_s:
+                    hero.destination = Cut_interactive(392, 436)
+                    hero.find_path_to_deal(scene.room_map, hero.destination)
+                    if self.tutorial_barista_to_say != []:
+                        self.barista_speach = True
+                    self.barista_direction = 'вниз'
+                self.pushed_a = False
+                self.pushed_s = False
+                self.pushed_d = False
+
+            # инициация областей
+            if hero.x == 392 and hero.y == 436 and self.pushed_SPACE and not self.barista_speach:
+                self.pushed_SPACE = False
+                if self.tutorial_barista_to_say != []:
+                    self.barista_speach = True
+            elif hero.x == 400 and hero.y == 412 and self.pushed_SPACE and not self.barista_machine:
+                self.pushed_SPACE = False
+                self.barista_machine = True
+            elif hero.x == 360 and hero.y == 364 and self.pushed_SPACE and not self.barista_teatable:
+                self.pushed_SPACE = False
+                self.barista_teatable = True
+
+            # разговор с гостем
+            if self.barista_speach:
+
+                # определение, что нужно сказать
+                if self.barista_to_say == None:
+                    self.barista_to_say = str(self.tutorial_barista_to_say[0])
+                    self.tutorial_barista_to_say.pop(0)
+                    self.barista_says = ''
+
+                # завершение диалога с гостем, если фраза введена правильно
+                elif self.barista_to_say == self.barista_says:
+                    self.barista_says = None
+                    self.barista_to_say = None
+                    self.barista_speach = False
+
+                    # добавление напитков в заказ
+                    if act[scene.act][0] == 'обучение 29':
+                        self.barista_list = list(self.tutorial_barista_list)
+                        self.barista_preparing = list(self.tutorial_barista_preparing)
+                        self.tutorial_barista_list = None
+                        self.tutorial_barista_preparing = None
+                    if act[scene.act][0] == 'обучение 31':
+                        if len(self.tutorial_barista_list) == 10 or len(self.tutorial_barista_list) == 3:
+                            # 1
+                            self.barista_list.append(list(self.tutorial_barista_list[0]))
+                            self.tutorial_barista_list.pop(0)
+                            self.barista_preparing.append(list(self.tutorial_barista_preparing[0]))
+                            self.tutorial_barista_preparing.pop(0)
+                            # 2
+                            self.barista_list.append(list(self.tutorial_barista_list[0]))
+                            self.tutorial_barista_list.pop(0)
+                            self.barista_preparing.append(list(self.tutorial_barista_preparing[0]))
+                            self.tutorial_barista_preparing.pop(0)
+                            # 3
+                            self.barista_list.append(list(self.tutorial_barista_list[0]))
+                            self.tutorial_barista_list.pop(0)
+                            self.barista_preparing.append(list(self.tutorial_barista_preparing[0]))
+                            self.tutorial_barista_preparing.pop(0)
+                        elif len(self.tutorial_barista_list) == 7 or len(self.tutorial_barista_list) == 4:
+                            self.barista_list.append(list(self.tutorial_barista_list[0]))
+                            self.tutorial_barista_list.pop(0)
+                            self.barista_preparing.append(list(self.tutorial_barista_preparing[0]))
+                            self.tutorial_barista_preparing.pop(0)
+                        elif len(self.tutorial_barista_list) == 6:
+                            # 1
+                            self.barista_list.append(list(self.tutorial_barista_list[0]))
+                            self.tutorial_barista_list.pop(0)
+                            self.barista_preparing.append(list(self.tutorial_barista_preparing[0]))
+                            self.tutorial_barista_preparing.pop(0)
+                            # 2
+                            self.barista_list.append(list(self.tutorial_barista_list[0]))
+                            self.tutorial_barista_list.pop(0)
+                            self.barista_preparing.append(list(self.tutorial_barista_preparing[0]))
+                            self.tutorial_barista_preparing.pop(0)
+
+                # добавление буквы в высказывание героини
+                else:
+                    l = ''
+                    if self.pushed_BACKSPACE:
+                        if len(self.barista_says) < 2:
+                            self.barista_says = ''
+                        else:
+                            self.barista_says = self.barista_says[0: len(self.barista_says) - 1]
+                    # перечисление всех клавиш
+                    else:
+                        if self.pushed_SPACE:
+                            l = ' '
+                        elif self.pushed_q:
+                            l = 'й'
+                        elif self.pushed_w:
+                            l = 'ц'
+                        elif self.pushed_e:
+                            l = 'у'
+                        elif self.pushed_r:
+                            l = 'к'
+                        elif self.pushed_t:
+                            l = 'е'
+                        elif self.pushed_y:
+                            l = 'н'
+                        elif self.pushed_u:
+                            l = 'г'
+                        elif self.pushed_i:
+                            l = 'ш'
+                        elif self.pushed_o:
+                            l = 'щ'
+                        elif self.pushed_p:
+                            l = 'з'
+                        elif self.pushed_LEFTBRACKET:
+                            l = 'х'
+                        elif self.pushed_RIGHTBRACKET:
+                            l = 'ъ'
+                        elif self.pushed_a:
+                            l = 'ф'
+                        elif self.pushed_s:
+                            l = 'ы'
+                        elif self.pushed_d:
+                            l = 'в'
+                        elif self.pushed_f:
+                            l = 'а'
+                        elif self.pushed_g:
+                            l = 'п'
+                        elif self.pushed_h:
+                            l = 'р'
+                        elif self.pushed_j:
+                            l = 'о'
+                        elif self.pushed_k:
+                            l = 'л'
+                        elif self.pushed_l:
+                            l = 'д'
+                        elif self.pushed_SEMICOLON:
+                            l = 'ж'
+                        elif self.pushed_QUOTE:
+                            l = 'э'
+                        elif self.pushed_z:
+                            l = 'я'
+                        elif self.pushed_x:
+                            l = 'ч'
+                        elif self.pushed_c:
+                            l = 'с'
+                        elif self.pushed_v:
+                            l = 'м'
+                        elif self.pushed_b:
+                            l = 'и'
+                        elif self.pushed_n:
+                            l = 'т'
+                        elif self.pushed_m:
+                            l = 'ь'
+                        elif self.pushed_COMMA:
+                            l = 'б'
+                        elif self.pushed_PERIOD:
+                            l = 'ю'
+                    self.barista_says = self.barista_says + l
+                    # заглавная первая буква
+                    if len(self.barista_says) == 1:
+                        self.barista_says = self.barista_says.capitalize()
+                    if self.barista_says == ' ':
+                        self.barista_says = ''
+
+            # механика слотов
+            self.barista_cooking = None
+
+            if self.barista_machine:
+                if len(self.barista_list) == len(self.barista_done_animation[1]) or self.barista_list == [] or self.pushed_SPACE:
+                    self.barista_machine = False
+                if self.pushed_w:
+                    self.barista_cooking = 'Эс'
+                elif self.pushed_a:
+                    self.barista_cooking = 'Ки'
+                elif self.pushed_d:
+                    self.barista_cooking = 'Мо'
+                elif self.pushed_s:
+                    self.barista_cooking = 'Сл'
+
+            if self.barista_teatable:
+                if len(self.barista_list) == len(self.barista_done_animation[1]) or self.barista_list == [] or self.pushed_SPACE:
+                    self.barista_teatable = False
+                if self.pushed_w:
+                    self.barista_cooking = 'Ча'
+                elif self.pushed_a:
+                    self.barista_cooking = 'Ка'
+                elif self.pushed_d:
+                    self.barista_cooking = 'Си'
+                elif self.pushed_s:
+                    self.barista_cooking = 'Фи'
+
+            # сверка корректности добавляемого ингредиента
+            if self.barista_cooking != None:
+                i = 0
+                while i < len(self.barista_preparing) and i < self.barista_skill + len(self.barista_done_animation[1]) and self.barista_cooking not in self.barista_preparing[i]:
+                    i += 1
+                # добавление ингредиента, если он корректен и не превышает скилл
+                if i < len(self.barista_preparing) and i < self.barista_skill + len(self.barista_done_animation[1]):
+                    self.barista_preparing[i][self.barista_preparing[i].index(self.barista_cooking)] = None
+                    # закрытие позиции, если заказ готов
+                    if self.barista_preparing[i].count(None) == len(self.barista_preparing[i]):
+                        self.barista_score[0] += 1
+                        self.barista_done_animation[0].append(60)
+                        self.barista_done_animation[1].append(i)
+                        self.barista_done_animation[2].append(True)
+                else:
+                    if act[scene.act][0] == 'обучение 31':
+                        self.barista_score[1] += 1
+
+            # удаление позиции из списка заказов
+            if self.barista_done_animation != [[], [], []]:
+
+                # после анимации засчитывания
+                i = 0
+                done = False
+                while i <= len(self.barista_done_animation[1]) - 1 and done == False:
+                    if self.barista_done_animation[0][i] == 255:
+                        for j in range(len(self.barista_done_animation[1])):
+                            if self.barista_done_animation[1][j] > self.barista_done_animation[1][i]:
+                                self.barista_done_animation[1][j] += -1
+                        self.barista_list.pop(self.barista_done_animation[1][i])
+                        self.barista_preparing.pop(self.barista_done_animation[1][i])
+                        self.barista_done_animation[0].pop(i)
+                        self.barista_done_animation[1].pop(i)
+                        self.barista_done_animation[2].pop(i)
+                        done = True
+                    i += 1
+                for i in range(len(self.barista_done_animation[0])):
+                    self.barista_done_animation[0][i] += 5
 
 
     # рендер всей сцены
@@ -1046,7 +1796,7 @@ class Game:
                 l += 1
 
         # отрисовка реплик
-        if (act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя') and self.prepared_message != None :
+        if (act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя' or act[scene.act][0][0:8] == 'обучение') and self.prepared_message != None :
             x = 220
             if scene.room == 1:
                 y = 480
@@ -1059,10 +1809,10 @@ class Game:
             pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, w, 200), 2)
             game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             message = game_font.render(act[scene.act][1], False, 'Black')
-            scene_surface.blit(message, (x + (act[scene.act][0] == 'реплика') * 120, y))
+            scene_surface.blit(message, (x + (act[scene.act][0] == 'реплика' or act[scene.act][0][0:8] == 'обучение') * 120, y))
 
             # портрет персонажа
-            if act[scene.act][0] == 'реплика':
+            if act[scene.act][0] == 'реплика' or act[scene.act][0][0:8] == 'обучение':
                 for character in scene.plot_characters[scene.room-1]:
                     if character.name == act[scene.act][1]:
                         scene_surface.blit(character.head, (x + 10, y + 20))
@@ -1077,7 +1827,7 @@ class Game:
                     message = game_font.render(line, False, 'Black')
                 else:
                     message = game_font.render(line, False, (125, 125, 125))
-                scene_surface.blit(message, (x + (act[scene.act][0] == 'реплика') * 120, y + 30 + l * 20))
+                scene_surface.blit(message, (x + (act[scene.act][0] == 'реплика' or act[scene.act][0][0:8] == 'обучение') * 120, y + 30 + l * 20))
                 l += 1
 
         # рамки сцен
@@ -1087,6 +1837,20 @@ class Game:
         if scene.room == 2:
             pygame.draw.rect(scene_surface, 'Black', (0, 0, 207, 768))
             pygame.draw.rect(scene_surface, 'Black', (847, 0, 177, 768))
+
+        # рамки
+        if not self.pause:
+            if scene.room == 1:
+                pygame.draw.rect(scene_surface, (80, 80, 80), (0, 84, 1024, 606), 4)
+                pygame.draw.rect(scene_surface, 'Gray', (0 + 4, 84 + 4, 1024 - 8, 606 - 8), 4)
+
+            if scene.room == 2:
+                pygame.draw.rect(scene_surface, (80, 80, 80), (206, 0, 644, 768), 4)
+                pygame.draw.rect(scene_surface, 'Gray', (206 + 4, 0 + 4, 644 - 8, 768 - 8), 4)
+
+            if scene.room == 3:
+                pygame.draw.rect(scene_surface, (80, 80, 80), (0, 0, 1024, 768), 4)
+                pygame.draw.rect(scene_surface, 'Gray', (0 + 4, 0 + 4, 1024 - 8, 768 - 8), 4)
 
         # затемнение при переходе между комнатами
         if self.fade_animation != None:
@@ -1125,6 +1889,10 @@ class Game:
                 scene_surface.blit(message, (400 + record[0], 300 + record[1]))
             if self.timer:
                 self.chapter_timer += 1
+
+
+    # рендер мини - игр
+    def mini_game_render (self, scene_surface, hero, scene):
 
         if self.barista_game:
 
@@ -1283,7 +2051,7 @@ class Game:
                     x = 500
                     y = 377
                     w = 43
-                    print_info = ((x, y, 'Эс'), (x, y + w * 2, 'Сл'), (x - w, y + w, 'Ки'), (x + w, y + w, 'Мо'))
+                    print_info = ((x, y, 'Эс'), (x - w, y + w, 'Ки'), (x + w, y + w, 'Мо'), (x, y + w * 2, 'Сл'))
                     for record in print_info:
                         pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
                         pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
@@ -1296,7 +2064,7 @@ class Game:
                     x = 280
                     y = 327
                     w = 43
-                    print_info = ((x, y, 'Ча'), (x, y + w * 2, 'Ка'), (x - w, y + w, 'Си'), (x + w, y + w, 'Са'))
+                    print_info = ((x, y, 'Ча'), (x - w, y + w, 'Ка'), (x + w, y + w, 'Си'), (x, y + w * 2, 'Фи'))
                     for record in print_info:
                         pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
                         pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
@@ -1304,21 +2072,379 @@ class Game:
                         message = game_font.render(record[2], False, 'Black')
                         scene_surface.blit(message, (record[0] + 5, record[1] + 5))
 
+        if act[scene.act][0][0:8] == 'обучение':
 
-    def frames_render (self, final_surface, scene):
-        if self.screen_mod == 2:
-            if not self.pause:
-                if scene.room == 1:
-                    pygame.draw.rect(final_surface, (80, 80, 80), (0, 84, 1024, 606), 4)
-                    pygame.draw.rect(final_surface, 'Gray', (0 + 4, 84 + 4, 1024 - 8, 606 - 8), 4)
+            if act[scene.act][0] in ('обучение 05', 'обучение 06', 'обучение 07')  and scene.act_started == True:
+                x = 500
+                y = 377
+                w = 43
+                print_info = ((x, y, 'Эс'), (x - w, y + w, 'Ки'), (x + w, y + w, 'Мо'), (x, y + w * 2, 'Сл'))
+                for record in print_info:
+                    pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render(record[2], False, 'Black')
+                    scene_surface.blit(message, (record[0] + 5, record[1] + 5))
 
-                if scene.room == 2:
-                    pygame.draw.rect(final_surface, (80, 80, 80), (206, 0, 644, 768), 4)
-                    pygame.draw.rect(final_surface, 'Gray', (206 + 4, 0 + 4, 644 - 8, 768 - 8), 4)
+            elif (act[scene.act][0] == 'обучение 09' or act[scene.act][0] == 'обучение 10') and scene.act_started == True:
+                x = 280
+                y = 327
+                w = 43
+                print_info = ((x, y, 'Ча'), (x - w, y + w, 'Ка'), (x + w, y + w, 'Си'), (x, y + w * 2, 'Фи'))
+                for record in print_info:
+                    pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render(record[2], False, 'Black')
+                    scene_surface.blit(message, (record[0] + 5, record[1] + 5))
 
-                if scene.room == 3:
-                    pygame.draw.rect(final_surface, (80, 80, 80), (0, 0, 1024, 768), 4)
-                    pygame.draw.rect(final_surface, 'Gray', (0 + 4, 0 + 4, 1024 - 8, 768 - 8), 4)
+            elif act[scene.act][0] in ('обучение 12', 'обучение 13', 'обучение 14', 'обучение 15') and scene.act_started == True:
+                x = 220
+                y = 150
+                w = 280
+                h = 150
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, w, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, w, h), 2)
+                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                message = game_font.render('Гость', False, 'Black')
+                scene_surface.blit(message, (x, y))
+                message = game_font.render('Здравствуйте', False, 'Black')
+                scene_surface.blit(message, (x, y + 25))
+                message = game_font.render('Полина', False, 'Black')
+                scene_surface.blit(message, (x + w - 80, y + 50))
+                message = game_font.render(self.barista_says, False, 'Black')
+                scene_surface.blit(message, (x + w - 20 - len(self.barista_says) * 10, y + 75))
+                message = game_font.render(self.barista_to_say, False, (80, 80, 80))
+                scene_surface.blit(message, (x + w - 20 - len(self.barista_to_say) * 10, y + 100))
+
+            elif act[scene.act][0] in ('обучение 16', 'обучение 17', 'обучение 18', 'обучение 19') and scene.act_started == True:
+
+                x = 500
+                y = 377
+                w = 43
+                print_info = ((x, y, 'Эс'), (x - w, y + w, 'Ки'), (x + w, y + w, 'Мо'), (x, y + w * 2, 'Сл'))
+                for record in print_info:
+                    pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render(record[2], False, 'Black')
+                    scene_surface.blit(message, (record[0] + 5, record[1] + 5))
+
+                x = 505
+                y = 150
+                h = 50
+                # строка "Выполняемые заказы"
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 300, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 300, h), 2)
+                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                message = game_font.render('Выполняемые заказы:', False, 'Black')
+                scene_surface.blit(message, (x, y + 10))
+
+                # поля позиций в заказе
+                for line in range(len(self.barista_list)):
+                    rlc = h * (line + 1 + (self.barista_skill < line + 1))  # relative line coordinate
+
+                    # отображение фона полей заказов, если это не выполненный заказ
+                    pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + rlc, 300, h))
+
+                    # названия заказа
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y + rlc, 300, h), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render(self.barista_list[line][0], False, 'Black')
+                    scene_surface.blit(message, (x, y + 10 + rlc))
+
+                    # перечисление ингредиентов
+                    for i in range(1, len(self.barista_list[line])):
+                        # отображение засчитанного ингредиента темной иконкой
+                        if self.barista_preparing[line][i - 1] == None:
+                            pygame.draw.rect(scene_surface, (100, 100, 100), (x + 100 - 4 + h * (i - 1), y + rlc, h, h))
+                        # отображение остальных иконок
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (x + 100 - 4 + h * (i - 1), y + rlc, h, h), 2)
+                        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                        message = game_font.render(self.barista_list[line][i], False, 'Black')
+                        scene_surface.blit(message, (x + 100 + 5 + h * (i - 1), y + 10 + rlc))
+
+            elif act[scene.act][0] in ('обучение 20', 'обучение 21', 'обучение 22', 'обучение 23', 'обучение 24', 'обучение 25', 'обучение 26', 'обучение 27') and scene.act_started == True:
+                if act[scene.act][0] in ('обучение 20', 'обучение 21', 'обучение 22', 'обучение 23', 'обучение 24'):
+                    x = 500
+                    y = 377
+                    w = 43
+                    print_info = ((x, y, 'Эс'), (x - w, y + w, 'Ки'), (x + w, y + w, 'Мо'), (x, y + w * 2, 'Сл'))
+                    for record in print_info:
+                        pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
+                        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                        message = game_font.render(record[2], False, 'Black')
+                        scene_surface.blit(message, (record[0] + 5, record[1] + 5))
+
+                if act[scene.act][0] == 'обучение 26' or act[scene.act][0] == 'обучение 27':
+                    x = 280
+                    y = 327
+                    w = 43
+                    print_info = ((x, y, 'Ча'), (x - w, y + w, 'Ка'), (x + w, y + w, 'Си'), (x, y + w * 2, 'Фи'))
+                    for record in print_info:
+                        pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
+                        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                        message = game_font.render(record[2], False, 'Black')
+                        scene_surface.blit(message, (record[0] + 5, record[1] + 5))
+
+                x = 505
+                y = 150
+                h = 50
+                # строка "Выполняемые заказы"
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 300, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 300, h), 2)
+                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                message = game_font.render('Выполняемые заказы:', False, 'Black')
+                scene_surface.blit(message, (x, y + 10))
+                if len(self.barista_list) == 2:
+                    pygame.draw.rect(scene_surface, 'Gray', (
+                    x - 4, y + h * (self.barista_skill + 1), 300, h))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (
+                    x - 4, y + h * (self.barista_skill + 1), 300, h), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render('В очереди:', False, 'Black')
+                    scene_surface.blit(message, (x, y + 10 + h * (self.barista_skill + 1)))
+
+                # поля позиций в заказе
+                for line in range(len(self.barista_list)):
+                    rlc = h * (line + 1 + (self.barista_skill < line + 1))  # relative line coordinate
+
+                    # отображение фона полей заказов, если это не выполненный заказ
+                    pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + rlc, 300, h))
+
+                    # названия заказа
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y + rlc, 300, h), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render(self.barista_list[line][0], False, 'Black')
+                    scene_surface.blit(message, (x, y + 10 + rlc))
+
+                    # перечисление ингредиентов
+                    for i in range(1, len(self.barista_list[line])):
+                        # отображение засчитанного ингредиента темной иконкой
+                        if self.barista_preparing[line][i - 1] == None:
+                            pygame.draw.rect(scene_surface, (100, 100, 100), (x + 100 - 4 + h * (i - 1), y + rlc, h, h))
+                        # отображение остальных иконок
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (x + 100 - 4 + h * (i - 1), y + rlc, h, h), 2)
+                        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                        message = game_font.render(self.barista_list[line][i], False, 'Black')
+                        scene_surface.blit(message, (x + 100 + 5 + h * (i - 1), y + 10 + rlc))
+
+            elif act[scene.act][0] == 'обучение 28' and scene.act_started == True:
+                # счет игры: заказы
+                x = 235
+                y = 473
+                h = 50
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 150, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 150, h), 2)
+                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                message = game_font.render('Заказов:', False, 'Black')
+                scene_surface.blit(message, (x, y + 10))
+                message = game_font.render('0/3', False, 'Black')
+                scene_surface.blit(message, (x + 100, y + 10))
+
+            elif act[scene.act][0] == 'обучение 30' and scene.act_started == True:
+                # счет игры: ошибки
+                x = 235
+                y = 523  # 473
+                h = 50
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 150, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 150, h), 2)
+                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                message = game_font.render('Ошибок:', False, 'Black')
+                scene_surface.blit(message, (x, y + 10))
+                message = game_font.render('0/4', False, 'Black')
+                scene_surface.blit(message, (x + 100, y + 10))
+
+            elif (act[scene.act][0] == 'обучение 29' or act[scene.act][0] == 'обучение 31') and scene.act_started == True:
+
+                # счет игры: заказы
+                x = 235
+                y = 473
+                h = 50
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 150, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 150, h), 2)
+                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                message = game_font.render('Заказов:', False, 'Black')
+                scene_surface.blit(message, (x, y + 10))
+                message = game_font.render(str(self.barista_score[0]) + '/' + str(self.barista_rules[0]), False, 'Black')
+                scene_surface.blit(message, (x + 100 - (len(str(self.barista_score[0])) - 1) * 10, y + 10))
+
+                # счет игры: ошибки
+                if act[scene.act][0] == 'обучение 31':
+                    y = y + 50
+                    pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 150, h))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 150, h), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render('Ошибок:', False, 'Black')
+                    scene_surface.blit(message, (x, y + 10))
+                    message = game_font.render(str(self.barista_score[1]) + '/' + str(self.barista_rules[1]), False, 'Black')
+                    scene_surface.blit(message, (x + 100 - (len(str(self.barista_score[0])) - 1) * 10, y + 10))
+
+                # интерфейс списка заказов
+                if self.barista_list != []:
+
+                    x = 505
+                    y = 150
+                    h = 50
+                    # строка "Выполняемые заказы"
+                    pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 300, h))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 300, h), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render('Выполняемые заказы:', False, 'Black')
+                    scene_surface.blit(message, (x, y + 10))
+                    # строка "Заказы в очереди"
+                    if self.barista_skill + len(self.barista_done_animation[1]) < len(self.barista_list):
+                        pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + h * (self.barista_skill + len(self.barista_done_animation[1]) + 1), 300, h))
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y + h * (self.barista_skill + len(self.barista_done_animation[1]) + 1), 300, h), 2)
+                        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                        message = game_font.render('В очереди:', False, 'Black')
+                        scene_surface.blit(message, (x, y + 10 + h * (self.barista_skill + len(self.barista_done_animation[1]) + 1)))
+
+                    # поля позиций в заказе
+                    for line in range(len(self.barista_list)):
+                        rlc = h * (line + 1 + (self.barista_skill + len(self.barista_done_animation[1]) < line + 1))  # relative line coordinate
+
+                        # отображение фона полей заказов, если это не выполненный заказ
+                        if self.barista_done_animation == [[], [], []] or line not in self.barista_done_animation[1]:
+                            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + rlc, 300, h))
+
+                        # отображение фона поля заказа, если заказ выполнен
+                        elif self.barista_done_animation != [[], [], []] and line in self.barista_done_animation[1] and self.barista_done_animation[2][self.barista_done_animation[1].index(line)] == True:
+                            ind = self.barista_done_animation[1].index(line)
+                            pygame.draw.rect(scene_surface, (
+                            self.barista_done_animation[0][ind], self.barista_done_animation[0][ind],
+                            self.barista_done_animation[0][ind]), (x - 4, y + rlc, 300, h))
+
+                        # названия заказа
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y + rlc, 300, h), 2)
+                        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                        message = game_font.render(self.barista_list[line][0], False, 'Black')
+                        scene_surface.blit(message, (x, y + 10 + rlc))
+
+                        # перечисление ингредиентов
+                        for i in range(1, len(self.barista_list[line])):
+                            # отображение засчитанного ингредиента темной иконкой
+                            if self.barista_preparing[line][i - 1] == None:
+                                pygame.draw.rect(scene_surface, (100, 100, 100), (x + 100 - 4 + h * (i - 1), y + rlc, h, h))
+                            # отображение остальных иконок
+                            pygame.draw.rect(scene_surface, (80, 80, 80), (x + 100 - 4 + h * (i - 1), y + rlc, h, h), 2)
+                            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                            message = game_font.render(self.barista_list[line][i], False, 'Black')
+                            scene_surface.blit(message, (x + 100 + 5 + h * (i - 1), y + 10 + rlc))
+
+                # окно диалога с гостем
+                if self.barista_speach:
+                    x = 220
+                    y = 150
+                    w = 280
+                    h = 150
+                    pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, w, h))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, w, h), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render('Гость', False, 'Black')
+                    scene_surface.blit(message, (x, y))
+                    message = game_font.render('Здравствуйте', False, 'Black')
+                    scene_surface.blit(message, (x, y + 25))
+                    message = game_font.render('Полина', False, 'Black')
+                    scene_surface.blit(message, (x + w - 80, y + 50))
+                    message = game_font.render(self.barista_says, False, 'Black')
+                    scene_surface.blit(message, (x + w - 20 - len(self.barista_says) * 10, y + 75))
+                    message = game_font.render(self.barista_to_say, False, (80, 80, 80))
+                    scene_surface.blit(message, (x + w - 20 - len(self.barista_to_say) * 10, y + 100))
+
+                # интерфейс опций кофе-машины
+                if self.barista_machine:
+                    x = 500
+                    y = 377
+                    w = 43
+                    print_info = ((x, y, 'Эс'), (x - w, y + w, 'Ки'), (x + w, y + w, 'Мо'), (x, y + w * 2, 'Сл'))
+                    for record in print_info:
+                        pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
+                        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                        message = game_font.render(record[2], False, 'Black')
+                        scene_surface.blit(message, (record[0] + 5, record[1] + 5))
+
+                # интерфейс опций чайного столика
+                if self.barista_teatable:
+                    x = 280
+                    y = 327
+                    w = 43
+                    print_info = ((x, y, 'Ча'), (x - w, y + w, 'Ка'), (x + w, y + w, 'Си'), (x, y + w * 2, 'Фи'))
+                    for record in print_info:
+                        pygame.draw.rect(scene_surface, 'Gray', (record[0], record[1], 45, 45))
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (record[0], record[1], 45, 45), 2)
+                        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                        message = game_font.render(record[2], False, 'Black')
+                        scene_surface.blit(message, (record[0] + 5, record[1] + 5))
+
+            elif act[scene.act][0] == 'обучение 33' and scene.act_started == True:
+                x = 220  # 200
+                y = 150
+                w = 280  # 600
+                h = 150
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, w, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, w, h), 2)
+                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                message = game_font.render('Гость', False, 'Black')
+                scene_surface.blit(message, (x, y))
+                message = game_font.render('Здравствуйте', False, 'Black')
+                scene_surface.blit(message, (x, y + 25))
+                message = game_font.render('15', False, 'Black')
+                scene_surface.blit(message, (x + w - 30 - 11, y + 25))
+                message = game_font.render('Полина', False, 'Black')
+                scene_surface.blit(message, (x + w - 80, y + 50))
+                message = game_font.render(' ', False, 'Black')
+                scene_surface.blit(message, (x + w - 30, y + 75))
+                message = game_font.render('Привет', False, (80, 80, 80))
+                scene_surface.blit(message, (x + w - 80, y + 100))
+
+            elif act[scene.act][0] == 'обучение 34' and scene.act_started == True:
+                x = 505
+                y = 150
+                h = 50
+                # строка "Выполняемые заказы"
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 300, h))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 300, h), 2)
+                game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                message = game_font.render('Выполняемые заказы:', False, 'Black')
+                scene_surface.blit(message, (x, y + 10))
+                if len(self.barista_list) == 2:
+                    pygame.draw.rect(scene_surface, 'Gray', (
+                    x - 4, y + h * (self.barista_skill + 1), 300, h))
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (
+                    x - 4, y + h * (self.barista_skill + 1), 300, h), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render('В очереди:', False, 'Black')
+                    scene_surface.blit(message, (x, y + 10 + h * (self.barista_skill + 1)))
+
+                # поля позиций в заказе
+                for line in range(len(self.barista_list)):
+                    rlc = h * (line + 1 + (self.barista_skill < line + 1))  # relative line coordinate
+
+                    # отображение фона полей заказов, если это не выполненный заказ
+                    pygame.draw.rect(scene_surface, 'Gray', (x - 4, y + rlc, 300, h))
+
+                    # названия заказа
+                    pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y + rlc, 300, h), 2)
+                    game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                    message = game_font.render(self.barista_list[line][0], False, 'Black')
+                    scene_surface.blit(message, (x, y + 10 + rlc))
+                    message = game_font.render('15', False, 'Black')
+                    scene_surface.blit(message, (x + 270 - 11, y + 10 + rlc))
+
+                    # перечисление ингредиентов
+                    for i in range(1, len(self.barista_list[line])):
+                        # отображение засчитанного ингредиента темной иконкой
+                        if self.barista_preparing[line][i - 1] == None:
+                            pygame.draw.rect(scene_surface, (100, 100, 100), (x + 100 - 4 + h * (i - 1), y + rlc, h, h))
+                        # отображение остальных иконок
+                        pygame.draw.rect(scene_surface, (80, 80, 80), (x + 100 - 4 + h * (i - 1), y + rlc, h, h), 2)
+                        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+                        message = game_font.render(self.barista_list[line][i], False, 'Black')
+                        scene_surface.blit(message, (x + 100 + 5 + h * (i - 1), y + 10 + rlc))
 
 
 if __name__ == '__main__':
