@@ -81,7 +81,7 @@ stages = {1 : {'СТАДИЯ' : '1',
                                  2: ((664, 132, 684, 166, 'Files/Images/S1R2/room_kitchen_chair_2.png', 678, 150, 1, 'вниз'),
                                      (664, 296, 682, 278, 'Files/Images/S1R2/room_kitchen_chair_1.png', 678, 280, 1, 'вверх'),
                                      (664, 332, 684, 362, 'Files/Images/S1R2/room_kitchen_chair_2.png', 678, 344, 2, 'вниз'),
-                                     (664, 496, 682, 472, 'Files/Images/S1R2/room_kitchen_chair_1.png', 678, 474, 2, 'вверх')
+                                     (664, 488, 682, 472, 'Files/Images/S1R2/room_kitchen_chair_1.png', 678, 474, 2, 'вверх')
                                      ),
                                  3: ((164, 260, 155, 194, 'Files/Images/S1R3/room_large_chair_1.png', 98, 174, 1, 'вправо'), # коричневый стол слева вверху
                                      (320, 200, 315, 140, 'Files/Images/S1R3/room_large_chair_2.png', 300, 104, 1, 'вниз-влево'), #

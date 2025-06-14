@@ -56,7 +56,7 @@ while game.running:
             for character in scene.characters[scene.room-1]:
                 scene.interactive, go_away = character.decision(game.timer, scene.room_map, scene.interactive, can_go_away)
             # передвижение NPC
-                if character.path_to_deal != None:
+                if character.path_to_deal != []:
                     character.walk()
             # если NPC решил уйти
                 if go_away == True:

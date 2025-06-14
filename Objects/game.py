@@ -73,7 +73,6 @@ class Game:
         self.barista_game = False
         # region
         self.barista_start_timer = None
-        self.barista_direction = None
         self.barista_skill = 1
         self.barista_rules = (20, 4)
         self.barista_cook_time = None
@@ -451,7 +450,7 @@ class Game:
         if scene.act_started == False:
             print(act[scene.act])
             if act[scene.act][0] == 'герой идет':
-                hero.destination = Cut_interactive(act[scene.act][1], act[scene.act][2])
+                hero.destination = Cut_interactive(act[scene.act][1])
                 hero.find_path_to_deal(scene.room_map, hero.destination)
             elif act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя':
                 self.message_preparing(act[scene.act][2], True)
@@ -472,11 +471,10 @@ class Game:
                 i = 0
                 while scene.plot_characters[scene.room-1][i].name != act[scene.act][1]:
                     i += 1
-                scene.plot_characters[scene.room-1][i].destination = Cut_interactive(act[scene.act][2], act[scene.act][3])
+                scene.plot_characters[scene.room-1][i].destination = Cut_interactive(act[scene.act][2])
                 scene.plot_characters[scene.room-1][i].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][i].destination)
             elif act[scene.act][0] == 'ОБУЧЕНИЕ БАРИСТА':
                 self.tutorial_barista_game = True
-                self.barista_direction = 'вниз'
             elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
                 self.barista_game = True
                 self.barista_start_timer = [pygame.USEREVENT + 3, 3]
@@ -485,7 +483,6 @@ class Game:
                 hero.y = 300
                 hero.direction = 'вниз'
                 hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
-                self.barista_direction = 'вниз'
                 self.barista_rules = (20, 4)
                 self.barista_list = []
                 self.barista_preparing = []
@@ -567,7 +564,6 @@ class Game:
             elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
                 if self.pushed_TAB or self.barista_score[2] == True:
                     self.barista_game = False
-                    self.barista_direction = None
                     self.barista_list = None
                     self.barista_preparing = None
                     self.barista_done_animation = None
@@ -616,28 +612,22 @@ class Game:
     def s_barista_walk (self, hero, scene):
         if hero.path_to_deal != []:
             hero.walk()
-        else:
-            hero.direction = self.barista_direction
         if not self.barista_speach and not self.barista_machine and not self.barista_teatable:
             # if self.pushed_w:
-            #     hero.destination = Cut_interactive(420, 172)
+            #     hero.destination = Cut_interactive((420, 172, вверх))
             #     hero.find_path_to_deal(scene.room_map, hero.destination)
-            #     self.barista_direction = 'вверх'
             if self.pushed_a:
-                hero.destination = Cut_interactive(360, 364)
+                hero.destination = Cut_interactive((360, 364, 'влево'))
                 hero.find_path_to_deal(scene.room_map, hero.destination)
                 self.barista_teatable = True
-                self.barista_direction = 'влево'
             elif self.pushed_d:
-                hero.destination = Cut_interactive(400, 412)
+                hero.destination = Cut_interactive((400, 412, 'вправо'))
                 hero.find_path_to_deal(scene.room_map, hero.destination)
                 self.barista_machine = True
-                self.barista_direction = 'вправо'
             elif self.pushed_s:
-                hero.destination = Cut_interactive(392, 436)
+                hero.destination = Cut_interactive((392, 436, 'вниз'))
                 hero.find_path_to_deal(scene.room_map, hero.destination)
                 self.barista_speach = True
-                self.barista_direction = 'вниз'
             self.pushed_w = False
             self.pushed_a = False
             self.pushed_s = False
@@ -865,23 +855,23 @@ class Game:
                 self.barista_score[1] += 1
     def s_barista_wait_guests_walk(self, scene):
         # передвижение людей в очереди на кассу
-        places = ((392, 568), (444, 580), (500, 560), (540, 600))
+        places = ((392, 568, 'вверх'), (444, 580, 'вверх-влево'), (500, 560, 'вниз-влево'), (540, 600, 'влево'))
         for i in range(len(self.barista_queue)):
             for j in range(len(scene.plot_characters[scene.room - 1])):
                 if scene.plot_characters[scene.room-1][j].name == self.barista_queue[i][0]:
                     if scene.plot_characters[scene.room-1][j].x != places[i][0] and scene.plot_characters[scene.room-1][j].y != places[i][1] and scene.plot_characters[scene.room-1][j].path_to_deal == []:
-                        scene.plot_characters[scene.room-1][j].destination = Cut_interactive(places[i][0], places[i][1])
+                        scene.plot_characters[scene.room-1][j].destination = Cut_interactive(places[i])
                         scene.plot_characters[scene.room-1][j].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][j].destination)
                     elif scene.plot_characters[scene.room-1][j].x != places[i][0] and scene.plot_characters[scene.room-1][j].y != places[i][1] and scene.plot_characters[scene.room-1][j].path_to_deal != []:
                         scene.plot_characters[scene.room-1][j].walk()
 
         # передвижение людей в очереди за заказом
-        places = ((576, 540), (560, 512), (588, 488), (568, 472))
+        places = ((576, 540, 'вниз'), (560, 512, 'вниз-вправо'), (588, 488, 'вниз-влево'), (568, 472, 'влево'))
         for i in range(len(self.barista_queue_wait)):
             for j in range(len(scene.plot_characters[scene.room - 1])):
                 if scene.plot_characters[scene.room - 1][j].name == self.barista_queue_wait[i][0]:
                     if scene.plot_characters[scene.room - 1][j].x != places[i][0] and scene.plot_characters[scene.room - 1][j].y != places[i][1] and scene.plot_characters[scene.room - 1][j].path_to_deal == []:
-                        scene.plot_characters[scene.room - 1][j].destination = Cut_interactive(places[i][0], places[i][1])
+                        scene.plot_characters[scene.room - 1][j].destination = Cut_interactive(places[i])
                         scene.plot_characters[scene.room - 1][j].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room - 1][j].destination)
                     elif scene.plot_characters[scene.room - 1][j].x != places[i][0] and scene.plot_characters[scene.room - 1][j].y != places[i][1] and scene.plot_characters[scene.room - 1][j].path_to_deal != []:
                         scene.plot_characters[scene.room - 1][j].walk()
@@ -905,12 +895,12 @@ class Game:
                 self.barista_queue_wait.pop(i)
         # если очередь уходящих гостей не пустая
         if self.barista_queue_away != []:
-            places = (444, 628)
+            places = (444, 628, 'вниз')
             for i in range(len(self.barista_queue_away)):
                 for j in range(len(scene.plot_characters[scene.room - 1])):
                     if scene.plot_characters[scene.room-1][j].name == self.barista_queue_away[i][0]:
                         if scene.plot_characters[scene.room-1][j].x != places[0] and scene.plot_characters[scene.room-1][j].y != places[1] and scene.plot_characters[scene.room-1][j].path_to_deal == []:
-                            scene.plot_characters[scene.room-1][j].destination = Cut_interactive(places[0], places[1])
+                            scene.plot_characters[scene.room-1][j].destination = Cut_interactive(places)
                             scene.plot_characters[scene.room-1][j].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][j].destination)
                         elif scene.plot_characters[scene.room-1][j].x != places[0] and scene.plot_characters[scene.room-1][j].y != places[0] and scene.plot_characters[scene.room-1][j].path_to_deal != []:
                             scene.plot_characters[scene.room-1][j].walk()
@@ -992,7 +982,6 @@ class Game:
             hero.y = 300
             hero.direction = 'вниз'
             hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
-            self.barista_direction = 'вниз'
             self.barista_list = []
             self.barista_preparing = []
             self.barista_done_animation = [[], [], []]
@@ -1075,9 +1064,8 @@ class Game:
             if act[scene.act][0] == 'обучение 01':
                 if self.pushed_d:
                     self.prepared_message = None
-                    hero.destination = Cut_interactive(400, 412)
+                    hero.destination = Cut_interactive((400, 412, 'вправо'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
-                    self.barista_direction = 'вправо'
                     self.pushed_d = False
                     scene.act = scene.act + 1
                     scene.act_started = False
@@ -1085,9 +1073,8 @@ class Game:
             elif act[scene.act][0] == 'обучение 02':
                 if self.pushed_a:
                     self.prepared_message = None
-                    hero.destination = Cut_interactive(360, 364)
+                    hero.destination = Cut_interactive((360, 364, 'влево'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
-                    self.barista_direction = 'влево'
                     self.pushed_a = False
                     scene.act = scene.act + 1
                     scene.act_started = False
@@ -1095,9 +1082,8 @@ class Game:
             elif act[scene.act][0] == 'обучение 03':
                 if self.pushed_s:
                     self.prepared_message = None
-                    hero.destination = Cut_interactive(392, 436)
+                    hero.destination = Cut_interactive((392, 436, 'вниз'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
-                    self.barista_direction = 'вниз'
                     self.pushed_s = False
                     scene.act = scene.act + 1
                     scene.act_started = False
@@ -1105,9 +1091,8 @@ class Game:
             elif act[scene.act][0] == 'обучение 04':
                 if self.pushed_d:
                     self.prepared_message = None
-                    hero.destination = Cut_interactive(400, 412)
+                    hero.destination = Cut_interactive((400, 412, 'вправо'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
-                    self.barista_direction = 'вправо'
                     self.pushed_d = False
                     scene.act = scene.act + 1
                     scene.act_started = False
@@ -1136,9 +1121,8 @@ class Game:
             elif act[scene.act][0] == 'обучение 08':
                 if self.pushed_a:
                     self.prepared_message = None
-                    hero.destination = Cut_interactive(360, 364)
+                    hero.destination = Cut_interactive((360, 364, 'влево'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
-                    self.barista_direction = 'влево'
                     self.pushed_a = False
                     scene.act = scene.act + 1
                     scene.act_started = False
@@ -1160,9 +1144,8 @@ class Game:
             elif act[scene.act][0] == 'обучение 11':
                 if self.pushed_s:
                     self.prepared_message = None
-                    hero.destination = Cut_interactive(392, 436)
+                    hero.destination = Cut_interactive((392, 436, 'вниз'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
-                    self.barista_direction = 'вниз'
                     self.pushed_s = False
                     scene.act = scene.act + 1
                     scene.act_started = False
@@ -1262,9 +1245,8 @@ class Game:
             elif act[scene.act][0] == 'обучение 25':
                 if self.pushed_a:
                     self.prepared_message = None
-                    hero.destination = Cut_interactive(360, 364)
+                    hero.destination = Cut_interactive((360, 364, 'влево'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
-                    self.barista_direction = 'влево'
                     self.pushed_a = False
                     scene.act = scene.act + 1
                     scene.act_started = False
@@ -1360,8 +1342,6 @@ class Game:
         if act[scene.act][0] == 'реплика' or act[scene.act][0][0:8] == 'обучение' and int(act[scene.act][0][9:11]) < 29:
             if hero.path_to_deal != []:
                 hero.walk()
-            else:
-                hero.direction = self.barista_direction
 
         # ввод текста при первом обучении вводу текста
         if act[scene.act][0] == 'обучение 15':
@@ -1371,10 +1351,9 @@ class Game:
         # приготовление эспрессо при первом приготовлении напитка
         elif act[scene.act][0] == 'обучение 18':
             if self.pushed_d and not self.barista_machine:
-                hero.destination = Cut_interactive(400, 412)
+                hero.destination = Cut_interactive((400, 412, 'вправо'))
                 hero.find_path_to_deal(scene.room_map, hero.destination)
                 self.barista_machine = True
-                self.barista_direction = 'вправо'
             if self.barista_machine:
                 if self.pushed_w:
                     self.barista_preparing = [[None, 'Ки']]
@@ -1406,25 +1385,20 @@ class Game:
             # передвижение персонажа
             if hero.path_to_deal != []:
                 hero.walk()
-            else:
-                hero.direction = self.barista_direction
             if not self.barista_speach and not self.barista_machine and not self.barista_teatable:
                 if self.pushed_a:
-                    hero.destination = Cut_interactive(360, 364)
+                    hero.destination = Cut_interactive((360, 364, 'влево'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
                     self.barista_teatable = True
-                    self.barista_direction = 'влево'
                 elif self.pushed_d:
-                    hero.destination = Cut_interactive(400, 412)
+                    hero.destination = Cut_interactive((400, 412, 'вправо'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
                     self.barista_machine = True
-                    self.barista_direction = 'вправо'
                 elif self.pushed_s:
-                    hero.destination = Cut_interactive(392, 436)
+                    hero.destination = Cut_interactive((392, 436, 'вниз'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
                     if self.tutorial_barista_to_say != [] and (self.barista_list == [] or len(self.barista_list) == len(self.barista_done_animation[1])):
                         self.barista_speach = True
-                    self.barista_direction = 'вниз'
                 self.pushed_a = False
                 self.pushed_s = False
                 self.pushed_d = False

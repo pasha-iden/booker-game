@@ -59,6 +59,7 @@ class Sub_character:
             current_position, path = queue.popleft()
 
             if current_position == deal_location:
+                path.append(destination.direction)
                 self.path_to_deal = path
 
             x, y = current_position
@@ -74,45 +75,35 @@ class Sub_character:
 
 
     def walk(self):
-        if self.path_to_deal != []:
+        if len(self.path_to_deal) > 1:
             self.direction = self.path_to_deal[0]
             self.on_walk = True
             if self.path_to_deal[0] == 'влево':
-                self.path_to_deal.pop(0)
                 self.x += -self.speed
-                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
             elif self.path_to_deal[0] == 'вниз-влево':
-                self.path_to_deal.pop(0)
                 self.x += -self.speed
                 self.y += self.speed
-                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
             elif self.path_to_deal[0] == 'вниз':
-                self.path_to_deal.pop(0)
                 self.y += self.speed
-                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
             elif self.path_to_deal[0] == 'вниз-вправо':
-                self.path_to_deal.pop(0)
                 self.x += self.speed
                 self.y += self.speed
-                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
             elif self.path_to_deal[0] == 'вправо':
-                self.path_to_deal.pop(0)
                 self.x += self.speed
-                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
             elif self.path_to_deal[0] == 'вверх-вправо':
-                self.path_to_deal.pop(0)
                 self.x += self.speed
                 self.y += -self.speed
-                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
             elif self.path_to_deal[0] == 'вверх':
-                self.path_to_deal.pop(0)
                 self.y += -self.speed
-                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
             elif self.path_to_deal[0] == 'вверх-влево':
-                self.path_to_deal.pop(0)
                 self.x += -self.speed
                 self.y += -self.speed
-                self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+            self.path_to_deal.pop(0)
+            self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+        elif len(self.path_to_deal) == 1:
+            if self.path_to_deal[0] != None:
+                self.direction = self.path_to_deal[0]
+            self.path_to_deal.pop(0)
 
 
     def draw(self, scene_surface, timer):
@@ -236,7 +227,6 @@ class Hero(Sub_character):
 
 
     def move(self, key, objects):
-        # print (objects[0].hitbox, self.hitbox)
         now_x = self.x
         now_y = self.y
         if key[pygame.K_a] and self.x > 20:
