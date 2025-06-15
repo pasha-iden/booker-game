@@ -17,6 +17,8 @@ class Furniture:
         self.width = parameters[2]
         self.height = parameters[3]
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+        # self.hitbox_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)
+        # pygame.draw.rect(self.hitbox_surface, (255, 0, 0, 128), (self.x, self.y, self.width, self.height))
         self.table = parameters[7]
 
     def draw(self, scene_surface, timer):
@@ -24,6 +26,4 @@ class Furniture:
             scene_surface.blit(self.image, (self.ix, self.iy))
 
         # отрисовка хитбоксов
-        # hitbox_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)
-        # pygame.draw.rect(hitbox_surface, (255, 0, 0, 128), (self.x, self.y, self.width, self.height))
-        # scene_surface.blit(hitbox_surface, (0, 0))
+        # scene_surface.blit(self.hitbox_surface, (0, 0))

@@ -1562,16 +1562,19 @@ class Game:
         rendering_objects = []
         for object in scene.characters[scene.room - 1]:
             if not object.on_chair:
-                rendering_objects.append((object.y + hero.height * 1.5, object.type, scene.characters[scene.room - 1].index(object)))
+                rendering_objects.append((object.y + object.height * 1.5, object.type, scene.characters[scene.room - 1].index(object)))
+                scene_surface.blit(scene.shadow, (object.x, object.y + 35)) # тени персонажей
         for object in scene.plot_characters[scene.room - 1]:
             if not object.on_chair:
-                rendering_objects.append((object.y + hero.height * 1.5, object.type, scene.plot_characters[scene.room - 1].index(object)))
+                rendering_objects.append((object.y + object.height * 1.5, object.type, scene.plot_characters[scene.room - 1].index(object)))
+                scene_surface.blit(scene.shadow, (object.x, object.y + 35)) # тени сюжетных персонажей
         for object in scene.furniture:
             if object.table == 0:
                 rendering_objects.append((object.y + object.height, object.type, scene.furniture.index(object)))
             else:
                 rendering_objects.append((object.y + object.height, 'table', scene.furniture.index(object)))
         rendering_objects.append((hero.y + hero.height * 1.5, 'hero', 0))
+        scene_surface.blit(scene.shadow, (hero.x, hero.y + 35)) # тень героя
         rendering_objects.sort(key=lambda x: x[0])
 
         # отрисовка объектов

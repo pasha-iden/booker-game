@@ -17,8 +17,8 @@ class Scene:
         self.act_started = False
         self.image = None
         self.phase = 1
-        self.x = 0
-        self.y = 0
+        self.shadow = pygame.Surface((48, 48), pygame.SRCALPHA)
+        pygame.draw.ellipse(self.shadow, (0, 0, 0, 80), (0, 0, 48, 24))
         self.room = 1
         self.image = pygame.image.load(stages[self.stage]['ФОНЫ'][self.room][0]).convert()
         if self.room == 1:
