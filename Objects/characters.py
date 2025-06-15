@@ -212,6 +212,7 @@ class Plot_character(Sub_character):
             self.head = pygame.transform.smoothscale(head_surface, (100, 100))
         self.x = parameters[2]
         self.y = parameters[3]
+        self.direction = parameters[4]
         self.on_chair = False
 
 

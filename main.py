@@ -43,7 +43,7 @@ while game.running:
                 game.fade_animation = None
 
             # управление игроком
-            if (game.fade_animation == None and game.barista_game == False and game.tutorial_barista_game == False) and pygame.key.get_pressed() != None:
+            if (game.fade_animation == None and game.barista == None) and pygame.key.get_pressed() != None:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
 
@@ -71,10 +71,11 @@ while game.running:
 
 
             # МИНИ-ИГРЫ
-            if game.tutorial_barista_game:
-                game.tutorial_barista_work(hero, scene)
-            if game.barista_game:
-                game.barista_work(hero, scene)
+            game.mini_games_logica(hero, scene)
+            # if game.tutorial_barista_game:
+            #     game.tutorial_barista_work(hero, scene)
+            # if game.barista_game:
+            #     game.barista_work(hero, scene)
 
 
 
