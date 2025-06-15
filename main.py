@@ -72,10 +72,7 @@ while game.running:
 
             # МИНИ-ИГРЫ
             game.mini_games_logica(hero, scene)
-            # if game.tutorial_barista_game:
-            #     game.tutorial_barista_work(hero, scene)
-            # if game.barista_game:
-            #     game.barista_work(hero, scene)
+
 
 
 
