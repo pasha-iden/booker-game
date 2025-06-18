@@ -431,6 +431,15 @@ class Game:
             scene.placing_chairs()
             scene.mapping_room()
             scene.placing_characters()
+            for character in scene.characters[scene.room-1]:
+                i = 0
+                deleted = False
+                while i < len(scene.interactive) and not deleted:
+                    if character.his_interactive != None and character.his_interactive.number == scene.interactive[i].number:
+                        scene.interactive.pop(i)
+                        deleted = True
+                    else:
+                        i += 1
 
 
     def message_preparing (self, message, is_replica):

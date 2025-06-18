@@ -76,6 +76,8 @@ class Barista:
             self.tutorial(hero, scene)
 
 
+    # Методы логики
+    # region
     def walk(self, hero, scene):
         if hero.path_to_deal != []:
             hero.walk()
@@ -937,6 +939,7 @@ class Barista:
                     self.counted_cook_time += 1
                 if self.to_say == 'Рады вас видеть':
                     self.counted_order_time += 1
+    # endregion
 
 
     def render(self, scene_surface, hero, scene):

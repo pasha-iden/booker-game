@@ -14,11 +14,12 @@ class Cut_interactive:
 
 class Interactive:
     def __init__ (self, objects, parameters):
-        # x, y, w, h
-        # 0  1  2  3
+        # x, y, w, h, number
+        # 0  1  2  3  4
         super().__init__()
         objects.append(self)
         self.type = 'interactive'
+        self.number = parameters[4]
         self.x = parameters[0]
         self.y = parameters[1]
         self.width = parameters[2]

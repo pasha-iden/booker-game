@@ -4,6 +4,7 @@ from random import randint
 from collections import deque
 
 from Objects.skins import skins
+from Objects.tablethings import tables_data, place_data, tablethings
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
@@ -148,16 +149,53 @@ class Sub_character:
 
 
 class Character(Sub_character):
-    def __init__ (self, objects, room_map, chair):
+    def __init__ (self, objects, chair, tablethings_atlas):
         super().__init__()
         objects.append(self)
         self.type = 'character'
-        self.x = chair.x
-        self.y = chair.y
+        # self.x = chair.x
+        # self.y = chair.y
+        self.x = chair.landing_x
+        self.y = chair.landing_y
         self.chair = chair
+        self.direction = chair.direction
+        self.deal_kind = 'сидит'
         self.stand = False
         self.on_chair = True
         self.destination = None
+
+        self.tablethings_images = tablethings_atlas
+
+        self.cup_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Чашка'][0]), 90 * randint(0, 3))
+        self.free_coordinates = tables_data[self.chair.number]
+        self.possible_coordinates = []
+        for el in self.free_coordinates:
+            i = 0
+            while i < len(tablethings['Чашка'][1]) and (tablethings['Чашка'][1][i][0] + el[0], tablethings['Чашка'][1][i][1] + el[1]) in self.free_coordinates:
+                i += 1
+            if i == len(tablethings['Чашка'][1]):
+                self.possible_coordinates.append((el[0], el[1]))
+        choised_coordinate = randint(0, len(self.possible_coordinates) - 1)
+        self.cup_coordinates = (self.possible_coordinates[choised_coordinate][0] * 3.5 // 1 - 2 + place_data[self.chair.number][0], self.possible_coordinates[choised_coordinate][1] * 3.5 // 1 - 2 + place_data[self.chair.number][1])
+        self.cup_dotes = set()
+        for el in tablethings['Чашка'][1]:
+            self.cup_dotes.add((el[0] + self.possible_coordinates[choised_coordinate][0], el[1] + self.possible_coordinates[choised_coordinate][1]))
+        self.possible_coordinates = set(self.possible_coordinates) - self.cup_dotes
+
+        # self.plate_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Тарелка']), 90 * randint(0, 3))
+        # self.plate_coordibades = place_data[self.chair.number // 100][self.chair.number][1]
+        #
+        # if chair.number > 200:
+        #     book_or_laptop = randint(0, 3)
+        #     if book_or_laptop == 0:
+        #         self.book = bool(randint(0, 1))
+        #         self.laptop = not self.book
+        # self.plate = randint(0, 2) == 0
+        # self.water = randint(0, 2) == 0
+        # if self.water:
+        #     self.glass = True
+        # else:
+        #     self.glass = randint(0, 1) == 0
 
 
     def decision(self, timer, room_map, interactive, can_go_away):
@@ -166,6 +204,7 @@ class Character(Sub_character):
             kind_of_decision = randint(1, 100)
             if 80 <= kind_of_decision <= 95 and len(interactive) != 0:
                 self.have_a_deal = True
+                self.deal_kind = 'интерактив'
                 self.on_chair = False
                 i = randint(0, len(interactive)-1)
                 self.his_interactive = interactive[i]
@@ -178,25 +217,36 @@ class Character(Sub_character):
 
             if 95 < kind_of_decision <= 100 and can_go_away:
                 go_away = True
+        if self.deal_kind == 'интерактив':
+            if self.have_a_deal and self.x == self.destination.x and self.y == self.destination.y:
+                self.have_a_deal = False
+                self.on_interactive = True
+                self.staing = 4
+            elif self.on_interactive and self.staing > 0 and timer:
+                self.staing += -1
+            elif self.on_interactive and self.staing == 0:
+                interactive.append(self.his_interactive)
+                self.his_interactive = None
+                self.on_interactive = False
+                self.destination = self.chair
+                self.find_path_to_deal(room_map, self.destination)
+            elif self.x == self.chair.x and self.y == self.chair.y and self.have_a_deal == False:
+                self.deal_kind = 'сидит'
+                self.on_chair = True
+                self.direction = self.chair.direction
+                self.x = self.chair.landing_x
+                self.y = self.chair.landing_y
 
-        if self.have_a_deal and self.x == self.destination.x and self.y == self.destination.y:
-            self.have_a_deal = False
-            self.on_interactive = True
-            self.staing = 4
-        if self.on_interactive and self.staing > 0 and timer:
-            self.staing += -1
-        if self.on_interactive and self.staing == 0:
-            interactive.append(self.his_interactive)
-            self.his_interactive = None
-            self.on_interactive = False
-            self.destination = self.chair
-            self.find_path_to_deal(room_map, self.destination)
-        if self.x == self.chair.x and self.y == self.chair.y and self.have_a_deal == False:
-            self.on_chair = True
-            self.direction = self.chair.direction
-            self.x = self.chair.landing_x
-            self.y = self.chair.landing_y
         return  interactive, go_away
+
+    def draw_tablethings (self, scene_surface):
+
+        scene_surface.blit(self.cup_image, self.cup_coordinates)
+        for el in self.free_coordinates:
+            pygame.draw.circle(scene_surface, 'Red', (el[0] * 3.5 // 1 + place_data[self.chair.number][0], el[1] * 3.5 // 1 + place_data[self.chair.number][1]), 1)
+        for el in self.possible_coordinates:
+            # scene_surface.blit(self.cup_image, (el[0] * 4 + place_data[self.chair.number][0], el[1] * 4 + place_data[self.chair.number][1]))
+            pygame.draw.circle(scene_surface, 'Green', (el[0] * 3.5 // 1 + place_data[self.chair.number][0], el[1] * 3.5 // 1 + place_data[self.chair.number][1]), 1)
 
 
 class Plot_character(Sub_character):

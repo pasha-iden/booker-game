@@ -81,12 +81,17 @@ while game.running:
             game.cut_effects_render(scene_surface, hero, scene)
             game.mini_game_render(scene_surface, hero, scene)
 
+
+
+
+
         # тесты
-        # print(pygame.mouse.get_pos())
+        # if not game.pause:
+        #     print(pygame.mouse.get_pos())
 
 
         # scale изображения и рамки
-        final_surface = pygame.transform.smoothscale(scene_surface, ((1024*game.scale_value)//1, (768*game.scale_value)//1))
+        final_surface = pygame.transform.smoothscale(scene_surface, (1024*game.scale_value//1, 768*game.scale_value//1))
 
         # рендер графики и обновление экрана
         game.screen.blit(final_surface, (game.shift_x, game.shift_y))

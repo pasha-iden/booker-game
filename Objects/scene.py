@@ -31,6 +31,8 @@ class Scene:
         self.characters = [[],[],[]]
         self.plot_characters = [[],[],[]]
 
+        self.tablethings = pygame.image.load('Files/Images/Other/tablethings.png').convert_alpha()
+
 
     def draw(self, scene_surface, timer, leaves):
 
@@ -54,11 +56,14 @@ class Scene:
             if object.on_chair and object.chair.table == table:
                 object.draw_legs(scene_surface, timer)
         for object in self.characters[self.room-1]:
-            if object.on_chair and object.chair.table == table and (object.direction != 'вверх-вправо' and object.direction != 'вверх' and object.direction != 'вверх-влево'):
+            if object.on_chair and object.chair.table == table and (object.direction not in ('вверх-вправо', 'вверх', 'вверх-влево')):
                 object.draw_torso(scene_surface, timer)
         self.furniture[i].draw(scene_surface, timer)
         for object in self.characters[self.room-1]:
-            if object.on_chair and object.chair.table == table and (object.direction == 'вверх-вправо' or object.direction == 'вверх' or object.direction == 'вверх-влево'):
+            if object.chair.table == table:
+                object.draw_tablethings(scene_surface)
+        for object in self.characters[self.room-1]:
+            if object.on_chair and object.chair.table == table and (object.direction in ('вверх-вправо', 'вверх', 'вверх-влево')):
                 object.draw_torso(scene_surface, timer)
         for object in self.characters[self.room-1]:
             if object.on_chair and object.chair.table == table:
@@ -97,7 +102,7 @@ class Scene:
             self.empty_chairs[self.room-1] = list(self.chairs)
             for i in range(start_qount_characters):
                 current_chair = randint(0, len(self.empty_chairs[self.room-1]) - 1)
-                Character(objects, self.room_map, self.empty_chairs[self.room-1][current_chair])
+                Character(objects, self.empty_chairs[self.room-1][current_chair], self.tablethings)
                 self.empty_chairs[self.room-1].pop(current_chair)
             self.characters[self.room-1] = objects
 
@@ -110,7 +115,7 @@ class Scene:
         if len(self.characters[self.room-1]) < len(self.chairs) and timer and randint(1, 100) > 90:
             objects = []
             current_chair = randint(0, len(self.empty_chairs[self.room - 1]) - 1)
-            Character(objects, self.room_map, self.empty_chairs[self.room - 1][current_chair])
+            Character(objects, self.empty_chairs[self.room - 1][current_chair], self.tablethings)
             self.empty_chairs[self.room-1].pop(current_chair)
             self.characters[self.room-1].append(objects[0])
 
