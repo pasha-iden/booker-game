@@ -27,6 +27,11 @@ class Game:
         pygame.display.set_caption('Booker - The Coffee Adventure')
         icon = pygame.image.load('Booker.png')
         pygame.display.set_icon(icon)
+        
+        self.game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
+        self.menu_font = pygame.font.Font('Files/Fonts/Font.ttf', size=40)
+        self.chapter_font = pygame.font.Font('Files/Fonts/Font.ttf', size=60)
+        
         self.timer_1000 = pygame.USEREVENT + 1
         pygame.time.set_timer(self.timer_1000, 1000)
         self.timer_50 = pygame.USEREVENT + 2
@@ -83,7 +88,7 @@ class Game:
         if not self.just_started and self.pushed_ESCAPE and not self.settings:
             self.pause = not self.pause
             self.pushed_ESCAPE = False
-        game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=40)
+        self.menu_font = pygame.font.Font('Files/Fonts/Font.ttf', size=40)
 
         if self.settings:
             options = self.menu_settings
@@ -95,7 +100,7 @@ class Game:
 
         for option in options:
             if option[2].collidepoint(pygame.mouse.get_pos()):
-                menu_option = game_font.render(option[0], False, 'Red')
+                menu_option = self.menu_font.render(option[0], False, 'Red')
                 scene_surface.blit(menu_option, option[1])
 
                 # if pygame.mouse.get_pressed()[0]:
@@ -109,6 +114,7 @@ class Game:
                         scene.placing_chairs()
                         scene.mapping_room()
                         scene.placing_characters()
+                        self.prepared_message = None
                         self.just_started = False
                         self.pause = False
 
@@ -143,6 +149,7 @@ class Game:
                         scene.placing_chairs()
                         scene.mapping_room()
                         scene.placing_characters()
+                        self.prepared_message = None
                         self.just_started = False
                         self.pause = False
 
@@ -199,7 +206,7 @@ class Game:
 
 
             else:
-                menu_option = game_font.render(option[0], False, 'Yellow')
+                menu_option = self.menu_font.render(option[0], False, 'Yellow')
                 scene_surface.blit(menu_option, option[1])
 
         return hero, scene
@@ -650,7 +657,7 @@ class Game:
             hero.action(scene_surface, scene.interactive)
 
         # отрисовка мыслей
-        if act[scene.act][0] == 'мысли героя' and self.prepared_message != None:
+        if self.prepared_message != None and act[scene.act][0] == 'мысли героя':
             x = hero.x + 33 - (len(max(self.prepared_message[0], key=len)) * 10) // 2
             y = hero.y - 85
             if scene.room == 1 or scene.room == 3:
@@ -665,18 +672,17 @@ class Game:
                 if y - len(self.prepared_message[0]) * 21 < 97: y = len(self.prepared_message[0]) * 21 + 97
             pygame.draw.rect(scene_surface, 'Gray', (x - 4, y - len(self.prepared_message[0]) * 21, len(max(self.prepared_message[0], key=len)) * 10, len(self.prepared_message[0]) * 22 + 6))
             pygame.draw.rect(scene_surface, (80, 80 ,80), (x - 4, y - len(self.prepared_message[0]) * 21, len(max(self.prepared_message[0], key=len)) * 10, len(self.prepared_message[0]) * 22 + 6), 2)
-            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             l = 0
             for line in self.prepared_message[0]:
                 if (self.prepared_message[1] == False) or (self.prepared_message[1] == True and l < self.prepared_message[2]):
-                    message = game_font.render(line, False, 'Black')
+                    message = self.game_font.render(line, False, 'Black')
                 else:
-                    message = game_font.render(line, False, (125, 125, 125))
+                    message = self.game_font.render(line, False, (125, 125, 125))
                 scene_surface.blit(message, (x, y - (len(self.prepared_message[0]) -l) * 20))
                 l += 1
 
         # отрисовка реплик
-        if (act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя' or act[scene.act][0][0:8] == 'обучение') and self.prepared_message != None :
+        if self.prepared_message != None and act[scene.act][0] != 'мысли героя':
             x = 220
             if scene.room == 1:
                 y = 480
@@ -687,8 +693,7 @@ class Game:
             # окно речи и имя персонажа
             pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, w, 200))
             pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, w, 200), 2)
-            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
-            message = game_font.render(act[scene.act][1], False, 'Black')
+            message = self.game_font.render(act[scene.act][1], False, 'Black')
             scene_surface.blit(message, (x + (act[scene.act][0] == 'реплика' or act[scene.act][0][0:8] == 'обучение') * 120, y))
 
             # портрет персонажа
@@ -700,31 +705,26 @@ class Game:
                 scene_surface.blit(hero.head, (x + w - 100 - 10, y + 20))
 
             # реплика
-            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
             l = 0
             for line in self.prepared_message[0]:
                 if (self.prepared_message[1] == False) or (self.prepared_message[1] == True and l < self.prepared_message[2]):
-                    message = game_font.render(line, False, 'Black')
+                    message = self.game_font.render(line, False, 'Black')
                 else:
-                    message = game_font.render(line, False, (125, 125, 125))
+                    message = self.game_font.render(line, False, (125, 125, 125))
                 scene_surface.blit(message, (x + (act[scene.act][0] == 'реплика' or act[scene.act][0][0:8] == 'обучение') * 120, y + 30 + l * 20))
                 l += 1
-
-        # рамки сцен
-        if scene.room == 1:
-            pygame.draw.rect(scene_surface, 'Black', (0, 0, 1024, 92))
-            pygame.draw.rect(scene_surface, 'Black', (0, 682, 1024, 86))
-        if scene.room == 2:
-            pygame.draw.rect(scene_surface, 'Black', (0, 0, 207, 768))
-            pygame.draw.rect(scene_surface, 'Black', (847, 0, 177, 768))
 
         # рамки
         if not self.pause:
             if scene.room == 1:
+                pygame.draw.rect(scene_surface, 'Black', (0, 0, 1024, 92))
+                pygame.draw.rect(scene_surface, 'Black', (0, 682, 1024, 86))
                 pygame.draw.rect(scene_surface, (80, 80, 80), (0, 84, 1024, 606), 4)
                 pygame.draw.rect(scene_surface, 'Gray', (0 + 4, 84 + 4, 1024 - 8, 606 - 8), 4)
 
             if scene.room == 2:
+                pygame.draw.rect(scene_surface, 'Black', (0, 0, 207, 768))
+                pygame.draw.rect(scene_surface, 'Black', (847, 0, 177, 768))
                 pygame.draw.rect(scene_surface, (80, 80, 80), (206, 0, 644, 768), 4)
                 pygame.draw.rect(scene_surface, 'Gray', (206 + 4, 0 + 4, 644 - 8, 768 - 8), 4)
 
@@ -762,10 +762,10 @@ class Game:
 
         # название главы
         if self.chapter_info != None:
-            game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=60)
+
             print_info = ((-4, -4, 'Orange'), (0, -4, 'Orange'), (4, -4, 'Orange'), (-4, 0, 'Orange'), (4, 0, 'Orange'), (-4, 4, 'Orange'), (0, 4, 'Orange'), (4, 4, 'Red'), (0, 0, 'Yellow'))
             for record in print_info:
-                message = game_font.render(self.chapter_info[0], False, record[2])
+                message = self.chapter_font.render(self.chapter_info[0], False, record[2])
                 scene_surface.blit(message, (400 + record[0], 300 + record[1]))
             if self.timer:
                 self.chapter_timer += 1

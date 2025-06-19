@@ -43,7 +43,7 @@ class Scene:
             if timer:
                 self.phase = randint (1, 3)
             scene_surface.blit(self.image, (0, 0), stages[self.stage]['ФОНЫ'][1][self.phase])
-        if self.room == 1 and leaves:
+        elif self.room == 1 and leaves:
             scene_surface.blit(self.leaves, (0, 0), stages[self.stage]['ФОНЫ'][11][self.phase])
 
 

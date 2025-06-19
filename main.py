@@ -4,6 +4,8 @@ from Objects.game import Game
 from Objects.scene import Scene
 from Objects.characters import Hero
 
+import time
+
 
 
 game = Game()
@@ -20,6 +22,8 @@ while game.running:
     # отслеживание событий: --Таймер, --Кнопка Escape, --Выход из игры
     game.events_tracking()
 
+
+
     if game.running:
 
         # меню игры
@@ -33,6 +37,7 @@ while game.running:
 
 
 
+
             # перемещение между комнатами
             if game.pushed_SPACE and game.fade_animation == None:
                 game.transfering_room_initiation(hero, scene)
@@ -41,6 +46,7 @@ while game.running:
                 game.fade_animation = 1
             if game.fade_animation == 12:
                 game.fade_animation = None
+
 
             # управление игроком
             if (game.fade_animation == None and game.barista == None) and pygame.key.get_pressed() != None:
@@ -67,6 +73,7 @@ while game.running:
                 scene.characters[scene.room-1].pop(scene.characters[scene.room-1].index(character_go_away))
             # приход нового NPC
             scene.adding_character(game.timer)
+
 
 
 
