@@ -167,18 +167,15 @@ class Character(Sub_character):
         self.tablethings_images = tablethings_atlas
         self.all_coordinates = tables_data[self.chair.number]
         self.free_coordinates = tables_data[self.chair.number]
-        # self.laptop_placing()
+        # if self.chair.number not in (302, 309, 310, 311, 312):
+        #     self.laptop_placing()
         # self.book_placing()
-        # self.plate_placing()
-        # self.water_placing()
-        # self.glass_placing()
+        self.plate_placing()
+        self.water_placing()
+        self.glass_placing()
         self.cup_placing()
 
 
-
-        # self.plate_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Тарелка']), 90 * randint(0, 3))
-        # self.plate_coordibades = place_data[self.chair.number // 100][self.chair.number][1]
-        #
         # if chair.number > 200:
         #     book_or_laptop = randint(0, 3)
         #     if book_or_laptop == 0:
@@ -236,12 +233,18 @@ class Character(Sub_character):
     def draw_tablethings (self, scene_surface):
 
         scene_surface.blit(self.cup_image, self.cup_coordinates)
+        scene_surface.blit(self.plate_image, self.plate_coordinates)
+        scene_surface.blit(self.water_image, self.water_coordinates)
+        scene_surface.blit(self.glass_image, self.glass_coordinates)
+        # scene_surface.blit(self.book_image, self.book_coordinates)
+        # if self.chair.number not in (302, 309, 310, 311, 312):
+        #     scene_surface.blit(self.laptop_image, self.laptop_coordinates)
 
         # for el in self.all_coordinates:
-        #     pygame.draw.circle(scene_surface, 'Red', (el[0] * 3.5 // 1 + place_data[self.chair.number][0], el[1] * 3.5 // 1 + place_data[self.chair.number][1]), 1)
+        #     pygame.draw.circle(scene_surface, 'Red', (el[0] * 4 + place_data[self.chair.number][0], el[1] * 4 + place_data[self.chair.number][1]), 1)
         # for el in self.free_coordinates:
-        #     # scene_surface.blit(self.cup_image, (el[0] * 3.5 // 1 - 2 + place_data[self.chair.number][0], el[1] * 3.5 // 1 - 2 + place_data[self.chair.number][1]))
-        #     pygame.draw.circle(scene_surface, 'Green', (el[0] * 3.5 // 1 + place_data[self.chair.number][0], el[1] * 3.5 // 1 + place_data[self.chair.number][1]), 1)
+        #     # scene_surface.blit(self.cup_image, (el[0] * 4 + place_data[self.chair.number][0], el[1] * 4 + place_data[self.chair.number][1]))
+        #     pygame.draw.circle(scene_surface, 'Green', (el[0] * 4 + place_data[self.chair.number][0], el[1] * 4 + place_data[self.chair.number][1]), 1)
 
     def cup_placing (self):
         cup_index = randint(1, 8)
@@ -255,10 +258,131 @@ class Character(Sub_character):
                 possible_coordinates.append((el[0], el[1]))
         choised_coordinate = randint(0, len(possible_coordinates) - 1)
         self.cup_coordinates = (possible_coordinates[choised_coordinate][0] * 3.5 // 1 - 2 + place_data[self.chair.number][0], possible_coordinates[choised_coordinate][1] * 3.5 // 1 - 2 + place_data[self.chair.number][1])
-        cup_dotes = set()
+        self.cup_dotes = set()
         for el in tablethings['Чашка'][cup_index][1]:
-            cup_dotes.add((el[0] + possible_coordinates[choised_coordinate][0], el[1] + possible_coordinates[choised_coordinate][1]))
-        self.free_coordinates = self.free_coordinates - cup_dotes
+            self.cup_dotes.add((el[0] + possible_coordinates[choised_coordinate][0], el[1] + possible_coordinates[choised_coordinate][1]))
+        self.free_coordinates = self.free_coordinates - self.cup_dotes
+    def plate_placing (self):
+        self.plate_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Тарелка'][0]), randint(0, 3) * 90)
+        possible_coordinates = []
+        for el in self.free_coordinates:
+            i = 0
+            while i < len(tablethings['Тарелка'][1]) and (tablethings['Тарелка'][1][i][0] + el[0], tablethings['Тарелка'][1][i][1] + el[1]) in self.free_coordinates:
+                i += 1
+            if i == len(tablethings['Тарелка'][1]):
+                possible_coordinates.append((el[0], el[1]))
+        choised_coordinate = randint(0, len(possible_coordinates) - 1)
+        self.plate_coordinates = (possible_coordinates[choised_coordinate][0] * 3.5 // 1 - 2 + place_data[self.chair.number][0], possible_coordinates[choised_coordinate][1] * 3.5 // 1 - 2 + place_data[self.chair.number][1])
+        self.plate_dotes = set()
+        for el in tablethings['Тарелка'][1]:
+            self.plate_dotes.add((el[0] + possible_coordinates[choised_coordinate][0], el[1] + possible_coordinates[choised_coordinate][1]))
+        self.free_coordinates = self.free_coordinates - self.plate_dotes
+    def water_placing (self):
+        self.water_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Вода'][0]), randint(0, 3) * 90)
+        possible_coordinates = []
+        for el in self.free_coordinates:
+            i = 0
+            while i < len(tablethings['Вода'][1]) and (tablethings['Вода'][1][i][0] + el[0], tablethings['Вода'][1][i][1] + el[1]) in self.free_coordinates:
+                i += 1
+            if i == len(tablethings['Вода'][1]):
+                possible_coordinates.append((el[0], el[1]))
+        choised_coordinate = randint(0, len(possible_coordinates) - 1)
+        self.water_coordinates = (possible_coordinates[choised_coordinate][0] * 3.5 // 1 - 2 + place_data[self.chair.number][0], possible_coordinates[choised_coordinate][1] * 3.5 // 1 - 2 + place_data[self.chair.number][1])
+        self.water_dotes = set()
+        for el in tablethings['Вода'][1]:
+            self.water_dotes.add((el[0] + possible_coordinates[choised_coordinate][0], el[1] + possible_coordinates[choised_coordinate][1]))
+        self.free_coordinates = self.free_coordinates - self.water_dotes
+    def glass_placing (self):
+        self.glass_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Стакан'][0]), randint(0, 3) * 90)
+        possible_coordinates = []
+        for el in self.free_coordinates:
+            i = 0
+            while i < len(tablethings['Стакан'][1]) and (tablethings['Стакан'][1][i][0] + el[0], tablethings['Стакан'][1][i][1] + el[1]) in self.free_coordinates:
+                i += 1
+            if i == len(tablethings['Стакан'][1]):
+                possible_coordinates.append((el[0], el[1]))
+        choised_coordinate = randint(0, len(possible_coordinates) - 1)
+        self.glass_coordinates = (possible_coordinates[choised_coordinate][0] * 3.5 // 1 - 2 + place_data[self.chair.number][0], possible_coordinates[choised_coordinate][1] * 3.5 // 1 - 2 + place_data[self.chair.number][1])
+        self.glass_dotes = set()
+        for el in tablethings['Стакан'][1]:
+            self.glass_dotes.add((el[0] + possible_coordinates[choised_coordinate][0], el[1] + possible_coordinates[choised_coordinate][1]))
+        self.free_coordinates = self.free_coordinates - self.glass_dotes
+    def laptop_placing (self):
+        if self.chair.direction == 'вверх':
+            self.laptop_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Ноутбук'][1][0]), 180)
+            laptop_index = 1
+        elif self.chair.direction == 'вниз':
+            self.laptop_image = self.tablethings_images.subsurface(tablethings['Ноутбук'][1][0])
+            laptop_index = 1
+        elif self.chair.direction == 'вправо':
+            self.laptop_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Ноутбук'][2][0]), 180)
+            laptop_index = 2
+        elif self.chair.direction == 'влево':
+            self.laptop_image = self.tablethings_images.subsurface(tablethings['Ноутбук'][2][0])
+            laptop_index = 2
+        elif self.chair.direction == 'вниз-вправо':
+            self.laptop_image = self.tablethings_images.subsurface(tablethings['Ноутбук'][3][0])
+            laptop_index = 3
+        elif self.chair.direction == 'вверх-влево':
+            self.laptop_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Ноутбук'][3][0]), 180)
+            laptop_index = 3
+        elif self.chair.direction == 'вниз-влево':
+            self.laptop_image = self.tablethings_images.subsurface(tablethings['Ноутбук'][4][0])
+            laptop_index = 4
+        elif self.chair.direction == 'вверх-вправо':
+            self.laptop_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Ноутбук'][4][0]), 180)
+            laptop_index = 4
+        possible_coordinates = []
+        for el in self.free_coordinates:
+            i = 0
+            while i < len(tablethings['Ноутбук'][laptop_index][1]) and (tablethings['Ноутбук'][laptop_index][1][i][0] + el[0], tablethings['Ноутбук'][laptop_index][1][i][1] + el[1]) in self.free_coordinates:
+                i += 1
+            if i == len(tablethings['Ноутбук'][laptop_index][1]):
+                possible_coordinates.append((el[0], el[1]))
+        choised_coordinate = randint(0, len(possible_coordinates) - 1)
+        self.laptop_coordinates = (possible_coordinates[choised_coordinate][0] * 3.5 // 1 - 2 + place_data[self.chair.number][0], possible_coordinates[choised_coordinate][1] * 3.5 // 1 - 2 + place_data[self.chair.number][1])
+        self.laptop_dotes = set()
+        for el in tablethings['Ноутбук'][laptop_index][1]:
+            self.laptop_dotes.add((el[0] + possible_coordinates[choised_coordinate][0], el[1] + possible_coordinates[choised_coordinate][1]))
+        self.free_coordinates = self.free_coordinates - self.laptop_dotes
+    def book_placing (self):
+        if self.chair.direction == 'вниз':
+            self.book_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Книга'][1][0]), 180)
+            book_index = 1
+        elif self.chair.direction == 'вверх':
+            self.book_image = self.tablethings_images.subsurface(tablethings['Книга'][1][0])
+            book_index = 1
+        elif self.chair.direction == 'влево':
+            self.book_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Книга'][2][0]), 180)
+            book_index = 2
+        elif self.chair.direction == 'вправо':
+            self.book_image = self.tablethings_images.subsurface(tablethings['Книга'][2][0])
+            book_index = 2
+        elif self.chair.direction == 'вверх-влево':
+            self.book_image = self.tablethings_images.subsurface(tablethings['Книга'][3][0])
+            book_index = 3
+        elif self.chair.direction == 'вниз-вправо':
+            self.book_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Книга'][3][0]), 180)
+            book_index = 3
+        elif self.chair.direction == 'вверх-вправо':
+            self.book_image = self.tablethings_images.subsurface(tablethings['Книга'][4][0])
+            book_index = 4
+        elif self.chair.direction == 'вниз-влево':
+            self.book_image = pygame.transform.rotate(self.tablethings_images.subsurface(tablethings['Книга'][4][0]), 180)
+            book_index = 4
+        possible_coordinates = []
+        for el in self.free_coordinates:
+            i = 0
+            while i < len(tablethings['Книга'][book_index][1]) and (tablethings['Книга'][book_index][1][i][0] + el[0], tablethings['Книга'][book_index][1][i][1] + el[1]) in self.free_coordinates:
+                i += 1
+            if i == len(tablethings['Книга'][book_index][1]):
+                possible_coordinates.append((el[0], el[1]))
+        choised_coordinate = randint(0, len(possible_coordinates) - 1)
+        self.book_coordinates = (possible_coordinates[choised_coordinate][0] * 3.5 // 1 - 2 + place_data[self.chair.number][0], possible_coordinates[choised_coordinate][1] * 3.5 // 1 - 2 + place_data[self.chair.number][1])
+        self.book_dotes = set()
+        for el in tablethings['Книга'][book_index][1]:
+            self.book_dotes.add((el[0] + possible_coordinates[choised_coordinate][0], el[1] + possible_coordinates[choised_coordinate][1]))
+        self.free_coordinates = self.free_coordinates - self.book_dotes
 
 
 class Plot_character(Sub_character):
