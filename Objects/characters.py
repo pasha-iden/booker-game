@@ -111,43 +111,23 @@ class Sub_character:
     def draw(self, scene_surface, timer):
         # pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, 4, 4))
         if self.on_walk == False:
-            # image = pygame.image.load(skins[self.skin][self.direction]['тело']).convert_alpha()
             scene_surface.blit(self.image, (self.x -8, self.y -62), coordinates[self.direction]['тело'])
         elif self.on_walk == True:
-            # image = pygame.image.load(skins[self.skin][self.direction][self.head_place]).convert_alpha()
             scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction][self.head_place])
-        # if self.head_place == True:
-            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
-            # image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
         scene_surface.blit(self.image, (self.x - 8, self.y - 62 + 4 * self.head_place), coordinates[self.direction]['голова'])
-        # else:
-        #     # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
-        #     # image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
-        #     scene_surface.blit(self.image, (self.x - 8, self.y - 58), coordinates[self.direction]['голова'])
-
         self.on_walk = False
         if timer:
             self.head_place = not self.head_place
 
 
     def draw_legs(self, scene_surface, timer):
-        # image = pygame.image.load(skins[self.skin][self.direction]['ноги']).convert_alpha()
         scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction]['ноги'])
     def draw_torso(self, scene_surface, timer):
-        # image = pygame.image.load(skins[self.skin][self.direction]['торс']).convert_alpha()
         scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction]['торс'])
     def draw_hands(self, scene_surface, timer):
-        # image = pygame.image.load(skins[self.skin][self.direction]['торс']).convert_alpha()
         scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction]['руки'])
     def draw_head(self, scene_surface, timer):
-        # if self.head_place == True:
-            # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 42, 48, 48))
-            # image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
         scene_surface.blit(self.image, (self.x - 8, self.y - 62 + 4 * self.head_place), coordinates[self.direction]['голова'])
-        # else:
-        #     # pygame.draw.rect(scene_surface, 'Yellow', (self.x, self.y - 37, 48, 48))
-        #     # image = pygame.image.load(skins[self.skin][self.direction]['голова']).convert_alpha()
-        #     scene_surface.blit(self.image, (self.x - 8, self.y - 58))
         if timer:
             self.head_place = not self.head_place
 
@@ -431,7 +411,6 @@ class Hero(Sub_character):
         # self.head = pygame.transform.smoothscale(head_surface, (100, 100))
 
 
-
     def move(self, key, objects):
         now_x = self.x
         now_y = self.y
@@ -455,14 +434,15 @@ class Hero(Sub_character):
             if self.hitbox.colliderect(object.hitbox):
                 self.y = now_y
                 self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
-        if key[pygame.K_a]: self.direction = 'влево'; self.on_walk = True
-        elif key[pygame.K_d]: self.direction = 'вправо'; self.on_walk = True
-        elif key[pygame.K_w]: self.direction = 'вверх'; self.on_walk = True
-        elif key[pygame.K_s]: self.direction = 'вниз'; self.on_walk = True
-        elif key[pygame.K_a] and key[pygame.K_w]: self.direction = 'вверх-влево'; self.on_walk = True
+        if key[pygame.K_a] and key[pygame.K_w]: self.direction = 'вверх-влево'; self.on_walk = True
         elif key[pygame.K_a] and key[pygame.K_s]: self.direction = 'вниз-влево'; self.on_walk = True
         elif key[pygame.K_d] and key[pygame.K_w]: self.direction = 'вверх-вправо'; self.on_walk = True
         elif key[pygame.K_d] and key[pygame.K_s]: self.direction = 'вниз-вправо'; self.on_walk = True
+        elif key[pygame.K_a]: self.direction = 'влево'; self.on_walk = True
+        elif key[pygame.K_d]: self.direction = 'вправо'; self.on_walk = True
+        elif key[pygame.K_w]: self.direction = 'вверх'; self.on_walk = True
+        elif key[pygame.K_s]: self.direction = 'вниз'; self.on_walk = True
+
 
     def action(self, scene_surface, objects):
         for object in objects:
