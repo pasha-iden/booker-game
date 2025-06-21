@@ -1,69 +1,137 @@
 
-skins = {1: {'вниз': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вниз.png',
-                      'тело' : 'Files/Images/Characters/Skin_1/stand/вниз.png',
-                      True : 'Files/Images/Characters/Skin_1/walk/вниз_1.png',
-                      False : 'Files/Images/Characters/Skin_1/walk/вниз_2.png',
-                      'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вниз.png',
-                      'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вниз.png'
-                      },
-
-             'вверх': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вверх.png',
-                       'тело' : 'Files/Images/Characters/Skin_1/stand/вверх.png',
-                       True : 'Files/Images/Characters/Skin_1/walk/вверх_1.png',
-                       False : 'Files/Images/Characters/Skin_1/walk/вверх_2.png',
-                       'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вверх.png',
-                       'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вверх.png'
-                       },
-
-             'вниз-влево': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_влево_вниз.png',
-                            'тело' : 'Files/Images/Characters/Skin_1/stand/влево_вниз.png',
-                            True : 'Files/Images/Characters/Skin_1/walk/влево_вниз_1.png',
-                            False : 'Files/Images/Characters/Skin_1/walk/влево_вниз_2.png',
-                            'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_влево_вниз.png',
-                            'торс' : 'Files/Images/Characters/Skin_1/torso/торс_влево_вниз.png'
-                            },
-
-             'вниз-вправо': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вправо_вниз.png',
-                             'тело' : 'Files/Images/Characters/Skin_1/stand/вправо_вниз.png',
-                             True : 'Files/Images/Characters/Skin_1/walk/вправо_вниз_1.png',
-                             False : 'Files/Images/Characters/Skin_1/walk/вправо_вниз_2.png',
-                             'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вправо_вниз.png',
-                             'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вправо_вниз.png'
-                             },
-
-             'влево': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_влево.png',
-                       'тело' : 'Files/Images/Characters/Skin_1/stand/влево.png',
-                       True : 'Files/Images/Characters/Skin_1/walk/влево_1.png',
-                       False : 'Files/Images/Characters/Skin_1/walk/влево_2.png',
-                       'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_влево.png',
-                       'торс' : 'Files/Images/Characters/Skin_1/torso/торс_влево.png'
-                       },
-
-             'вправо': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вправо.png',
-                        'тело' : 'Files/Images/Characters/Skin_1/stand/вправо.png',
-                        True : 'Files/Images/Characters/Skin_1/walk/вправо_1.png',
-                        False : 'Files/Images/Characters/Skin_1/walk/вправо_2.png',
-                        'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вправо.png',
-                        'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вправо.png'
-                        },
-
-             'вверх-влево': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_влево_вверх.png',
-                             'тело' : 'Files/Images/Characters/Skin_1/stand/влево_вверх.png',
-                             True : 'Files/Images/Characters/Skin_1/walk/влево_вверх_1.png',
-                             False : 'Files/Images/Characters/Skin_1/walk/влево_вверх_2.png',
-                             'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_влево_вверх.png',
-                             'торс' : 'Files/Images/Characters/Skin_1/torso/торс_влево_вверх.png'
-                             },
-
-             'вверх-вправо': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вправо_вверх.png',
-                              'тело' : 'Files/Images/Characters/Skin_1/stand/вправо_вверх.png',
-                              True : 'Files/Images/Characters/Skin_1/walk/вправо_вверх_1.png',
-                              False : 'Files/Images/Characters/Skin_1/walk/вправо_вверх_2.png',
-                              'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вправо_вверх.png',
-                              'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вправо_вверх.png'
-                              }
-             }
+skins = {1: 'Files/Images/Characters/Skin_1/NPC_1.png',
          }
+
+coordinates = {'вниз' : {'голова' : (22, 57, 67, 111),
+                         'тело' : (92, 57 , 67, 111),
+                         True : (162, 57, 67, 111),
+                         False : (232, 57, 67, 111),
+                         'торс': (302, 57, 67, 111),
+                         'ноги': (372, 57, 67, 111),
+                         'руки': (442, 57, 67, 111),
+                         'пьет': (512, 57, 67, 111)},
+               'вверх': {'голова' : (22, 187, 67, 111),
+                         'тело' : (92, 187 , 67, 111),
+                         True : (162, 187, 67, 111),
+                         False : (232, 187, 67, 111),
+                         'торс': (302, 187, 67, 111),
+                         'ноги': (372, 187, 67, 111),
+                         'руки': (442, 187, 67, 111),
+                         'пьет': (512, 187, 67, 111)},
+               'вправо' : {'голова' : (22, 317, 67, 111),
+                         'тело' : (92, 317 , 67, 111),
+                         True : (162, 317, 67, 111),
+                         False : (232, 317, 67, 111),
+                         'торс': (302, 317, 67, 111),
+                         'ноги': (372, 317, 67, 111),
+                         'руки': (442, 317, 67, 111),
+                         'пьет': (512, 317, 67, 111)},
+               'влево' : {'голова' : (22, 447, 67, 111),
+                         'тело' : (92, 447 , 67, 111),
+                         True : (162, 447, 67, 111),
+                         False : (232, 447, 67, 111),
+                         'торс': (302, 447, 67, 111),
+                         'ноги': (372, 447, 67, 111),
+                         'руки': (442, 447, 67, 111),
+                         'пьет': (512, 447, 67, 111)},
+               'вниз-вправо' : {'голова' : (22, 577, 67, 111),
+                         'тело' : (92, 577 , 67, 111),
+                         True : (162, 577, 67, 111),
+                         False : (232, 577, 67, 111),
+                         'торс': (302, 577, 67, 111),
+                         'ноги': (372, 577, 67, 111),
+                         'руки': (442, 577, 67, 111),
+                         'пьет': (512, 577, 67, 111)},
+               'вниз-влево' : {'голова' : (22, 707, 67, 111),
+                         'тело' : (92, 707 , 67, 111),
+                         True : (162, 707, 67, 111),
+                         False : (232, 707, 67, 111),
+                         'торс': (302, 707, 67, 111),
+                         'ноги': (372, 707, 67, 111),
+                         'руки': (442, 707, 67, 111),
+                         'пьет': (512, 707, 67, 111)},
+               'вверх-вправо' : {'голова' : (22, 837, 67, 111),
+                         'тело' : (92, 837 , 67, 111),
+                         True : (162, 837, 67, 111),
+                         False : (232, 837, 67, 111),
+                         'торс': (302, 837, 67, 111),
+                         'ноги': (372, 837, 67, 111),
+                         'руки': (442, 837, 67, 111),
+                         'пьет': (512, 837, 67, 111)},
+               'вверх-влево' : {'голова' : (22, 967, 67, 111),
+                         'тело' : (92, 967 , 67, 111),
+                         True : (162, 967, 67, 111),
+                         False : (232, 967, 67, 111),
+                         'торс': (302, 967, 67, 111),
+                         'ноги': (372, 967, 67, 111),
+                         'руки': (442, 967, 67, 111),
+                         'пьет': (512, 967, 67, 111)},
+               }
+             # {'вниз': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вниз.png',
+             #          'тело' : 'Files/Images/Characters/Skin_1/stand/вниз.png',
+             #          True : 'Files/Images/Characters/Skin_1/walk/вниз_1.png',
+             #          False : 'Files/Images/Characters/Skin_1/walk/вниз_2.png',
+             #          'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вниз.png',
+             #          'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вниз.png'
+             #          },
+             #
+             # 'вверх': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вверх.png',
+             #           'тело' : 'Files/Images/Characters/Skin_1/stand/вверх.png',
+             #           True : 'Files/Images/Characters/Skin_1/walk/вверх_1.png',
+             #           False : 'Files/Images/Characters/Skin_1/walk/вверх_2.png',
+             #           'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вверх.png',
+             #           'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вверх.png'
+             #           },
+             #
+             # 'вниз-влево': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_влево_вниз.png',
+             #                'тело' : 'Files/Images/Characters/Skin_1/stand/влево_вниз.png',
+             #                True : 'Files/Images/Characters/Skin_1/walk/влево_вниз_1.png',
+             #                False : 'Files/Images/Characters/Skin_1/walk/влево_вниз_2.png',
+             #                'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_влево_вниз.png',
+             #                'торс' : 'Files/Images/Characters/Skin_1/torso/торс_влево_вниз.png'
+             #                },
+             #
+             # 'вниз-вправо': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вправо_вниз.png',
+             #                 'тело' : 'Files/Images/Characters/Skin_1/stand/вправо_вниз.png',
+             #                 True : 'Files/Images/Characters/Skin_1/walk/вправо_вниз_1.png',
+             #                 False : 'Files/Images/Characters/Skin_1/walk/вправо_вниз_2.png',
+             #                 'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вправо_вниз.png',
+             #                 'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вправо_вниз.png'
+             #                 },
+             #
+             # 'влево': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_влево.png',
+             #           'тело' : 'Files/Images/Characters/Skin_1/stand/влево.png',
+             #           True : 'Files/Images/Characters/Skin_1/walk/влево_1.png',
+             #           False : 'Files/Images/Characters/Skin_1/walk/влево_2.png',
+             #           'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_влево.png',
+             #           'торс' : 'Files/Images/Characters/Skin_1/torso/торс_влево.png'
+             #           },
+             #
+             # 'вправо': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вправо.png',
+             #            'тело' : 'Files/Images/Characters/Skin_1/stand/вправо.png',
+             #            True : 'Files/Images/Characters/Skin_1/walk/вправо_1.png',
+             #            False : 'Files/Images/Characters/Skin_1/walk/вправо_2.png',
+             #            'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вправо.png',
+             #            'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вправо.png'
+             #            },
+             #
+             # 'вверх-влево': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_влево_вверх.png',
+             #                 'тело' : 'Files/Images/Characters/Skin_1/stand/влево_вверх.png',
+             #                 True : 'Files/Images/Characters/Skin_1/walk/влево_вверх_1.png',
+             #                 False : 'Files/Images/Characters/Skin_1/walk/влево_вверх_2.png',
+             #                 'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_влево_вверх.png',
+             #                 'торс' : 'Files/Images/Characters/Skin_1/torso/торс_влево_вверх.png'
+             #                 },
+             #
+             # 'вверх-вправо': {'голова' : 'Files/Images/Characters/Skin_1/head/голова_вправо_вверх.png',
+             #                  'тело' : 'Files/Images/Characters/Skin_1/stand/вправо_вверх.png',
+             #                  True : 'Files/Images/Characters/Skin_1/walk/вправо_вверх_1.png',
+             #                  False : 'Files/Images/Characters/Skin_1/walk/вправо_вверх_2.png',
+             #                  'ноги' : 'Files/Images/Characters/Skin_1/legs/ноги_вправо_вверх.png',
+             #                  'торс' : 'Files/Images/Characters/Skin_1/torso/торс_вправо_вверх.png'
+             #                  }
+             # }
+         # }
 
 
 if __name__ == '__main__':

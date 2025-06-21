@@ -49,24 +49,43 @@ class Scene:
 
     def draw_area(self, scene_surface, timer, i):
         table = self.furniture[i].table
+        # стул
         for object in self.chairs:
             if object.table == table:
                 object.draw(scene_surface, timer)
+        # ноги
         for object in self.characters[self.room-1]:
             if object.on_chair and object.chair.table == table:
                 object.draw_legs(scene_surface, timer)
+        # тело (сверху)
         for object in self.characters[self.room-1]:
             if object.on_chair and object.chair.table == table and (object.direction not in ('вверх-вправо', 'вверх', 'вверх-влево')):
                 object.draw_torso(scene_surface, timer)
+        # стол
         self.furniture[i].draw(scene_surface, timer)
+        # вещи
         for object in self.characters[self.room-1]:
             if object.chair.table == table:
                 object.draw_tablethings(scene_surface)
+        # головы (сверху)
+        for object in self.characters[self.room-1]:
+            if object.on_chair and object.chair.table == table and (object.direction not in ('вверх-вправо', 'вверх', 'вверх-влево')):
+                object.draw_head(scene_surface, timer)
+        # руки (сверху)
+        for object in self.characters[self.room-1]:
+            if object.on_chair and object.chair.table == table and (object.direction not in ('вверх-вправо', 'вверх', 'вверх-влево')):
+                object.draw_hands(scene_surface, timer)
+        # тело (снизу)
         for object in self.characters[self.room-1]:
             if object.on_chair and object.chair.table == table and (object.direction in ('вверх-вправо', 'вверх', 'вверх-влево')):
                 object.draw_torso(scene_surface, timer)
+        # руки (снизу)
         for object in self.characters[self.room-1]:
-            if object.on_chair and object.chair.table == table:
+            if object.on_chair and object.chair.table == table and (object.direction in ('вверх-вправо', 'вверх', 'вверх-влево')):
+                object.draw_hands(scene_surface, timer)
+        # головы (снизу)
+        for object in self.characters[self.room-1]:
+            if object.on_chair and object.chair.table == table and (object.direction in ('вверх-вправо', 'вверх', 'вверх-влево')):
                 object.draw_head(scene_surface, timer)
 
 
