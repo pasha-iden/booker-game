@@ -5,7 +5,7 @@ from random import randint
 from Objects.chairs import Chairs
 from Objects.characters import Character, Plot_character
 from Objects.furniture import Furniture
-from Objects.interactives import Interactive
+from Objects.interactives import Interactive, Hero_interactive
 
 from Objects.stages import stages
 
@@ -25,6 +25,7 @@ class Scene:
             self.leaves = pygame.image.load(stages[self.stage]['ФОНЫ'][11][0]).convert_alpha()
         self.furniture = None
         self.interactive = None
+        self.girl_interactive = None
         self.chairs = None
         self.room_map = None
         self.empty_chairs = [[],[],[]]
@@ -67,7 +68,7 @@ class Scene:
         for object in self.characters[self.room-1]:
             if object.chair.table == table:
                 object.draw_tablethings(scene_surface)
-        # плечи
+        # плечи (сверху)
         for object in self.characters[self.room - 1]:
             if object.on_chair and object.chair.table == table and (object.direction in ('влево', 'вправо', 'вниз-влево', 'вниз-вправо')):
                 object.draw_shoulders(scene_surface, timer)
@@ -107,6 +108,12 @@ class Scene:
         for parameters in interactive_in_room:
             Interactive(objects, parameters)
         self.interactive = objects
+
+        objects = []
+        interactive_in_room = stages[self.stage]['ИНТЕРАКТИВНЫЕ ОБЪЕКТЫ (героиня)'][self.room]
+        for parameters in interactive_in_room:
+            Hero_interactive(objects, parameters)
+        self.girl_interactive = objects
 
 
     def placing_chairs(self):

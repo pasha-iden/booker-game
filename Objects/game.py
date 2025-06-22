@@ -2,6 +2,8 @@ import pygame
 
 from random import randint
 
+from pygame import K_SPACE
+
 from Objects.characters import Hero
 from Objects.scene import Scene
 from Objects.interactives import Cut_interactive
@@ -27,11 +29,13 @@ class Game:
         pygame.display.set_caption('Booker - The Coffee Adventure')
         icon = pygame.image.load('Booker.png')
         pygame.display.set_icon(icon)
-        
+
+        # шрифты
         self.game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
         self.menu_font = pygame.font.Font('Files/Fonts/Font.ttf', size=40)
         self.chapter_font = pygame.font.Font('Files/Fonts/Font.ttf', size=60)
-        
+
+        # таймеры
         self.timer_1000 = pygame.USEREVENT + 1
         pygame.time.set_timer(self.timer_1000, 1000)
         self.timer_50 = pygame.USEREVENT + 2
@@ -55,7 +59,6 @@ class Game:
                              ('Настройки', (350, 560), pygame.Rect(350, 560, 180, 50)),
                              ('Выйти', (350, 630), pygame.Rect(350, 630, 120, 50)),
                              )
-
         self.menu_settings = (('Полноэкранный режим', (350, 280), pygame.Rect(350, 280, 400, 50)),
                               ('Оконный режим (без рамок)', (350, 350), pygame.Rect(350, 350, 470, 50)),
                               ('Оконный режим (с рамками)', (350, 420), pygame.Rect(350, 420, 470, 50)),
@@ -477,10 +480,10 @@ class Game:
         self.prepared_message = (message_lines, tutorial, lines_before_tutorial)
 
 
-    def cut_scene (self, hero, scene, key):
+    def cut_scene (self, hero, scene):
 
         if scene.act_started == False:
-            print(act[scene.act])
+            # print(act[scene.act])
             if act[scene.act][0] == 'герой идет':
                 hero.destination = Cut_interactive(act[scene.act][1])
                 hero.find_path_to_deal(scene.room_map, hero.destination)
@@ -527,13 +530,14 @@ class Game:
                     scene.act_started = False
             elif act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя' :
                 if self.pushed_SPACE:
-                    self.pushed_SPACE = False
+                    # self.pushed_SPACE = False
                     self.barista_letter = None
                     self.prepared_message = None
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'мысли героя':
                 if self.pushed_SPACE:
+                    # self.pushed_SPACE = False
                     self.prepared_message = None
                     scene.act = scene.act + 1
                     scene.act_started = False
@@ -613,8 +617,12 @@ class Game:
         # отрисовка сцены
         scene.draw(scene_surface, self.timer, False) # False - значит, что рисуется не листва
 
-        # отрисовка интерактивных областей
-        for object in scene.interactive:
+        # интерактивные области npc
+        # for object in scene.interactive:
+        #     object.draw(scene_surface, self.timer)
+
+        # интерактивные области героя
+        for object in scene.girl_interactive:
             object.draw(scene_surface, self.timer)
 
         # ранжирование объектов по порядку их отрисовки
@@ -652,16 +660,91 @@ class Game:
         # отрисовка листьев
         scene.draw(scene_surface, self.timer, True) # True - значит, что рисуется - листва
 
-        # интерактивное сообщение
-        if scene.interactive != None:
-            hero.action(scene_surface, scene.interactive)
+        # интерактивное сообщение и подсказка
+        if scene.girl_interactive != None:
+            collided = False
+            for object in scene.girl_interactive:
+                if hero.hitbox.colliderect(object.hitbox):
+                    collided = True
+                    hero.his_interactive = object
+                    # подсказка
+                    if hero.thoughts == None:
+                        # включение интерактивного сообщение
+                        if self.pushed_SPACE:
+                            self.pushed_SPACE = False
+                            hero.thoughts_preparing()
+                        # отображение подсказки
+                        else:
+                            x = hero.x + 15
+                            y = hero.y - 75
+                            if scene.room == 2 or scene.room == 3:
+                                if y < 15: y = 15
+                            else:
+                                if y < 97: y = 97
+                            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y, 25, 25))
+                            pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y, 25, 25), 2)
+                            message = self.game_font.render('?', False, 'Black')
+                            scene_surface.blit(message, (x + 4, y))
+                    # сообщение
+                    if  hero.thoughts != None:
+                        # отключение сообщения
+                        if self.pushed_SPACE:
+                            self.pushed_SPACE = False
+                            hero.thoughts = None
+                        # отображение сообщения
+                        else:
+                            x = hero.x + 33 - (len(max(hero.thoughts, key=len)) * 10) // 2
+                            y = hero.y - 85
+                            if scene.room == 1 or scene.room == 3:
+                                if x < 5: x = 15
+                                if (x + len(max(hero.thoughts, key=len)) * 10) > 1020: x = 1020 - len(max(hero.thoughts, key=len)) * 10
+                            else:
+                                if x < 207: x = 212
+                                if (x + len(max(hero.thoughts, key=len)) * 10) > 842: x = 842 - len(max(hero.thoughts, key=len)) * 10
+                            if scene.room == 2 or scene.room == 3:
+                                if y - len(hero.thoughts) * 21 < 5: y = len(hero.thoughts) * 21 + 5
+                            else:
+                                if y - len(hero.thoughts) * 21 < 97: y = len(hero.thoughts) * 21 + 97
+                            pygame.draw.rect(scene_surface, 'Gray', (x - 4, y - len(hero.thoughts) * 21, len(max(hero.thoughts, key=len)) * 10, len(hero.thoughts) * 22 + 6))
+                            pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y - len(hero.thoughts) * 21, len(max(hero.thoughts, key=len)) * 10, len(hero.thoughts) * 22 + 6), 2)
+                            l = 0
+                            for line in hero.thoughts:
+                                message = self.game_font.render(line, False, 'Black')
+                                scene_surface.blit(message, (x, y - (len(hero.thoughts) - l) * 20))
+                                l += 1
+            if not collided:
+                hero.his_interactive = None
+                hero.thoughts = None
+
+        # мысли NPC
+        for character in scene.characters[scene.room-1]:
+            if character.thoughts != None:
+                x = character.x + 33 - (len(max(character.thoughts, key=len)) * 10) // 2
+                y = character.y - 85
+                if scene.room == 1 or scene.room == 3:
+                    if x < 5: x = 15
+                    if (x + len(max(character.thoughts, key=len)) * 10) > 1020: x = 1020 - len(max(character.thoughts, key=len)) * 10
+                else:
+                    if x < 207: x = 212
+                    if (x + len(max(character.thoughts, key=len)) * 10) > 842: x = 842 - len(max(character.thoughts, key=len)) * 10
+                if scene.room == 2 or scene.room == 3:
+                    if y - len(character.thoughts) * 21 < 5: y = len(character.thoughts) * 21 + 5
+                else:
+                    if y - len(character.thoughts) * 21 < 97: y = len(character.thoughts) * 21 + 97
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y - len(character.thoughts) * 21, len(max(character.thoughts, key=len)) * 10, len(character.thoughts) * 22 + 6))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y - len(character.thoughts) * 21, len(max(character.thoughts, key=len)) * 10, len(character.thoughts) * 22 + 6), 2)
+                l = 0
+                for line in character.thoughts:
+                    message = self.game_font.render(line, False, 'Black')
+                    scene_surface.blit(message, (x, y - (len(character.thoughts) - l) * 20))
+                    l += 1
 
         # отрисовка мыслей
         if self.prepared_message != None and act[scene.act][0] == 'мысли героя':
             x = hero.x + 33 - (len(max(self.prepared_message[0], key=len)) * 10) // 2
             y = hero.y - 85
             if scene.room == 1 or scene.room == 3:
-                if x < 5: x = 5
+                if x < 5: x = 15
                 if (x + len(max(self.prepared_message[0], key=len)) * 10) > 1020: x = 1020 - len(max(self.prepared_message[0], key=len)) * 10
             else:
                 if x < 207: x = 212

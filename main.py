@@ -33,7 +33,7 @@ while game.running:
 
 
             # менеджер кат-сцены
-            game.cut_scene(hero, scene, pygame.key.get_pressed())
+            game.cut_scene(hero, scene)
 
 
 
