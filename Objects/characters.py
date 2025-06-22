@@ -29,6 +29,7 @@ class Sub_character:
         self.on_chair = False
         self.chair = None
         self.have_a_deal = False
+        self.deal_kind = 'сидит'
         self.on_interactive = False
         self.his_interactive = None
         self.staing = 0
@@ -124,8 +125,13 @@ class Sub_character:
         scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction]['ноги'])
     def draw_torso(self, scene_surface, timer):
         scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction]['торс'])
+    def draw_shoulders(self, scene_surface, timer):
+        scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction]['плечи'])
     def draw_hands(self, scene_surface, timer):
-        scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction]['руки'])
+        if self.deal_kind == 'сидит':
+            scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction]['руки'])
+        elif self.deal_kind == 'пьет':
+            scene_surface.blit(self.image, (self.x - 8, self.y - 62), coordinates[self.direction]['пьет'])
     def draw_head(self, scene_surface, timer):
         scene_surface.blit(self.image, (self.x - 8, self.y - 62 + 4 * self.head_place), coordinates[self.direction]['голова'])
         if timer:
@@ -143,7 +149,6 @@ class Character(Sub_character):
         self.y = chair.landing_y
         self.chair = chair
         self.direction = chair.direction
-        self.deal_kind = 'сидит'
         self.stand = False
         self.on_chair = True
         self.destination = None
@@ -179,7 +184,7 @@ class Character(Sub_character):
 
     def decision(self, timer, room_map, interactive, can_go_away):
         go_away = False
-        if timer and self.on_chair and self.have_a_deal == False:
+        if timer and self.deal_kind == 'сидит':
             kind_of_decision = randint(1, 100)
             if 80 <= kind_of_decision <= 95 and len(interactive) != 0:
                 self.have_a_deal = True
@@ -194,8 +199,11 @@ class Character(Sub_character):
                 self.find_path_to_deal(room_map, self.destination)
 
 
-            if 95 < kind_of_decision <= 100 and can_go_away:
+            elif 95 < kind_of_decision <= 100 and can_go_away:
                 go_away = True
+            elif 10 <= kind_of_decision <= 20:
+                self.deal_kind = 'пьет'
+                self.staing = 3
         if self.deal_kind == 'интерактив':
             if self.have_a_deal and self.x == self.destination.x and self.y == self.destination.y:
                 self.have_a_deal = False
@@ -215,12 +223,18 @@ class Character(Sub_character):
                 self.direction = self.chair.direction
                 self.x = self.chair.landing_x
                 self.y = self.chair.landing_y
+        elif self.deal_kind == 'пьет':
+            if self.staing > 0 and timer:
+                self.staing += -1
+            elif self.staing == 0:
+                self.deal_kind = 'сидит'
 
         return  interactive, go_away
 
     def draw_tablethings (self, scene_surface):
 
-        scene_surface.blit(self.cup_image, self.cup_coordinates)
+        if self.deal_kind != 'пьет':
+            scene_surface.blit(self.cup_image, self.cup_coordinates)
         if self.laptop:
             scene_surface.blit(self.laptop_image, self.laptop_coordinates)
         elif self.book:
@@ -233,11 +247,11 @@ class Character(Sub_character):
             scene_surface.blit(self.water_image, self.water_coordinates)
 
 
-    # for el in self.all_coordinates:
-        #     pygame.draw.circle(scene_surface, 'Red', (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]), 1)
-        # for el in self.free_coordinates:
-        #     # scene_surface.blit(self.cup_image, (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]))
-        #     pygame.draw.circle(scene_surface, 'Green', (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]), 1)
+        # for el in self.all_coordinates:
+            #     pygame.draw.circle(scene_surface, 'Red', (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]), 1)
+            # for el in self.free_coordinates:
+            #     # scene_surface.blit(self.cup_image, (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]))
+            #     pygame.draw.circle(scene_surface, 'Green', (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]), 1)
 
     def cup_placing (self):
         cup_index = randint(1, 8)

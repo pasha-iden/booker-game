@@ -67,6 +67,10 @@ class Scene:
         for object in self.characters[self.room-1]:
             if object.chair.table == table:
                 object.draw_tablethings(scene_surface)
+        # плечи
+        for object in self.characters[self.room - 1]:
+            if object.on_chair and object.chair.table == table and (object.direction in ('влево', 'вправо', 'вниз-влево', 'вниз-вправо')):
+                object.draw_shoulders(scene_surface, timer)
         # головы (сверху)
         for object in self.characters[self.room-1]:
             if object.on_chair and object.chair.table == table and (object.direction not in ('вверх-вправо', 'вверх', 'вверх-влево')):
