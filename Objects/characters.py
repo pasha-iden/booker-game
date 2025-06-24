@@ -2,6 +2,7 @@ import pygame
 
 from random import randint
 from collections import deque
+from rubish.time_detector import time_counter
 
 from Objects.skins import skins, coordinates
 from Objects.tablethings import tables_data, place_data, tablethings
@@ -39,6 +40,7 @@ class Sub_character:
         self.thoughts = None
 
 
+    # @time_counter()
     def find_path_to_deal(self, room_map, destination):
         deal_location = (destination.y//self.speed, destination.x//self.speed)
         start = (self.y//self.speed, self.x//self.speed)
@@ -125,6 +127,7 @@ class Sub_character:
         pass
 
 
+    # @time_counter()
     def draw(self, scene_surface, timer):
         # pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, 4, 4))
         if self.on_walk == False:
@@ -221,6 +224,8 @@ class Character(Sub_character):
 
         return  interactive, go_away
 
+
+    # @time_counter()
     def draw_tablethings (self, scene_surface):
 
         if self.deal_kind != 'пьет':

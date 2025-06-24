@@ -1,8 +1,7 @@
 import pygame
 
 from random import randint
-
-from pygame import K_SPACE
+from rubish.time_detector import time_counter
 
 from Objects.characters import Hero
 from Objects.scene import Scene
@@ -11,7 +10,7 @@ from Objects.interactives import Cut_interactive
 from Objects.stages import stages
 from Objects.acts import act
 
-from  Objects.barista import Barista
+from Objects.barista import Barista
 
 
 class Game:
@@ -84,6 +83,22 @@ class Game:
         self.barista_letter = None
         self.counted_cook_time = None
         self.counted_order_time = None
+
+        # пост-эффекты
+        # шумы
+        self.dots_surface = pygame.Surface((1024, 768))
+        self.doting_stage = 0
+        # слои цветовых фильтров и их окрашивание
+        self.red_mask = pygame.Surface((1024, 768), pygame.SRCALPHA)
+        self.green_mask = pygame.Surface((1024, 768), pygame.SRCALPHA)
+        self.blue_mask = pygame.Surface((1024, 768), pygame.SRCALPHA)
+        self.red_mask.fill((255, 0, 0, 255))
+        self.green_mask.fill((0, 255, 0, 255))
+        self.blue_mask.fill((0, 0, 255, 255))
+        # полосы
+        self.lines_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)
+        for y in range(0, 768, 3):
+            pygame.draw.line(self.lines_surface, (0, 0, 0, 40), (0, y), (1024, y), 1)
 
 
 
@@ -613,6 +628,7 @@ class Game:
 
 
     # рендер всей сцены
+    # @time_counter()
     def render (self, scene_surface, hero, scene):
         # отрисовка сцены
         scene.draw(scene_surface, self.timer, False) # False - значит, что рисуется не листва
@@ -622,8 +638,8 @@ class Game:
         #     object.draw(scene_surface, self.timer)
 
         # интерактивные области героя
-        for object in scene.girl_interactive:
-            object.draw(scene_surface, self.timer)
+        # for object in scene.girl_interactive:
+        #     object.draw(scene_surface, self.timer)
 
         # ранжирование объектов по порядку их отрисовки
         rendering_objects = []
@@ -859,6 +875,68 @@ class Game:
 
         if self.barista != None:
             self.barista.render(scene_surface, hero, scene)
+
+    @time_counter()
+    def after_effects (self, scene_surface):
+
+        # размытие
+        blurring_surface = pygame.Surface((1024, 768))
+        blurring_surface.blit(scene_surface, (-2, 0))
+        blurring_surface.blit(scene_surface, (2, 0))
+        blurring_surface.blit(scene_surface, (0, 2))
+        blurring_surface.blit(scene_surface, (0, -2))
+        blurring_surface.set_alpha(50)
+        scene_surface.blit(blurring_surface, (0, 0))
+
+        # пикcельное мерцание (шумы)
+        if self.doting_stage == 0:
+            self.dots = pygame.Surface((1024, 768), pygame.SRCALPHA)
+            a = 300
+        elif self.doting_stage in (1, 2, 3):
+            a = 450
+        for dot in range(a):
+            x = randint(0, 1023)
+            y = randint(0, 767)
+            current_color = scene_surface.get_at((x, y))
+            new_color = (
+                max(0, min(255, current_color.r + randint(-20, 20))),
+                max(0, min(255, current_color.g + randint(-20, 20))),
+                max(0, min(255, current_color.b + randint(-20, 20))))
+            pygame.draw.circle(self.dots, (new_color[0], new_color[1], new_color[2]), (x, y), 1)
+        if self.doting_stage < 3:
+            self.doting_stage += 1
+        else:
+            self.dots_surface = self.dots
+            self.doting_stage = 0
+        scene_surface.blit(self.dots_surface, (0, 0))
+
+        # глитч смещения части экрана
+        if randint(0, 50) == 0:
+            area_to_shift = pygame.Rect(0, randint(0, 748), 1024, randint(4, 14))
+            shifted_surface = scene_surface.subsurface(area_to_shift).copy()
+            shifted_position = area_to_shift.move(4, 0)
+            scene_surface.fill((0, 0, 0), area_to_shift)
+            scene_surface.blit(shifted_surface, shifted_position)
+
+        # хроматические аберрации
+        # копии изображения для трех каналов
+        red_shifted = pygame.transform.smoothscale(scene_surface, (1024, 768))
+        green_shifted = pygame.transform.smoothscale(scene_surface, (1024, 768))
+        blue_shifted = pygame.transform.smoothscale(scene_surface, (1024, 768))
+        # наложение цветовых фильтров на изображение
+        red_shifted.blit(self.red_mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        green_shifted.blit(self.green_mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        blue_shifted.blit(self.blue_mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        # обратное складывание в одно изображение
+        result_surface = pygame.Surface((1024, 768))
+        result_surface.blit(red_shifted, (-1, 0), special_flags=pygame.BLEND_RGB_ADD)
+        result_surface.blit(green_shifted, (1, 0), special_flags=pygame.BLEND_RGB_ADD)
+        result_surface.blit(blue_shifted, (0, 0), special_flags=pygame.BLEND_RGB_ADD)
+        # перенос на основную поверхность
+        scene_surface.blit(result_surface, (0, 0))
+
+        # полосы
+        scene_surface.blit(self.lines_surface, (0, 0))
 
 
 if __name__ == '__main__':

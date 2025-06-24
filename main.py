@@ -1,10 +1,11 @@
 import pygame
 
+import time
+
 from Objects.game import Game
 from Objects.scene import Scene
 from Objects.characters import Hero
 
-import time
 
 
 
@@ -13,9 +14,6 @@ hero = Hero()
 scene = Scene()
 scene_surface = pygame.Surface((game.SCREEN_WIDTH, game.SCREEN_HEIGHT))
 
-
-
-
 while game.running:
     scene_surface.fill('Black')
 
@@ -23,9 +21,9 @@ while game.running:
     game.events_tracking()
 
 
-
     if game.running:
 
+        start_time = time.perf_counter()
         # меню игры
         if game.just_started or game.pause or game.pushed_ESCAPE:
             hero, scene = game.menu_window(scene_surface, hero, scene)
@@ -87,9 +85,7 @@ while game.running:
             game.render(scene_surface, hero, scene)
             game.cut_effects_render(scene_surface, hero, scene)
             game.mini_game_render(scene_surface, hero, scene)
-
-
-
+            game.after_effects(scene_surface)
 
 
         # тесты
@@ -97,13 +93,13 @@ while game.running:
         #     print(pygame.mouse.get_pos())
 
 
-        # scale изображения и рамки
-        final_surface = pygame.transform.smoothscale(scene_surface, (1024*game.scale_value//1, 768*game.scale_value//1))
-
         # рендер графики и обновление экрана
-        game.screen.blit(final_surface, (game.shift_x, game.shift_y))
+        game.screen.blit(scene_surface, (game.shift_x, game.shift_y))
         pygame.display.update()
 
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        print(f"{execution_time:.6f}")
 
         game.clock_on.tick(game.FPS)
 pygame.quit()

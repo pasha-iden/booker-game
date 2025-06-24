@@ -1,6 +1,7 @@
 import pygame
 
 from random import randint
+from rubish.time_detector import time_counter
 
 from Objects.chairs import Chairs
 from Objects.characters import Character, Plot_character
@@ -48,6 +49,7 @@ class Scene:
             scene_surface.blit(self.leaves, (0, 0), stages[self.stage]['ФОНЫ'][11][self.phase])
 
 
+    # @time_counter()
     def draw_area(self, scene_surface, timer, i):
         table = self.furniture[i].table
         # стул
