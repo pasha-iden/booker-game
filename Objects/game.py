@@ -30,9 +30,9 @@ class Game:
         pygame.display.set_icon(icon)
 
         # шрифты
-        self.game_font = pygame.font.Font('Files/Fonts/Font.ttf', size=20)
-        self.menu_font = pygame.font.Font('Files/Fonts/Font.ttf', size=40)
-        self.chapter_font = pygame.font.Font('Files/Fonts/Font.ttf', size=60)
+        self.game_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=20)
+        self.menu_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=40)
+        self.chapter_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=60)
 
         # таймеры
         self.timer_1000 = pygame.USEREVENT + 1
@@ -106,7 +106,6 @@ class Game:
         if not self.just_started and self.pushed_ESCAPE and not self.settings:
             self.pause = not self.pause
             self.pushed_ESCAPE = False
-        self.menu_font = pygame.font.Font('Files/Fonts/Font.ttf', size=40)
 
         if self.settings:
             options = self.menu_settings
@@ -876,6 +875,7 @@ class Game:
         if self.barista != None:
             self.barista.render(scene_surface, hero, scene)
 
+
     @time_counter()
     def after_effects (self, scene_surface):
 
@@ -920,9 +920,9 @@ class Game:
 
         # хроматические аберрации
         # копии изображения для трех каналов
-        red_shifted = pygame.transform.smoothscale(scene_surface, (1024, 768))
-        green_shifted = pygame.transform.smoothscale(scene_surface, (1024, 768))
-        blue_shifted = pygame.transform.smoothscale(scene_surface, (1024, 768))
+        red_shifted = scene_surface.copy()
+        green_shifted = scene_surface.copy()
+        blue_shifted = scene_surface.copy()
         # наложение цветовых фильтров на изображение
         red_shifted.blit(self.red_mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
         green_shifted.blit(self.green_mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)

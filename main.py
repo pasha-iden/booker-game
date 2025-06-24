@@ -8,7 +8,6 @@ from Objects.characters import Hero
 
 
 
-
 game = Game()
 hero = Hero()
 scene = Scene()
@@ -35,7 +34,6 @@ while game.running:
 
 
 
-
             # перемещение между комнатами
             if game.pushed_SPACE and game.fade_animation == None:
                 game.transfering_room_initiation(hero, scene)
@@ -49,7 +47,6 @@ while game.running:
             # управление игроком
             if (game.fade_animation == None and game.barista == None) and pygame.key.get_pressed() != None:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
-
 
 
 
@@ -74,10 +71,8 @@ while game.running:
 
 
 
-
             # МИНИ-ИГРЫ
             game.mini_games_logica(hero, scene)
-
 
 
 
@@ -88,7 +83,6 @@ while game.running:
             game.after_effects(scene_surface)
 
 
-        # тесты
         # if not game.pause:
         #     print(pygame.mouse.get_pos())
 
