@@ -129,7 +129,7 @@ class Sub_character:
 
     # @time_counter()
     def draw(self, scene_surface, timer):
-        # pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, 4, 4))
+        # pygame.draw.rect(scene_surface, 'Blue', (self.x, self.y, self.width, self.height))
         if self.on_walk == False:
             scene_surface.blit(self.image, (self.x -8, self.y -62), coordinates[self.direction]['тело'])
         elif self.on_walk == True:
@@ -243,10 +243,10 @@ class Character(Sub_character):
 
 
         # for el in self.all_coordinates:
-            #     pygame.draw.circle(scene_surface, 'Red', (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]), 1)
-            # for el in self.free_coordinates:
-            #     # scene_surface.blit(self.cup_image, (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]))
-            #     pygame.draw.circle(scene_surface, 'Green', (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]), 1)
+        #         pygame.draw.circle(scene_surface, 'Red', (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]), 1)
+        # for el in self.free_coordinates:
+        #     # scene_surface.blit(self.cup_image, (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]))
+        #     pygame.draw.circle(scene_surface, 'Green', (el[0] * 4 + place_data[self.chair.number][0][0], el[1] * 4 + place_data[self.chair.number][0][1]), 1)
 
     def tablethings_placing(self, tablethings_atlas):
         self.tablethings_images = tablethings_atlas

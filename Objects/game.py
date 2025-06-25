@@ -42,6 +42,11 @@ class Game:
         self.clock_on = pygame.time.Clock()
         self.FPS = 60
 
+        # начальная музыка
+        pygame.mixer.music.load('Files/Sounds/Music/cartoon-mischief.mp3')
+        pygame.mixer.music.set_volume(0.7)
+        pygame.mixer.music.play(-1)
+
         # переменные параметры игры
         self.running = True
         self.just_started = True
@@ -74,6 +79,13 @@ class Game:
         self.chapter_info = None
         self.chapter_timer = None
         self.wait = None
+        self.cut_data = None
+
+        # трансферинги
+        self.zone_one = pygame.Rect(556, 278, 120, 20)
+        self.zone_two_one = pygame.Rect(420, 652, 160, 20)
+        self.zone_two_two = pygame.Rect(588, 68, 104, 40)
+        self.zone_three = pygame.Rect(20, 552, 48, 88)
 
         # мысли и реплики
         self.prepared_message = None
@@ -132,6 +144,9 @@ class Game:
                         scene.mapping_room()
                         scene.placing_characters()
                         self.prepared_message = None
+                        pygame.mixer.music.load('Files/Sounds/Music/sinnesloschen-beam.mp3')
+                        pygame.mixer.music.set_volume(1)
+                        pygame.mixer.music.play(-1) # -1 значит зациклена, без параметра - воспроизведется один раз, больше единицы - столько и воспроизведется
                         self.just_started = False
                         self.pause = False
 
@@ -425,25 +440,25 @@ class Game:
 
 
     def transfering_room_initiation (self, hero, scene):
-        if (hero.hitbox.collidepoint((30, 570)) and scene.room == 3) or (hero.hitbox.collidepoint((630, 90)) and scene.room == 2) or (hero.hitbox.collidepoint((445, 620)) and scene.room == 2) or (hero.hitbox.collidepoint((595, 300)) and scene.room == 1):
+        if (hero.hitbox.colliderect(self.zone_three) and scene.room == 3) or (hero.hitbox.colliderect(self.zone_two_two) and scene.room == 2) or (hero.hitbox.colliderect(self.zone_two_one) and scene.room == 2) or (hero.hitbox.colliderect(self.zone_one) and scene.room == 1):
             self.fade_animation = -12
 
 
     def transfering_room (self, hero, scene):
         scene_before = scene.room
-        if hero.hitbox.collidepoint((30, 570)) and scene.room == 3:
+        if hero.hitbox.colliderect(self.zone_three) and scene.room == 3:
             scene.room = 2
             hero.x = 652
             hero.y = 80
-        if hero.hitbox.collidepoint((630, 90)) and scene.room == 2:
+        if hero.hitbox.colliderect(self.zone_two_two) and scene.room == 2:
             scene.room = 3
             hero.x = 28
             hero.y = 556
-        if hero.hitbox.collidepoint((445, 620)) and scene.room == 2:
+        if hero.hitbox.colliderect(self.zone_two_one) and scene.room == 2:
             scene.room = 1
             hero.x = 580
             hero.y = 296
-        if hero.hitbox.collidepoint((595, 300)) and scene.room == 1:
+        if hero.hitbox.colliderect(self.zone_one) and scene.room == 1:
             scene.room = 2
             hero.x = 424
             hero.y = 600
@@ -524,12 +539,18 @@ class Game:
                 scene.plot_characters[scene.room-1][i].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][i].destination)
             elif act[scene.act][0] == 'ОБУЧЕНИЕ БАРИСТА':
                 self.barista = Barista(False)
+                pygame.mixer.music.load('Files/Sounds/Music/Tatlin.mp3')
+                pygame.mixer.music.set_volume(0.7)
+                pygame.mixer.music.play(-1)
             elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
                 self.barista = Barista(True, self.counted_order_time, self.counted_cook_time)
                 hero.x = 400
                 hero.y = 300
                 hero.direction = 'вниз'
                 hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
+                pygame.mixer.music.load('Files/Sounds/Music/AberrantRealities 1.mp3')
+                pygame.mixer.music.set_volume(0.7)
+                pygame.mixer.music.play(-1)
             if act[scene.act][0][0:8] != 'обучение':
                 scene.act_started = True
 
@@ -598,13 +619,15 @@ class Game:
                 scene.act = scene.act + 1
                 scene.act_started = False
             elif act[scene.act][0] == 'ЗАВЕРШЕНИЕ ОБУЧЕНИЯ БАРИСТА':
-                # self.tutorial_barista_game = False
                 self.barista = None
                 scene.act = scene.act + 1
                 scene.act_started = False
             elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
                 if self.pushed_TAB or self.barista.score[2] == True:
                     self.barista = None
+                    pygame.mixer.music.load('Files/Sounds/Music/sinnesloschen-beam.mp3')
+                    pygame.mixer.music.set_volume(0.7)
+                    pygame.mixer.music.play(-1)
                     scene.act = scene.act + 1
                     scene.act_started = False
 
@@ -640,6 +663,15 @@ class Game:
         # for object in scene.girl_interactive:
         #     object.draw(scene_surface, self.timer)
 
+        # области перехода
+        # if scene.room == 1:
+        #     pygame.draw.rect(scene_surface, 'White', self.zone_one)
+        # elif scene.room == 2:
+        #     pygame.draw.rect(scene_surface, 'White', self.zone_two_one)
+        #     pygame.draw.rect(scene_surface, 'White', self.zone_two_two)
+        # elif scene.room == 3:
+        #     pygame.draw.rect(scene_surface, 'White', self.zone_three)
+
         # ранжирование объектов по порядку их отрисовки
         rendering_objects = []
         for object in scene.characters[scene.room - 1]:
@@ -674,6 +706,29 @@ class Game:
 
         # отрисовка листьев
         scene.draw(scene_surface, self.timer, True) # True - значит, что рисуется - листва
+
+        # мысли NPC
+        for character in scene.characters[scene.room - 1]:
+            if character.thoughts != None:
+                x = character.x + 33 - (len(max(character.thoughts, key=len)) * 10) // 2
+                y = character.y - 85
+                if scene.room == 1 or scene.room == 3:
+                    if x < 5: x = 15
+                    if (x + len(max(character.thoughts, key=len)) * 10) > 1020: x = 1020 - len(max(character.thoughts, key=len)) * 10
+                else:
+                    if x < 207: x = 212
+                    if (x + len(max(character.thoughts, key=len)) * 10) > 842: x = 842 - len(max(character.thoughts, key=len)) * 10
+                if scene.room == 2 or scene.room == 3:
+                    if y - len(character.thoughts) * 21 < 5: y = len(character.thoughts) * 21 + 5
+                else:
+                    if y - len(character.thoughts) * 21 < 97: y = len(character.thoughts) * 21 + 97
+                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y - len(character.thoughts) * 21, len(max(character.thoughts, key=len)) * 10, len(character.thoughts) * 22 + 6))
+                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y - len(character.thoughts) * 21, len(max(character.thoughts, key=len)) * 10, len(character.thoughts) * 22 + 6), 2)
+                l = 0
+                for line in character.thoughts:
+                    message = self.game_font.render(line, False, 'Black')
+                    scene_surface.blit(message, (x, y - (len(character.thoughts) - l) * 20))
+                    l += 1
 
         # интерактивное сообщение и подсказка
         if scene.girl_interactive != None:
@@ -730,29 +785,6 @@ class Game:
             if not collided:
                 hero.his_interactive = None
                 hero.thoughts = None
-
-        # мысли NPC
-        for character in scene.characters[scene.room-1]:
-            if character.thoughts != None:
-                x = character.x + 33 - (len(max(character.thoughts, key=len)) * 10) // 2
-                y = character.y - 85
-                if scene.room == 1 or scene.room == 3:
-                    if x < 5: x = 15
-                    if (x + len(max(character.thoughts, key=len)) * 10) > 1020: x = 1020 - len(max(character.thoughts, key=len)) * 10
-                else:
-                    if x < 207: x = 212
-                    if (x + len(max(character.thoughts, key=len)) * 10) > 842: x = 842 - len(max(character.thoughts, key=len)) * 10
-                if scene.room == 2 or scene.room == 3:
-                    if y - len(character.thoughts) * 21 < 5: y = len(character.thoughts) * 21 + 5
-                else:
-                    if y - len(character.thoughts) * 21 < 97: y = len(character.thoughts) * 21 + 97
-                pygame.draw.rect(scene_surface, 'Gray', (x - 4, y - len(character.thoughts) * 21, len(max(character.thoughts, key=len)) * 10, len(character.thoughts) * 22 + 6))
-                pygame.draw.rect(scene_surface, (80, 80, 80), (x - 4, y - len(character.thoughts) * 21, len(max(character.thoughts, key=len)) * 10, len(character.thoughts) * 22 + 6), 2)
-                l = 0
-                for line in character.thoughts:
-                    message = self.game_font.render(line, False, 'Black')
-                    scene_surface.blit(message, (x, y - (len(character.thoughts) - l) * 20))
-                    l += 1
 
         # отрисовка мыслей
         if self.prepared_message != None and act[scene.act][0] == 'мысли героя':
@@ -876,7 +908,7 @@ class Game:
             self.barista.render(scene_surface, hero, scene)
 
 
-    @time_counter()
+    # @time_counter()
     def after_effects (self, scene_surface):
 
         # размытие

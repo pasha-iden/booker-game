@@ -93,7 +93,7 @@ while game.running:
 
         end_time = time.perf_counter()
         execution_time = end_time - start_time
-        print(f"{execution_time:.6f}")
+        # print(f"{execution_time:.6f}")
 
         game.clock_on.tick(game.FPS)
 pygame.quit()
