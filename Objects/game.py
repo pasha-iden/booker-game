@@ -19,20 +19,21 @@ class Game:
         pygame.init()
         self.SCREEN_WIDTH = 1024
         self.SCREEN_HEIGHT = 768
-        self.shift_x = 0
-        self.shift_y = 0
-        self.scale_value = 1
-        self.screen_mod = 1
+        self.screen_mod = '1024 x 768'
+        self.screen_shift = {'1024 x 768': (0, 0),
+                            '1920 x 1200': (260, 100)}
         # print(pygame.display.list_modes())
         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))  # базовое разрешение
-        pygame.display.set_caption('Booker - The Coffee Adventure')
+        pygame.display.set_caption('Booker - 8-bit Adventure')
         icon = pygame.image.load('Booker.png')
         pygame.display.set_icon(icon)
 
         # шрифты
         self.game_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=20)
-        self.menu_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=40)
+        self.menu_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=35)
         self.chapter_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=60)
+        self.logo_font = pygame.font.Font('Files/Fonts/PressStart2P-Regular.ttf', size=70)
+        self.sublogo_font = pygame.font.Font('Files/Fonts/PressStart2P-Regular.ttf', size=20)
 
         # таймеры
         self.timer_1000 = pygame.USEREVENT + 1
@@ -44,7 +45,7 @@ class Game:
 
         # начальная музыка
         pygame.mixer.music.load('Files/Sounds/Music/cartoon-mischief.mp3')
-        pygame.mixer.music.set_volume(0.7)
+        pygame.mixer.music.set_volume(0.6)
         pygame.mixer.music.play(-1)
 
         # переменные параметры игры
@@ -56,17 +57,12 @@ class Game:
         self.timer_005 = False
 
         # опции меню
-        self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350, 280, 200, 50)),
-                             ('Продолжить', (350, 350), pygame.Rect(350, 350, 220, 50)),
-                             ('Сохранить', (350, 420), pygame.Rect(350, 420, 220, 50)),
-                             ('Загрузить', (350, 490), pygame.Rect(350, 490, 180, 50)),
-                             ('Настройки', (350, 560), pygame.Rect(350, 560, 180, 50)),
-                             ('Выйти', (350, 630), pygame.Rect(350, 630, 120, 50)),
-                             )
-        self.menu_settings = (('Полноэкранный режим', (350, 280), pygame.Rect(350, 280, 400, 50)),
-                              ('Оконный режим (без рамок)', (350, 350), pygame.Rect(350, 350, 470, 50)),
-                              ('Оконный режим (с рамками)', (350, 420), pygame.Rect(350, 420, 470, 50)),
-                              )
+        self.menu_options_height = 50
+        self.menu_options_width = 18
+        self.menu_names = ('Новая игра', 'Продолжить', 'Сохранить', 'Загрузить', 'Настройки', 'Выйти')
+        self.menu_settings_names = ('Полноэкранный режим', 'Оконный режим')
+        self.menu_start_position = (350, 370)
+        self.set_menu_settings()
 
         # нажатые клавиши
         self.key_pushed = False
@@ -113,6 +109,20 @@ class Game:
             pygame.draw.line(self.lines_surface, (0, 0, 0, 40), (0, y), (1024, y), 1)
 
 
+    # Техническое -----------------------
+
+
+    def set_menu_settings(self):
+        menu_options = []
+        for i in range(len(self.menu_names)):
+            menu_options.append((self.menu_names[i], (self.menu_start_position[0], self.menu_start_position[1] + i * self.menu_options_height), pygame.Rect(self.menu_start_position[0] + self.screen_shift[self.screen_mod][0], self.menu_start_position[1] + i * self.menu_options_height + self.screen_shift[self.screen_mod][1], len(self.menu_names[i]) * self.menu_options_width, self.menu_options_height)))
+        self.menu_options = tuple(menu_options)
+
+        settings_options = []
+        for i in range(len(self.menu_settings_names)):
+            settings_options.append((self.menu_settings_names[i], (self.menu_start_position[0], self.menu_start_position[1] + i * self.menu_options_height), pygame.Rect(self.menu_start_position[0] + self.screen_shift[self.screen_mod][0], self.menu_start_position[1] + i * self.menu_options_height + self.screen_shift[self.screen_mod][1], len(self.menu_settings_names[i]) * self.menu_options_width, self.menu_options_height)))
+        self.menu_settings = tuple(settings_options)
+
 
     def menu_window(self, scene_surface, hero, scene):
         if not self.just_started and self.pushed_ESCAPE and not self.settings:
@@ -127,12 +137,19 @@ class Game:
         else:
             options = self.menu_options
 
+        logo = self.logo_font.render('BOOKER', False, 'Red')
+        scene_surface.blit(logo, (300, 220))
+        sublogo = self.sublogo_font.render('8-битное приключение', False, 'White')
+        scene_surface.blit(sublogo, (305, 300))
+
         for option in options:
             if option[2].collidepoint(pygame.mouse.get_pos()):
-                menu_option = self.menu_font.render(option[0], False, 'Red')
+                if self.cut_data == None and (option[0] == 'Сохранить' or option[0] == 'Продолжить') or self.cut_data != None and option[0] == 'Сохранить' and self.cut_data[4] == False:
+                    menu_option = self.menu_font.render(option[0], False, 'Gray')
+                else:
+                    menu_option = self.menu_font.render(option[0], False, 'Red')
                 scene_surface.blit(menu_option, option[1])
 
-                # if pygame.mouse.get_pressed()[0]:
                 if self.mouse_left:
                     screen_mod_before = self.screen_mod
                     if option[0] == 'Новая игра':
@@ -154,7 +171,7 @@ class Game:
                         self.just_started = False
                         self.pause = False
 
-                    elif option[0] == 'Сохранить' and not self.just_started:
+                    elif option[0] == 'Сохранить' and self.cut_data != None and self.cut_data[4] == True:
                         save_data = str(hero.x) + '\n' + str(hero.y) + '\n' + str(scene.room) + '\n' + str(scene.act)
                         save_file = open("save.txt", 'w', encoding="UTF-8")
                         print(save_data, file=save_file)
@@ -189,56 +206,28 @@ class Game:
                         self.settings = True
                     elif option[0] == 'Полноэкранный режим':
                         self.screen = pygame.display.set_mode((1920, 1200), pygame.FULLSCREEN) # или 1080
-                        self.screen_mod = 2
+                        self.screen_mod = '1920 x 1200'
                         self.settings = False
-                    elif option[0] == 'Оконный режим (без рамок)':
-                        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), flags=pygame.NOFRAME)
-                        self.screen_mod = 1
-                        self.settings = False
-                    elif option[0] == 'Оконный режим (с рамками)':
+                    # elif option[0] == 'Оконный режим (без рамок)':
+                    #     self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), flags=pygame.NOFRAME)
+                    #     self.screen_mod = 1
+                    #     self.settings = False
+                    elif option[0] == 'Оконный режим': # с рамками
                         self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-                        self.screen_mod = 1
+                        self.screen_mod = '1024 x 768'
                         self.settings = False
 
                     elif option[0] == 'Выйти':
                         self.running = False
 
                     if screen_mod_before != self.screen_mod:
-                        if self.screen_mod == 1:
-                            self.shift_x = 0
-                            self.shift_y = 0
-                            self.scale_value = 1
-                            self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350, 280, 200, 50)),
-                                                 ('Продолжить', (350, 350), pygame.Rect(350, 350, 220, 50)),
-                                                 ('Сохранить', (350, 420), pygame.Rect(350, 420, 220, 50)),
-                                                 ('Загрузить', (350, 490), pygame.Rect(350, 490, 180, 50)),
-                                                 ('Настройки', (350, 560), pygame.Rect(350, 560, 180, 50)),
-                                                 ('Выйти', (350, 630), pygame.Rect(350, 630, 120, 50)),
-                                                 )
-
-                            self.menu_settings = (('Полноэкранный режим', (350, 280), pygame.Rect(350, 280, 400, 50)),
-                                                  ('Оконный режим (без рамок)', (350, 350), pygame.Rect(350, 350, 470, 50)),
-                                                  ('Оконный режим (с рамками)', (350, 420), pygame.Rect(350, 420, 470, 50)),
-                                                  )
-                        if self.screen_mod == 2:
-                            self.shift_x = 260
-                            self.shift_y = 100
-                            self.scale_value = 1
-                            self.menu_options = (('Новая игра', (350, 280), pygame.Rect(350 + self.shift_x, 280 + self.shift_y, 200, 50)),
-                                                 ('Продолжить', (350, 350), pygame.Rect(350 + self.shift_x, 350 + self.shift_y, 220, 50)),
-                                                 ('Сохранить', (350, 420), pygame.Rect(350 + self.shift_x, 420 + self.shift_y, 220, 50)),
-                                                 ('Загрузить', (350, 490), pygame.Rect(350 + self.shift_x, 490 + self.shift_y, 180, 50)),
-                                                 ('Настройки', (350, 560), pygame.Rect(350 + self.shift_x, 560 + self.shift_y, 180, 50)),
-                                                 ('Выйти', (350, 630), pygame.Rect(350 + self.shift_x, 630 + self.shift_y, 120, 50)),
-                                                 )
-                            self.menu_settings = (('Полноэкранный режим', (350, 280), pygame.Rect(350 + self.shift_x, 280 + self.shift_y, 400, 50)),
-                                                  ('Оконный режим (без рамок)', (350, 350), pygame.Rect(350 + self.shift_x, 350 + self.shift_y, 470, 50)),
-                                                  ('Оконный режим (с рамками)', (350, 420), pygame.Rect(350 + self.shift_x, 420 + self.shift_y, 470, 50)),
-                                                  )
-
+                        self.set_menu_settings()
 
             else:
-                menu_option = self.menu_font.render(option[0], False, 'Yellow')
+                if self.cut_data == None and (option[0] == 'Сохранить' or option[0] == 'Продолжить') or self.cut_data != None and option[0] == 'Сохранить' and self.cut_data[4] == False:
+                    menu_option = self.menu_font.render(option[0], False, 'Gray')
+                else:
+                    menu_option = self.menu_font.render(option[0], False, 'Yellow')
                 scene_surface.blit(menu_option, option[1])
 
         return hero, scene
@@ -281,6 +270,9 @@ class Game:
         self.pushed_m = False
         self.pushed_COMMA = False
         self.pushed_PERIOD = False
+
+
+    # Логика ---------------------------
 
 
     def events_tracking(self):
@@ -506,7 +498,7 @@ class Game:
                 elif len(message_lines[line]) != 0:
                     message_lines[line] += ' '
                 message_lines[line] = message_lines[line] + word
-        self.prepared_message = (message_lines, tutorial, lines_before_tutorial)
+        self.prepared_message = (message_lines, tutorial, lines_before_tutorial, is_replica)
 
 
     def cut_scene (self, hero, scene):
@@ -516,6 +508,8 @@ class Game:
             if act[scene.act][0] == 'герой идет':
                 hero.destination = Cut_interactive(act[scene.act][1])
                 hero.find_path_to_deal(scene.room_map, hero.destination)
+            elif act[scene.act][0] == 'разворот героя':
+                hero.direction = act[scene.act][1]
             elif act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя':
                 self.message_preparing(act[scene.act][2], True)
             elif act[scene.act][0] == 'мысли героя':
@@ -527,20 +521,24 @@ class Game:
                 self.chapter_timer = 0
             elif act[scene.act][0] == 'ожидание':
                 self.wait = 0
-            elif act[scene.act][0] == 'появление персонажа':
-                scene.placing_plot_characters(act[scene.act][1])
             elif act[scene.act][0] == 'затемнение и обратно':
                 self.fade_animation = -12
+            elif act[scene.act][0] == 'появление персонажа':
+                scene.placing_plot_characters(act[scene.act][1])
             elif act[scene.act][0] == 'персонаж идет':
                 i = 0
                 while scene.plot_characters[scene.room-1][i].name != act[scene.act][1]:
                     i += 1
                 scene.plot_characters[scene.room-1][i].destination = Cut_interactive(act[scene.act][2])
                 scene.plot_characters[scene.room-1][i].find_path_to_deal(scene.room_map, scene.plot_characters[scene.room-1][i].destination)
+            elif act[scene.act][0] == 'уход персонажа':
+                pass
+            elif act[scene.act][0] == 'инициация в области':
+                pass
             elif act[scene.act][0] == 'ОБУЧЕНИЕ БАРИСТА':
                 self.barista = Barista(False)
                 pygame.mixer.music.load('Files/Sounds/Music/Tatlin.mp3')
-                pygame.mixer.music.set_volume(0.7)
+                pygame.mixer.music.set_volume(0.6)
                 pygame.mixer.music.play(-1)
             elif act[scene.act][0] == 'ГОТОВКА КОФЕ':
                 self.barista = Barista(True, self.counted_order_time, self.counted_cook_time)
@@ -549,10 +547,16 @@ class Game:
                 hero.direction = 'вниз'
                 hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
                 pygame.mixer.music.load('Files/Sounds/Music/AberrantRealities 1.mp3')
-                pygame.mixer.music.set_volume(0.7)
+                pygame.mixer.music.set_volume(0.6)
                 pygame.mixer.music.play(-1)
+
+            elif act[scene.act][0] == 'особое 1':
+                self.message_preparing(act[scene.act][1], False)
+            elif act[scene.act][0] == 'особое 2':
+                self.message_preparing(act[scene.act][1], False)
             if act[scene.act][0][0:8] != 'обучение':
                 scene.act_started = True
+            self.cut_data = act[scene.act][-1]
 
 
 
@@ -563,6 +567,9 @@ class Game:
                 else:
                     scene.act = scene.act + 1
                     scene.act_started = False
+            elif act[scene.act][0] == 'разворот героя':
+                scene.act = scene.act + 1
+                scene.act_started = False
             elif act[scene.act][0] == 'реплика' or act[scene.act][0] == 'реплика героя' :
                 if self.pushed_SPACE:
                     # self.pushed_SPACE = False
@@ -577,7 +584,7 @@ class Game:
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'погружение':
-                if self.wow_fade_animation == 110:
+                if self.wow_fade_animation == 100:
                     self.wow_fade_animation = None
                     hero.x = act[scene.act][1]
                     hero.y = act[scene.act][2]
@@ -586,26 +593,26 @@ class Game:
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'акт':
-                if self.chapter_timer == 4:
+                if self.chapter_timer == 80:
                     self.chapter_info = None
                     self.chapter_timer = None
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'ожидание':
                 if self.wait < act[scene.act][1]:
-                    if self.timer:
+                    if self.timer_005:
                         self.wait += 1
                 else:
                     self.wait = None
                     scene.act = scene.act + 1
                     scene.act_started = False
-            elif act[scene.act][0] == 'появление персонажа':
-                scene.act = scene.act + 1
-                scene.act_started = False
             elif act[scene.act][0] == 'затемнение и обратно':
                 if self.fade_animation == None:
                     scene.act = scene.act + 1
                     scene.act_started = False
+            elif act[scene.act][0] == 'появление персонажа':
+                scene.act = scene.act + 1
+                scene.act_started = False
             elif act[scene.act][0] == 'персонаж идет':
                 walk_characters = False
                 for plot_character in scene.plot_characters[scene.room-1]:
@@ -613,6 +620,17 @@ class Game:
                         plot_character.walk()
                         walk_characters = True
                 if walk_characters == False:
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+            elif act[scene.act][0] == 'уход персонажа':
+                i = 0
+                while scene.plot_characters[scene.room-1][i].name != act[scene.act][1]:
+                    i += 1
+                scene.plot_characters[scene.room-1].pop(i)
+                scene.act = scene.act + 1
+                scene.act_started = False
+            elif act[scene.act][0] == 'инициация в области':
+                if hero.hitbox.colliderect(act[scene.act][1]) and self.pushed_SPACE:
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'ОБУЧЕНИЕ БАРИСТА':
@@ -626,11 +644,21 @@ class Game:
                 if self.pushed_TAB or self.barista.score[2] == True:
                     self.barista = None
                     pygame.mixer.music.load('Files/Sounds/Music/sinnesloschen-beam.mp3')
-                    pygame.mixer.music.set_volume(0.7)
+                    pygame.mixer.music.set_volume(1)
                     pygame.mixer.music.play(-1)
                     scene.act = scene.act + 1
                     scene.act_started = False
 
+            elif act[scene.act][0] == 'особое 1':
+                if hero.hitbox.colliderect(pygame.Rect(act[scene.act][2])) and self.pushed_SPACE:
+                    self.prepared_message = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
+            elif act[scene.act][0] == 'особое 2':
+                if hero.hitbox.colliderect(pygame.Rect(act[scene.act][2])) and self.pushed_SPACE:
+                    self.prepared_message = None
+                    scene.act = scene.act + 1
+                    scene.act_started = False
 
     def mini_games_logica(self, hero, scene):
 
@@ -649,7 +677,9 @@ class Game:
                 self.barista.return_times = None
 
 
-    # рендер всей сцены
+    # Рендер --------------------------
+
+
     # @time_counter()
     def render (self, scene_surface, hero, scene):
         # отрисовка сцены
@@ -731,7 +761,7 @@ class Game:
                     l += 1
 
         # интерактивное сообщение и подсказка
-        if scene.girl_interactive != None:
+        if self.cut_data[2] == True and scene.girl_interactive != None:
             collided = False
             for object in scene.girl_interactive:
                 if hero.hitbox.colliderect(object.hitbox):
@@ -787,7 +817,7 @@ class Game:
                 hero.thoughts = None
 
         # отрисовка мыслей
-        if self.prepared_message != None and act[scene.act][0] == 'мысли героя':
+        if self.prepared_message != None and self.prepared_message[3] == False:
             x = hero.x + 33 - (len(max(self.prepared_message[0], key=len)) * 10) // 2
             y = hero.y - 85
             if scene.room == 1 or scene.room == 3:
@@ -812,7 +842,7 @@ class Game:
                 l += 1
 
         # отрисовка реплик
-        if self.prepared_message != None and act[scene.act][0] != 'мысли героя':
+        if self.prepared_message != None and self.prepared_message[3] == True:
             x = 220
             if scene.room == 1:
                 y = 480
@@ -881,10 +911,7 @@ class Game:
         # wow-переход
         if self.wow_fade_animation != None:
             fade_surface = pygame.Surface((1024, 768), pygame.SRCALPHA)
-            if self.wow_fade_animation < 52:
-                fade = 0 + 5 * self.wow_fade_animation
-            else:
-                fade = 255
+            fade = min(255, 0 + 5 * self.wow_fade_animation)
             pygame.draw.rect(fade_surface, (0, 0, 0, fade), (0, 0, 1024, 768))
             scene_surface.blit(fade_surface, (0, 0))
             if self.timer_005:
@@ -897,7 +924,7 @@ class Game:
             for record in print_info:
                 message = self.chapter_font.render(self.chapter_info[0], False, record[2])
                 scene_surface.blit(message, (400 + record[0], 300 + record[1]))
-            if self.timer:
+            if self.timer_005:
                 self.chapter_timer += 1
 
 

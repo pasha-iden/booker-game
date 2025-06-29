@@ -35,7 +35,7 @@ while game.running:
 
 
             # перемещение между комнатами
-            if game.pushed_SPACE and game.fade_animation == None:
+            if game.pushed_SPACE and game.fade_animation == None and game.cut_data[1] == True:
                 game.transfering_room_initiation(hero, scene)
             if game.fade_animation == 0:
                 game.transfering_room(hero, scene)
@@ -45,7 +45,7 @@ while game.running:
 
 
             # управление игроком
-            if (game.fade_animation == None and game.barista == None) and pygame.key.get_pressed() != None:
+            if game.fade_animation == None and game.cut_data[0] == True and pygame.key.get_pressed() != None:
                 hero.move(pygame.key.get_pressed(), scene.furniture)
 
 
@@ -88,7 +88,7 @@ while game.running:
 
 
         # рендер графики и обновление экрана
-        game.screen.blit(scene_surface, (game.shift_x, game.shift_y))
+        game.screen.blit(scene_surface, (game.screen_shift[game.screen_mod][0], game.screen_shift[game.screen_mod][1]))
         pygame.display.update()
 
         end_time = time.perf_counter()

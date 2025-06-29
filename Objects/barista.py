@@ -93,15 +93,17 @@ class Barista:
                 hero.destination = Cut_interactive((360, 364, 'влево'))
                 hero.find_path_to_deal(scene.room_map, hero.destination)
                 self.teatable = True
+                self.letter = None
             elif self.letter == 'в':
                 hero.destination = Cut_interactive((400, 412, 'вправо'))
                 hero.find_path_to_deal(scene.room_map, hero.destination)
                 self.machine = True
+                self.letter = None
             elif self.letter == 'ы':
                 hero.destination = Cut_interactive((392, 436, 'вниз'))
                 hero.find_path_to_deal(scene.room_map, hero.destination)
                 self.speach = True
-            self.letter = None
+                self.letter = None
 
 
     def initiation(self, hero):
@@ -789,16 +791,18 @@ class Barista:
                     hero.destination = Cut_interactive((360, 364, 'влево'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
                     self.teatable = True
+                    self.letter = None
                 elif self.letter == 'в':
                     hero.destination = Cut_interactive((400, 412, 'вправо'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
                     self.machine = True
+                    self.letter = None
                 elif self.letter == 'ы':
                     hero.destination = Cut_interactive((392, 436, 'вниз'))
                     hero.find_path_to_deal(scene.room_map, hero.destination)
                     if self.tutorial_to_say != [] and (self.list == [] or len(self.list) == len(self.done_animation[1])):
                         self.speach = True
-                self.letter = None
+                    self.letter = None
 
             # инициация областей
             if hero.x == 392 and hero.y == 436 and self.letter == ' ' and not self.speach:
