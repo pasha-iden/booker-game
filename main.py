@@ -51,23 +51,24 @@ while game.running:
 
 
             # СОБЫТИЯ NPC
-            character_go_away = None
-            can_go_away = len(scene.characters[scene.room-1]) > (len(scene.chairs) // 2)
-            # NPC принимают решения и идут к своей цели
-            for character in scene.characters[scene.room-1]:
-                scene.interactive, go_away = character.decision(game.timer, scene.room_map, scene.interactive, can_go_away)
-            # передвижение NPC
-                if character.path_to_deal != []:
-                    character.walk()
-            # если NPC решил уйти
-                if go_away == True:
-                    character_go_away = character
-                    go_away = False
-            if character_go_away != None:
-                scene.empty_chairs[scene.room-1].append(character_go_away.chair)
-                scene.characters[scene.room-1].pop(scene.characters[scene.room-1].index(character_go_away))
-            # приход нового NPC
-            scene.adding_character(game.timer)
+            if game.intro == None:
+                character_go_away = None
+                can_go_away = len(scene.characters[scene.room-1]) > (len(scene.chairs) // 2)
+                # NPC принимают решения и идут к своей цели
+                for character in scene.characters[scene.room-1]:
+                    scene.interactive, go_away = character.decision(game.timer, scene.room_map, scene.interactive, can_go_away)
+                # передвижение NPC
+                    if character.path_to_deal != []:
+                        character.walk()
+                # если NPC решил уйти
+                    if go_away == True:
+                        character_go_away = character
+                        go_away = False
+                if character_go_away != None:
+                    scene.empty_chairs[scene.room-1].append(character_go_away.chair)
+                    scene.characters[scene.room-1].pop(scene.characters[scene.room-1].index(character_go_away))
+                # приход нового NPC
+                scene.adding_character(game.timer)
 
 
 
@@ -80,7 +81,8 @@ while game.running:
             game.render(scene_surface, hero, scene)
             game.cut_effects_render(scene_surface, hero, scene)
             game.mini_game_render(scene_surface, hero, scene)
-            game.after_effects(scene_surface)
+            if game.intro == None:
+                game.after_effects(scene_surface)
 
 
         # if not game.pause:

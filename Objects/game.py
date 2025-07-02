@@ -1,6 +1,7 @@
 import pygame
 
 from random import randint
+
 from rubish.time_detector import time_counter
 
 from Objects.characters import Hero
@@ -10,6 +11,7 @@ from Objects.interactives import Cut_interactive
 from Objects.stages import stages
 from Objects.acts import act
 
+from Objects.intro import Intro
 from Objects.barista import Barista
 
 
@@ -30,8 +32,10 @@ class Game:
 
         # шрифты
         self.game_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=20)
-        self.menu_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=35)
+
         self.chapter_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=60)
+
+        self.menu_font = pygame.font.Font('Files/Fonts/Roboto_Condensed-Medium.ttf', size=35)
         self.logo_font = pygame.font.Font('Files/Fonts/PressStart2P-Regular.ttf', size=70)
         self.sublogo_font = pygame.font.Font('Files/Fonts/PressStart2P-Regular.ttf', size=20)
 
@@ -69,7 +73,14 @@ class Game:
         self.mouse_left = False
         self.keys_clear()
 
-        # технические состояния
+        # технические данные анимации
+        self.upline = pygame.Surface((1024, 25), pygame.SRCALPHA)
+        self.downline = pygame.Surface((1024, 25), pygame.SRCALPHA)
+        self.lines_off = ((84, 665), (0, 743))
+        self.lines_coordinates = [84, 665]
+        for i in range(25):
+            pygame.draw.line(self.upline, (0, 0, 0, 250 - 10 * i), (0, i), (1024, i), 1)
+            pygame.draw.line(self.downline, (0, 0, 0, 10 * i), (0, i), (1024, i), 1)
         self.fade_animation = None
         self.wow_fade_animation = None
         self.chapter_info = None
@@ -85,6 +96,9 @@ class Game:
 
         # мысли и реплики
         self.prepared_message = None
+
+        # заставка
+        self.intro = None
 
         # переменные для игры бариста
         self.barista = None
@@ -471,6 +485,8 @@ class Game:
                         deleted = True
                     else:
                         i += 1
+            self.lines_coordinates[0] = self.lines_off[scene.room != 1][0] - 25
+            self.lines_coordinates[1] = self.lines_off[scene.room != 1][1] + 25
 
 
     def message_preparing (self, message, is_replica):
@@ -535,6 +551,8 @@ class Game:
                 pass
             elif act[scene.act][0] == 'инициация в области':
                 pass
+            elif act[scene.act][0] == 'ИНТРО':
+                self.intro = Intro()
             elif act[scene.act][0] == 'ОБУЧЕНИЕ БАРИСТА':
                 self.barista = Barista(False)
                 pygame.mixer.music.load('Files/Sounds/Music/Tatlin.mp3')
@@ -547,6 +565,23 @@ class Game:
                 hero.direction = 'вниз'
                 hero.hitbox = pygame.Rect(hero.x, hero.y, hero.width, hero.height)
                 pygame.mixer.music.load('Files/Sounds/Music/AberrantRealities 1.mp3')
+                pygame.mixer.music.set_volume(0.6)
+                pygame.mixer.music.play(-1)
+
+            elif act[scene.act][0] == 'сцена':
+                scene.room = 2
+                hero.x = 500
+                hero.y = 600
+                hero.direction = 'вверх'
+                scene.image = pygame.image.load(stages[scene.stage]['ФОНЫ'][scene.room][0]).convert()
+                scene.placing_furniture()
+                scene.placing_interactive()
+                scene.placing_chairs()
+                scene.mapping_room()
+                scene.placing_characters()
+                self.lines_coordinates[0] = self.lines_off[scene.room != 1][0] - 25
+                self.lines_coordinates[1] = self.lines_off[scene.room != 1][1] + 25
+                pygame.mixer.music.load('Files/Sounds/Music/Surprising_Media.mp3')
                 pygame.mixer.music.set_volume(0.6)
                 pygame.mixer.music.play(-1)
 
@@ -593,7 +628,7 @@ class Game:
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'акт':
-                if self.chapter_timer == 80:
+                if self.chapter_timer == 80 + (self.chapter_info[0] != 'ПРОЛОГ') * 20:
                     self.chapter_info = None
                     self.chapter_timer = None
                     scene.act = scene.act + 1
@@ -633,6 +668,14 @@ class Game:
                 if hero.hitbox.colliderect(act[scene.act][1]) and self.pushed_SPACE:
                     scene.act = scene.act + 1
                     scene.act_started = False
+            elif act[scene.act][0] == 'ИНТРО':
+                if self.intro.out:
+                    self.intro = None
+                    pygame.mixer.music.load('Files/Sounds/Music/sinnesloschen-beam.mp3')
+                    pygame.mixer.music.set_volume(1)
+                    pygame.mixer.music.play(-1)
+                    scene.act = scene.act + 1
+                    scene.act_started = False
             elif act[scene.act][0] == 'ОБУЧЕНИЕ БАРИСТА':
                 scene.act = scene.act + 1
                 scene.act_started = False
@@ -649,6 +692,10 @@ class Game:
                     scene.act = scene.act + 1
                     scene.act_started = False
 
+            elif act[scene.act][0] == 'сцена':
+                scene.act = scene.act + 1
+                scene.act_started = False
+
             elif act[scene.act][0] == 'особое 1':
                 if hero.hitbox.colliderect(pygame.Rect(act[scene.act][2])) and self.pushed_SPACE:
                     self.prepared_message = None
@@ -659,6 +706,7 @@ class Game:
                     self.prepared_message = None
                     scene.act = scene.act + 1
                     scene.act_started = False
+
 
     def mini_games_logica(self, hero, scene):
 
@@ -921,15 +969,81 @@ class Game:
         if self.chapter_info != None:
 
             print_info = ((-4, -4, 'Orange'), (0, -4, 'Orange'), (4, -4, 'Orange'), (-4, 0, 'Orange'), (4, 0, 'Orange'), (-4, 4, 'Orange'), (0, 4, 'Orange'), (4, 4, 'Red'), (0, 0, 'Yellow'))
+            # "пролог", "акт"
             for record in print_info:
                 message = self.chapter_font.render(self.chapter_info[0], False, record[2])
-                scene_surface.blit(message, (400 + record[0], 300 + record[1]))
+                scene_surface.blit(message, (512 - len(self.chapter_info[0]) * 15 + 25 + record[0], 300 + record[1]))
+
+            if self.chapter_info[1] != None:
+                # название акта
+                for record in print_info:
+                    message = self.chapter_font.render(self.chapter_info[1], False, record[2])
+                    scene_surface.blit(message, (512 - len(self.chapter_info[1]) * 15 + record[0], 370 + record[1]))
+                # "сегодня на фильтре"
+                print_info = ((-2, -2), (0, -2), (2, -2), (-2, 0), (2, 0), (-2, 2), (0, 2), (2, 2)) #, (0, 0, 'Yellow'))
+                x = 300
+                y = 500
+                for record in print_info:
+                    message = self.game_font.render('СЕГОДНЯ НА ФИЛЬТРЕ:', False, (50, 50, 50))
+                    scene_surface.blit(message, (x + record[0], y + record[1]))
+                message = self.game_font.render('СЕГОДНЯ НА ФИЛЬТРЕ:', False, 'White')
+                scene_surface.blit(message, (x, y))
+                # фильтр 1
+                y += 30
+                for record in print_info:
+                    message = self.game_font.render(self.chapter_info[2], False, (50, 50, 50))
+                    scene_surface.blit(message, (x + record[0], y + record[1]))
+                message = self.game_font.render(self.chapter_info[2], False, 'Yellow')
+                scene_surface.blit(message, (x, y))
+
+                y += 20
+                for record in print_info:
+                    message = self.game_font.render(self.chapter_info[3], False, (50, 50, 50))
+                    scene_surface.blit(message, (x + record[0], y + record[1]))
+                message = self.game_font.render(self.chapter_info[3], False, 'White')
+                scene_surface.blit(message, (x, y))
+
+                y += 40
+                for record in print_info:
+                    message = self.game_font.render(self.chapter_info[4], False, (50, 50, 50))
+                    scene_surface.blit(message, (x + record[0], y + record[1]))
+                message = self.game_font.render(self.chapter_info[4], False, 'Yellow')
+                scene_surface.blit(message, (x, y))
+
+                y += 20
+                for record in print_info:
+                    message = self.game_font.render(self.chapter_info[5], False, (50, 50, 50))
+                    scene_surface.blit(message, (x + record[0], y + record[1]))
+                message = self.game_font.render(self.chapter_info[5], False, 'White')
+                scene_surface.blit(message, (x, y))
+
+            # "сегодня на фильтре"
+
             if self.timer_005:
                 self.chapter_timer += 1
+
+        # рамки кат-сцен
+        if self.barista == None:
+            if self.cut_data[0] == False and self.lines_coordinates[0] < self.lines_off[scene.room != 1][0]:
+                self.lines_coordinates[0] += 1
+                self.lines_coordinates[1] -= 1
+            if self.cut_data[0] == True and self.lines_coordinates[0] > self.lines_off[scene.room != 1][0] - 25:
+                self.lines_coordinates[0] -= 1
+                self.lines_coordinates[1] += 1
+        if self.barista != None or self.fade_animation != None or self.wow_fade_animation != None:
+            if self.lines_coordinates[0] > self.lines_off[scene.room != 1][0] - 25:
+                self.lines_coordinates[0] -= 1
+                self.lines_coordinates[1] += 1
+        if self.lines_coordinates[0] != self.lines_off[scene.room != 1][0] - 25:
+            scene_surface.blit(self.upline, (0, self.lines_coordinates[0]))
+            scene_surface.blit(self.downline, (0, self.lines_coordinates[1]))
 
 
     # рендер мини - игр
     def mini_game_render (self, scene_surface, hero, scene):
+
+        if self.intro != None:
+            self.intro.intro_cut(scene_surface)
 
         if self.barista != None:
             self.barista.render(scene_surface, hero, scene)
