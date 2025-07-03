@@ -4,7 +4,7 @@ from random import randint
 
 from rubish.time_detector import time_counter
 
-from Objects.characters import Hero
+from Objects.characters import Hero, Plot_character
 from Objects.scene import Scene
 from Objects.interactives import Cut_interactive
 
@@ -174,6 +174,11 @@ class Game:
                         scene.placing_chairs()
                         scene.mapping_room()
                         scene.placing_characters()
+
+                        for room in stages[scene.stage]['СЦЕНАРНЫЕ ПЕРСОНАЖИ']:
+                            for object in stages[scene.stage]['СЦЕНАРНЫЕ ПЕРСОНАЖИ'][room]:
+                                scene.plot_characters[room-1].append(Plot_character(object))
+
                         self.prepared_message = None
                         pygame.mixer.music.load('Files/Sounds/Music/sinnesloschen-beam.mp3')
                         pygame.mixer.music.set_volume(1)
@@ -212,6 +217,7 @@ class Game:
                         scene.placing_chairs()
                         scene.mapping_room()
                         scene.placing_characters()
+
                         self.prepared_message = None
                         self.just_started = False
                         self.pause = False
@@ -628,7 +634,7 @@ class Game:
                     scene.act = scene.act + 1
                     scene.act_started = False
             elif act[scene.act][0] == 'акт':
-                if self.chapter_timer == 80 + (self.chapter_info[0] != 'ПРОЛОГ') * 20:
+                if self.chapter_timer == 80 + (self.chapter_info[0] != 'ПРОЛОГ') * 40:
                     self.chapter_info = None
                     self.chapter_timer = None
                     scene.act = scene.act + 1

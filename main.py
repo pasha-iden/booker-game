@@ -85,9 +85,6 @@ while game.running:
                 game.after_effects(scene_surface)
 
 
-        # if not game.pause:
-        #     print(pygame.mouse.get_pos())
-
 
         # рендер графики и обновление экрана
         game.screen.blit(scene_surface, (game.screen_shift[game.screen_mod][0], game.screen_shift[game.screen_mod][1]))
