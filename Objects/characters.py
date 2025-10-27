@@ -14,7 +14,7 @@ SCREEN_HEIGHT = 768
 class Sub_character:
     def __init__ (self):
         self.type = 'sub_character'
-        self.skin = 1
+        self.skin = randint(1, 2)
         self.image = pygame.image.load(skins[self.skin]).convert_alpha()
         self.x = 952
         self.y = 380
@@ -440,6 +440,7 @@ class Plot_character(Sub_character):
 class Hero(Sub_character):
     def __init__ (self):
         super().__init__()
+        self.skin = 1
         self.type = 'hero'
         head_surface = pygame.Surface((67, 67), pygame.SRCALPHA)
         head_surface.blit(self.image, (0, 0), (22, 707, 67, 111))
